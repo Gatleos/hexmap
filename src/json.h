@@ -23,9 +23,8 @@ namespace config {
 	extern float sand;
 	extern float cold;
 	extern float hot;
+	Json::Value openJson(std::string file);
+	void loadAllJson();
 }
-
-Json::Value openJson(std::string file);
-void loadAllJson();
 
 #endif

@@ -8,7 +8,7 @@
 
 array<const char*, 6> config::roadTypes = { "r_e", "r_ne", "r_nw", "r_w", "r_sw", "r_se" };
 
-Json::Value openJson(string file) {
+Json::Value config::openJson(string file) {
 	Json::Value root;
 	Json::Reader reader;
 	filebuf fb;
@@ -22,7 +22,7 @@ Json::Value openJson(string file) {
 	return root;
 }
 
-void loadAllJson() {
+void config::loadAllJson() {
 	cerr << "\nBegin Json Parsing\n------------------\n";
 	TileFeatureS::loadJson("data/feature.json");
 	HexTileS::loadJson("data/terrain.json");

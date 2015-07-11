@@ -1,10 +1,10 @@
 #include <chrono>
 #include "rng.h"
 
-std::uniform_int_distribution<int> d6Gen(0, 5);
-std::uniform_int_distribution<int> degreesGen(0, 359);
-std::uniform_real_distribution<double> radiansGen(0.0, 6.28318530718);
-std::bernoulli_distribution booleanGen(0.5);
+static std::uniform_int_distribution<int> d6Gen(0, 5);
+static std::uniform_int_distribution<int> degreesGen(0, 359);
+static std::uniform_real_distribution<double> radiansGen(0.0, 6.28318530718);
+static std::bernoulli_distribution booleanGen(0.5);
 
 namespace rng
 {
@@ -37,9 +37,11 @@ namespace rng
 	int getInt(int hi, std::mt19937& urng) {
 		return std::uniform_int_distribution<int>(0, hi)(urng);
 	}
+
 	bool oneInX(double x, std::mt19937& urng) {
 		return std::bernoulli_distribution(1.0 / x)(urng);
 	}
+
 	bool xInY(double x, double y, std::mt19937& urng) {
 		return std::bernoulli_distribution(x / y)(urng);
 	}

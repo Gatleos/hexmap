@@ -24,7 +24,7 @@ Species::Species() :anims(nullptr)
 void Species::loadJson(string filename)
 {
 	Species::map.clear();
-	Json::Value root = openJson("data/species.json");
+	Json::Value root = config::openJson("data/species.json");
 	if (root.begin() == root.end()) {
 		cerr << "ERROR: couldn't open file \"" << filename << "\"\n";
 		return;

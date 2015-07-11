@@ -7,7 +7,7 @@ const sf::FloatRect* SpriteSheet::spr(string spriteName)
 {
 	const auto& spr = sprites.find(spriteName);
 	if (spr == sprites.end()) {
-		cerr << "ERROR: couldn't find sprite \"" << spriteName << "\" in file \"" << Resource().getRoot() + name << "\"\n";
+		cerr << "ERROR: couldn't find sprite \"" << spriteName << "\" in file \"" << RESOURCE.getRoot() + name << "\"\n";
 		return nullptr;
 	}
 	return &spr->second;

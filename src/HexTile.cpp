@@ -40,13 +40,13 @@ const sf::FloatRect* HexTileS::getRect(int rectNum, mt19937& urng) const
 
 void HexTileS::loadJson(string filename)
 {
-	Json::Value root = openJson(filename);
+	Json::Value root = config::openJson(filename);
 	if (root.begin() == root.end()) {
 		cerr << "ERROR: couldn't open file \"" << filename << "\"\n";
 		return;
 	}
 	string spriteSheet = root.get("spriteSheet", "").asString();
-	SpriteSheet* sheet = Resource().sh(spriteSheet);
+	SpriteSheet* sheet = RESOURCE.sh(spriteSheet);
 	if (sheet == nullptr) {
 		cerr << "\t(requested by \"" << filename << "\")\n";
 		return;

@@ -29,6 +29,6 @@ public:
 	string getRoot();
 };
 
-#define Resource() ResourceLoader::instance()
+#define RESOURCE ResourceLoader::instance()
 
 #endif

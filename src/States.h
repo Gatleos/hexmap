@@ -32,6 +32,8 @@ public:
 	void update();
 	void render(sf::RenderWindow &window);
 	void input(sf::Event &e);
+	void generate();
+	void loadResourcesInPlace();
 }; // EngineState
 
 #endif

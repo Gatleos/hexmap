@@ -35,8 +35,10 @@ int mtMilli = 0;
 
 void EngineState::init()
 {
+	// SFML init
+	engine->clearColor = { 0, 43, 77, 255 };
 	engine->window->setFramerateLimit(60);
-	config::load();
+	// GUI construction
 	mapGenDebug = UILayout::create();
 	auto window1 = sfg::Window::Create(sfg::Window::Style::BACKGROUND);
 	auto table1 = sfg::Table::Create();
@@ -60,29 +62,38 @@ void EngineState::init()
 	randomSeed->SetActive(true);
 	auto box1 = sfg::Box::Create(sfg::Box::Orientation::VERTICAL, 10.0f);
 	auto box2 = sfg::Box::Create(sfg::Box::Orientation::HORIZONTAL, 5.0f);
+	auto gen = sfg::Button::Create("Generate");
+	auto reload = sfg::Button::Create("Reload Files");
+	gen->GetSignal(sfg::Button::OnMouseLeftPress).Connect(std::bind(&EngineState::generate, this));
+	reload->GetSignal(sfg::Button::OnMouseLeftPress).Connect(std::bind(&EngineState::loadResourcesInPlace, this));
 	box1->Pack(table1);
 	box1->Pack(box2);
+	box1->Pack(gen);
+	box1->Pack(reload);
 	box2->Pack(randomSeed);
 	box2->Pack(seedBox);
 	window1->Add(box1);
 	mapGenDebug->addWindow(window1, UIAlign({ 1.0f, 0.0f, 210.0f, 120.0f }, UI::ALIGN_RIGHT | UI::ALIGN_FRAC_POSX));
 	UI::addNewLayout(mapGenDebug);
 	UI::pushLayout(mapGenDebug);
-	//
-	ResourceLoader::instance().setRoot("data/");
+	// Initialize views
 	sf::Vector2u winSize = engine->window->getSize();
 	mapView.setSize((sf::Vector2f)winSize);
 	winSize.x /= 2, winSize.y /= 2;
 	mapView.setCenter((sf::Vector2f)winSize);
 	mapView.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
 	uiView = mapView;
-	loadAllJson();
+	// Resources
+	config::load();
+	RESOURCE.setRoot("data/");
+	config::loadAllJson();
+	// Set up map
 	hex.loadFromFile("data/iso.png");
 	hg.init(MAPX, MAPY);
 	hg.setTexture(hex);
 	hg.setAllTiles(HexTileS::get(terraintypes::OCEAN));
-	engine->clearColor = { 0, 43, 77, 255 };
 	hg.calculateViewArea(mapView);
+	generate();
 }
 void EngineState::end()
 {
@@ -208,31 +219,8 @@ void EngineState::input(sf::Event &e)
 		else if (e.key.code == sf::Keyboard::BackSpace) {
 		}
 		else if (e.key.code == sf::Keyboard::Return) {
-			hg.clearTileFeatures();
-			unsigned long hexSeed = 0;
-			if (randomSeed->IsActive()) {
-				hexSeed = rng::r();
-			}
-			else {
-				string seed = (string)seedBox->GetText();
-				if (seed.empty()) {
-					seed = "0";
-				}
-				hexSeed = stoul(seed, nullptr, 16);
-			}
-			customSeed.seed(hexSeed);
-			sf::Clock mtClock;
-			hg.generateBiomes(customSeed);
-			for (int a = 0; a < 10; a++) {
-				hg.generateMountainRange(customSeed);
-			}
-			sf::Time mtTime = mtClock.getElapsedTime();
-			mtMilli = mtTime.asMilliseconds();
-			stringstream ss;
-			ss << std::hex << hexSeed;
-			seedBox->SetText(ss.str());
+			generate();
 		}
-		return;
 	}
 	else if (e.type == sf::Event::Resized)
 	{
@@ -247,4 +235,54 @@ void EngineState::input(sf::Event &e)
 		hg.constrainView(mapView);
 		hg.calculateViewArea(mapView);
 	}
+}
+
+void EngineState::generate()
+{
+	hg.clearTileFeatures();
+	unsigned long hexSeed = 0;
+	if (randomSeed->IsActive()) {
+		hexSeed = rng::r();
+	}
+	else {
+		string seed = (string)seedBox->GetText();
+		if (seed.empty()) {
+			seed = "0";
+		}
+		hexSeed = stoul(seed, nullptr, 16);
+	}
+	customSeed.seed(hexSeed);
+	sf::Clock mtClock;
+	hg.generateBiomes(customSeed);
+	for (int a = 0; a < 10; a++) {
+		hg.generateMountainRange(customSeed);
+	}
+	sf::Time mtTime = mtClock.getElapsedTime();
+	mtMilli = mtTime.asMilliseconds();
+	stringstream ss;
+	ss << std::hex << hexSeed;
+	seedBox->SetText(ss.str());
+}
+
+void EngineState::loadResourcesInPlace()
+{
+	config::load();
+	RESOURCE.setRoot("data/");
+	config::loadAllJson();
+	string seed = (string)seedBox->GetText();
+	if (seed.empty()) {
+		seed = "0";
+	}
+	unsigned long hexSeed = stoul(seed, nullptr, 16);
+	customSeed.seed(hexSeed);
+	sf::Clock mtClock;
+	hg.generateBiomes(customSeed);
+	for (int a = 0; a < 10; a++) {
+		hg.generateMountainRange(customSeed);
+	}
+	sf::Time mtTime = mtClock.getElapsedTime();
+	mtMilli = mtTime.asMilliseconds();
+	stringstream ss;
+	ss << std::hex << hexSeed;
+	seedBox->SetText(ss.str());
 }
