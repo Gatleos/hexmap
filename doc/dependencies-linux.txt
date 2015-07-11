@@ -1,0 +1,15 @@
+To gather the dependencies:
+---------------------------
+1.) Execute "install_deps.sh"
+2.) Execute "install_sfml_deps.sh"
+3.) Run "git clone https://github.com/SFML/SFML.git"
+4.) Follow the instructions here: http://www.sfml-dev.org/tutorials/2.3/compile-with-cmake.php
+	(skip the dependencies section, we have those)
+5.) Run "git clone https://github.com/TankOs/SFGUI.git"
+6.) Compile and install it like you did with SFML
+
+
+If the executable can't find the shared libraries:
+--------------------------------------------------
+1.) Add "/usr/local/lib" to the file "/etc/ld.so.conf"
+2.) Run "ldconfig -v"

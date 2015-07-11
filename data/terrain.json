@@ -1,0 +1,134 @@
+{
+	"spriteSheet": "terrain.sprites",
+	
+	"t_ocean": {
+		"name": "Ocean",
+		"rect": "/tiles/full/ocean",
+		"rectHalf": "/tiles/half/ocean",
+		"rectQuart": "/tiles/quarter/ocean",
+		"gradient": {
+			"0.0": [0, 42, 179],
+			"0.3": [0, 42, 179],
+			"1.0": [58, 146, 255]
+		},
+		"townChance": 0.0
+	},
+	"t_mountain": {
+		"name": "Mountains",
+		"rect": "/tiles/full/mountain",
+		"rectHalf": "/tiles/half/mountain",
+		"rectQuart": "/tiles/quarter/mountain",
+		"townChance": 0.5
+	},
+	"t_taiga_s": {
+		"name": "Taiga",
+		"rect": "/tiles/full/taiga1",
+		"rectHalf": "/tiles/half/taiga1",
+		"rectQuart": "/tiles/quarter/taiga1",
+		"townChance": 1.0
+	},
+	"t_taiga_m": {
+		"name": "Taiga",
+		"rect": "/tiles/full/taiga2",
+		"rectHalf": "/tiles/half/taiga2",
+		"rectQuart": "/tiles/quarter/taiga2",
+		"townChance": 1.0
+	},
+	"t_taiga_l": {
+		"name": "Taiga",
+		"rect": "/tiles/full/taiga3",
+		"rectHalf": "/tiles/half/taiga3",
+		"rectQuart": "/tiles/quarter/taiga3",
+		"townChance": 1.0
+	},
+	"t_tundra": {
+		"name": "Tundra",
+		"rect": "/tiles/full/tundra",
+		"rectHalf": "/tiles/half/tundra",
+		"rectQuart": "/tiles/quarter/tundra",
+		"townChance": 1.0
+	},
+	"t_forest_s": {
+		"name": "Forest",
+		"rect": "/tiles/full/forest1",
+		"rectHalf": "/tiles/half/forest1",
+		"rectQuart": "/tiles/quarter/forest1",
+		"townChance": 1.0
+	},
+	"t_forest_m": {
+		"name": "Forest",
+		"rect": "/tiles/full/forest2",
+		"rectHalf": "/tiles/half/forest2",
+		"rectQuart": "/tiles/quarter/forest2",
+		"townChance": 1.0
+	},
+	"t_forest_l": {
+		"name": "Forest",
+		"rect": "/tiles/full/forest3",
+		"rectHalf": "/tiles/half/forest3",
+		"rectQuart": "/tiles/quarter/forest3",
+		"townChance": 1.0
+	},
+	"t_grassland": {
+		"name": "Grassland",
+		"rect": "/tiles/full/grassland",
+		"rectHalf": "/tiles/half/grassland",
+		"rectQuart": "/tiles/quarter/grassland",
+		"townChance": 1.0
+	},
+	"t_semiarid": {
+		"name": "Semiarid Desert",
+		"rect": "/tiles/full/semiarid",
+		"rectHalf": "/tiles/half/semiarid",
+		"rectQuart": "/tiles/quarter/semiarid",
+		"townChance": 1.0
+	},
+	"t_jungle_s": {
+		"name": "Jungle",
+		"rect": "/tiles/full/jungle1",
+		"rectHalf": "/tiles/half/jungle1",
+		"rectQuart": "/tiles/quarter/jungle1",
+		"townChance": 1.0
+	},
+	"t_jungle_m": {
+		"name": "Jungle",
+		"rect": "/tiles/full/jungle2",
+		"rectHalf": "/tiles/half/jungle2",
+		"rectQuart": "/tiles/quarter/jungle2",
+		"townChance": 1.0
+	},
+	"t_jungle_l": {
+		"name": "Jungle",
+		"rect": "/tiles/full/jungle3",
+		"rectHalf": "/tiles/half/jungle3",
+		"rectQuart": "/tiles/quarter/jungle3",
+		"townChance": 1.0
+	},
+	"t_savanna": {
+		"name": "Savanna",
+		"rect": [
+			"/tiles/full/savanna", 17,
+			"/tiles/full/savannaTree", 3
+		],
+		"rectHalf": "/tiles/half/savanna",
+		"rectQuart": "/tiles/quarter/savanna",
+		"townChance": 1.0
+	},
+	"t_desert": {
+		"name": "Sand Desert",
+		"rect": "/tiles/full/desert",
+		"rectHalf": "/tiles/half/desert",
+		"rectQuart": "/tiles/quarter/desert",
+		"townChance": 0.5
+	},
+	"t_swamp": {
+		"name": "Swamp",
+		"rect": [
+			"/tiles/full/swamp", 19,
+			"/tiles/full/swampPlant", 1
+		],
+		"rectHalf": "/tiles/half/swamp",
+		"rectQuart": "/tiles/quarter/swamp",
+		"townChance": 0.5
+	}
+}

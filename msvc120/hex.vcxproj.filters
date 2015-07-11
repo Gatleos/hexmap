@@ -1,0 +1,135 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="..\src\SFMLEngine.h" />
+    <ClInclude Include="..\src\HexMap.h" />
+    <ClInclude Include="..\src\States.h">
+      <Filter>States</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\lerp.h">
+      <Filter>utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\json.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\simplexnoise.h">
+      <Filter>random</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\BezierCurve.h" />
+    <ClInclude Include="..\src\Compare.h" />
+    <ClInclude Include="..\src\AnimHandler.h">
+      <Filter>animation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ResourceLoader.h">
+      <Filter>animation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\MapEntity.h">
+      <Filter>MapEntities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Site.h">
+      <Filter>MapEntities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Faction.h">
+      <Filter>MapEntities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Species.h">
+      <Filter>MapEntities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\clamp.h">
+      <Filter>utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\UI.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\HexTile.h" />
+    <ClInclude Include="..\src\Array2d.h">
+      <Filter>utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\TileFeature.h" />
+    <ClInclude Include="..\src\rng.h">
+      <Filter>random</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\compat.h">
+      <Filter>utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\VERSION.h">
+      <Filter>utility</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\main.cpp" />
+    <ClCompile Include="..\src\SFMLEngine.cpp" />
+    <ClCompile Include="..\src\HexMap.cpp" />
+    <ClCompile Include="..\src\EngineState.cpp">
+      <Filter>States</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\lerp.cpp">
+      <Filter>utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\config.cpp">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\json.cpp">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="..\jsoncpp\src\jsoncpp.cpp">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\simplexnoise.cpp">
+      <Filter>random</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\HexMapGen.cpp" />
+    <ClCompile Include="..\src\AnimHandler.cpp">
+      <Filter>animation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ResourceLoader.cpp">
+      <Filter>animation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\MapEntity.cpp">
+      <Filter>MapEntities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Site.cpp">
+      <Filter>MapEntities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Faction.cpp">
+      <Filter>MapEntities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Species.cpp">
+      <Filter>MapEntities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pugixml\src\pugixml.cpp">
+      <Filter>animation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\UI.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\HexTile.cpp" />
+    <ClCompile Include="..\src\TileFeature.cpp" />
+    <ClCompile Include="..\src\rng.cpp">
+      <Filter>random</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="utility">
+      <UniqueIdentifier>{4f6f2d86-8cdd-48b3-aea3-2ea83fb5bbe0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="States">
+      <UniqueIdentifier>{03a2a1c9-4702-4db2-9e9a-6568d6e2eeed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="json">
+      <UniqueIdentifier>{4067d140-74e7-452b-82e4-fe19dd33cef7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="random">
+      <UniqueIdentifier>{a3cf82db-de61-4d19-9bdb-df3754caccd9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="animation">
+      <UniqueIdentifier>{69b111f5-1806-4a0f-b463-69b32fa8cbac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MapEntities">
+      <UniqueIdentifier>{641b8514-6079-4305-85d2-cda88f8f8276}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI">
+      <UniqueIdentifier>{b3904a07-7558-42e3-a6d2-b073e839b37f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

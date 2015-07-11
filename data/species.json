@@ -1,0 +1,27 @@
+{
+	"s_human": {
+		"name": ["Human", "Humans", "Human"],
+		"animFile": "monsters.anim",
+		"idleAnim": "eye"
+	},
+	"s_elf": {
+		"name": ["Elf", "Elves", "Elven"],
+		"animFile": "monsters.anim",
+		"idleAnim": "eye"
+	},
+	"s_dwarf": {
+		"name": ["Dwarf", "Dwarves", "Dwarven"],
+		"animFile": "monsters.anim",
+		"idleAnim": "eye"
+	},
+	"s_goblin": {
+		"name": ["Goblin", "Goblins", "Goblin"],
+		"animFile": "monsters.anim",
+		"idleAnim": "eye"
+	},
+	"s_undead": {
+		"name": ["Undead", "Undead", "Undead"],
+		"animFile": "monsters.anim",
+		"idleAnim": "eye"
+	}
+}

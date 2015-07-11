@@ -1,0 +1,10 @@
+----------------------------
+v0.1
+----------------------------
+* Support for JSON data file parsing
+* XML parsing for .sprite and .anim files created by
+  http://darkfunction.com/editor/
+* SFGUI integration (finally)
+* Full set of hexagon map utilities, including coordinate
+  conversions and pathfinding
+* Basic map generation with overlapping simplex noise maps

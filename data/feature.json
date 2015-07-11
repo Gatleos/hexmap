@@ -1,0 +1,11 @@
+{
+	"spriteSheet": "terrain.sprites",
+	
+	"f_mountain": {
+		"name": "Mountain",
+		"pos": [0, 0],
+		"rect": "/tiles/full/mountain",
+		"rectHalf": "/tiles/half/mountain",
+		"rectQuart": "/tiles/quarter/mountain"
+	}
+}
