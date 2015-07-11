@@ -20,6 +20,8 @@ float config::swamp = 0.0f;
 float config::sand = 0.0f;
 float config::cold = 0.0f;
 float config::hot = 0.0f;
+float config::mountNum = 10.0f;
+float config::mountDensity = 100.0f;
 
 void config::load() {
 	Json::Value root = openJson("data/config.json");
@@ -41,6 +43,8 @@ void config::load() {
 		sand = root["sand"].asFloat();
 		cold = root["cold"].asFloat();
 		hot = root["hot"].asFloat();
+		mountNum = root["mountNum"].asFloat();
+		mountDensity = root["mountDensity"].asFloat();
 	}
 	catch (runtime_error e) {
 		std::cout << e.what() << "\n";

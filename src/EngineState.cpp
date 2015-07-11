@@ -93,7 +93,22 @@ void EngineState::init()
 	hg.setTexture(hex);
 	hg.setAllTiles(HexTileS::get(terraintypes::OCEAN));
 	hg.calculateViewArea(mapView);
-	generate();
+	//auto* f = hg.addFaction();
+	//for (int x = 0; x < 16384; x++) {
+	//	sf::Vector2i pos = { x % 128, x / 128 };
+	//	auto* s = hg.addSite(f);
+	//	s->setMapPos(HexMap::offsetToAxial(pos));
+	//	s->setAnimationData(*RESOURCE.anim("monsters.anim"));
+	//	s->setAnimation("Eye");
+	//}
+	//ofstream file;
+	//file.open("local/test.txt");
+	//sf::Clock timer;
+	//for (int a = 0; a < 10000; a++) {
+	//	hg.generateMountainRange(rng::r);
+	//}
+	//file << timer.restart().asMicroseconds();
+	//file.close();
 }
 void EngineState::end()
 {
@@ -254,7 +269,7 @@ void EngineState::generate()
 	customSeed.seed(hexSeed);
 	sf::Clock mtClock;
 	hg.generateBiomes(customSeed);
-	for (int a = 0; a < 10; a++) {
+	for (int a = 0; a < config::mountNum; a++) {
 		hg.generateMountainRange(customSeed);
 	}
 	sf::Time mtTime = mtClock.getElapsedTime();
@@ -277,7 +292,7 @@ void EngineState::loadResourcesInPlace()
 	customSeed.seed(hexSeed);
 	sf::Clock mtClock;
 	hg.generateBiomes(customSeed);
-	for (int a = 0; a < 10; a++) {
+	for (int a = 0; a < config::mountNum; a++) {
 		hg.generateMountainRange(customSeed);
 	}
 	sf::Time mtTime = mtClock.getElapsedTime();

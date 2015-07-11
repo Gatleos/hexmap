@@ -40,7 +40,7 @@ public:
 	vector<Population> pops;
 	MapEntity(Faction* parent);
 	void setParentMap(HexMap* hmSet);
-	bool setMapPos(sf::Vector2i dest);
+	bool setMapPos(sf::Vector2i axialCoord);
 	virtual void update(const sf::Time& timeElapsed) = 0;
 	bool isOnscreen(const sf::View& mapView);
 };

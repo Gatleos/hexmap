@@ -400,7 +400,7 @@ void HexMap::setTileFeature(sf::Vector2i offsetPos, const TileFeatureS& tfs, mt1
 	int zoom = zoomLevel;
 	for (int a = 0; a < 3; a++) {
 		zoomLevel = a;
-		sf::Vector2f pixelPos = hexToPixel(axialPos) + tfs.pos_;
+		sf::Vector2f pixelPos = hexToPixel(axialPos) + tfs.pos_[zoomLevel];
 		const sf::FloatRect& rect = *tfs.getRect(a, urng);
 		sf::VertexArray& chunk = fgVertices_[a](chunkPos.x, chunkPos.y);
 		chunk[index].texCoords = { rect.left, rect.top };

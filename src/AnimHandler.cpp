@@ -62,7 +62,12 @@ void AnimHandler::setAnimationData(const AnimationData &ai)
 
 void AnimHandler::setAnimation(string name)
 {
-	currentAnim = &animInfo->animations.find(name)->second;
+	auto& a = animInfo->animations.find(name);
+	if (a == animInfo->animations.end()) {
+		cerr << "ERROR: Couldn't find animation \"" << name << "\"\n";
+		return;
+	}
+	currentAnim = &a->second;
 	cframe = 0;
 	currentFrame = &currentAnim->frames[0];
 }

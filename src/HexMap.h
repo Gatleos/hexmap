@@ -139,8 +139,6 @@ public:
 	const sf::IntRect& getChunkViewArea() const;
 	// Keep a view from moving too far outside the map boundaries
 	void constrainView(sf::View& view);
-	// Sites
-	Site* addSite(sf::Vector2i axialPos);
 	// MapEntities
 	Faction* addFaction();
 	Site* addSite(Faction* parent);

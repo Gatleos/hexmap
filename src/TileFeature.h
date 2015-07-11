@@ -25,10 +25,10 @@ public:
 	sf::VertexArray vert_;
 	string id_;
 	string name_;
-	sf::Vector2f pos_;
-	map<int, sf::FloatRect> rect_[3];
-	int probTotal_[3];
-	bool randomRect[3];
+	std::array<sf::Vector2f, 3> pos_;
+	std::array<map<int, sf::FloatRect>, 3> rect_;
+	std::array<int, 3> probTotal_;
+	std::array<bool, 3> randomRect_;
 	const sf::FloatRect* getRect(int rectNum, mt19937& urng = rng::r) const;
 };
 

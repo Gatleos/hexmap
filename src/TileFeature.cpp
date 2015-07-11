@@ -19,15 +19,13 @@ const TileFeatureS& TileFeatureS::get(int t)
 
 TileFeatureS::TileFeatureS(string id) :
 vert_(sf::PrimitiveType::Quads, 4U),
-id_(id),
-pos_(0.0f, 0.0f)
+id_(id)
 {
-
 }
 
 const sf::FloatRect* TileFeatureS::getRect(int rectNum, mt19937& urng) const
 {
-	if (!randomRect[rectNum]) {
+	if (!randomRect_[rectNum]) {
 		return &rect_[rectNum].begin()->second;
 	}
 	int r = rng::getInt(probTotal_[rectNum] - 1, urng);
@@ -53,6 +51,7 @@ void TileFeatureS::loadJson(string filename)
 		cerr << "\t(requested by \"" << filename << "\")\n";
 		return;
 	}
+	const char* posNames[] = { "pos", "posHalf", "posQuart" };
 	const char* rectNames[] = { "rect", "rectHalf", "rectQuart" };
 	// Cycle through defined feature types; make sure to skip f_null!
 	for (int a = 1; a < featuretypes::SIZE; a++) {
@@ -68,9 +67,12 @@ void TileFeatureS::loadJson(string filename)
 			element = "name";
 			feat->name_ = fdata.get(element, "").asString();
 			// pos
-			element = "pos";
-			Json::Value j = fdata.get(element, Json::Value::null);
-			feat->pos_ = { j[0].asFloat(), j[1].asFloat() };
+			Json::Value j;
+			for (int i = 0; i < 3; i++) {
+				element = posNames[i];
+				j = fdata.get(element, Json::Value::null);
+				feat->pos_[i] = { j[0].asFloat(), j[1].asFloat() };
+			}
 			// rect
 			const sf::FloatRect* rectData = nullptr;
 			for (int i = 0; i < 3; i++) {
@@ -78,7 +80,7 @@ void TileFeatureS::loadJson(string filename)
 				j = fdata.get(element, Json::Value::null);
 				feat->probTotal_[i] = 0;
 				if (j.isArray()) {
-					feat->randomRect[i] = true;
+					feat->randomRect_[i] = true;
 					if (j.size() & 1) {
 						throw runtime_error("incorrect number of arguments");
 					}
@@ -93,7 +95,7 @@ void TileFeatureS::loadJson(string filename)
 					}
 				}
 				else {
-					feat->randomRect[i] = false;
+					feat->randomRect_[i] = false;
 					rectData = sheet->spr(j.asString());
 					if (rectData == nullptr) {
 						throw runtime_error("couldn't find tile sprite");
@@ -108,7 +110,7 @@ void TileFeatureS::loadJson(string filename)
 				auto& rect = feat->rect_[r];
 				if (rect.empty()) {
 					rect.emplace(make_pair(0, sf::FloatRect()));
-					feat->randomRect[r] = false;
+					feat->randomRect_[r] = false;
 				}
 			}
 			cerr << "[" << filename << ", " << feat->id_ << ", " << element << "] " << e.what() << "\n";

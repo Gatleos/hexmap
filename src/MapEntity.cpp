@@ -72,7 +72,7 @@ bool MapEntity::setMapPos(sf::Vector2i axialCoord)
 	offset = HexMap::axialToOffset(pos);
 	hm->getAxial(pos.x, pos.y).ent = this;
 	hm->setFeatureColor(offset, TileFeatureS::fade);
-	setPosition((sf::Vector2f)hm->hexToPixel(pos) + hm->getOrigin());
+	setPosition((sf::Vector2f)hm->hexToPixel(pos));
 	return true;
 }
 
