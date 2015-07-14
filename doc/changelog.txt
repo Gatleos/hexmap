@@ -1,3 +1,5 @@
+* Changed the way features are rendered to keep them from
+  drawing out of order
 ----------------------------
 v0.1
 ----------------------------
