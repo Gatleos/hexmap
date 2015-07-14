@@ -45,7 +45,6 @@ sf::Vector2f roundvf(sf::Vector2f p)
 HexMap::HexMap() :
 tex_(nullptr),
 activeBgVertices_(&bgVertices_[0]),
-activeFgVertices_(&fgVertices_[0]),
 nextUnitId(0),
 nextSiteId(0)
 {
@@ -150,21 +149,16 @@ void HexMap::init(int width, int height)
 		sf::Vector2f p;
 		int chunkIndex = 0;
 		auto& b = bgVertices_[bv];
-		auto& f = fgVertices_[bv];
 		b.set(mapSizeChunks_.x, mapSizeChunks_.y);
-		f.set(mapSizeChunks_.x, mapSizeChunks_.y);
 		chunkOffset = { 0, 0 };
 		for (int chunkIndex = 0; chunkIndex < b.size(); chunkIndex++) { // iterate through all chunks, row order
 			int index = 0;
 			auto& bc = b[chunkIndex];
-			auto& fc = f[chunkIndex];
 			chunkOffset.x = chunkIndex % mapSizeChunks_.x * CHUNK_SIZE;
 			chunkOffset.y = chunkIndex / mapSizeChunks_.x * CHUNK_SIZE;
 			chunkOffset.x += -floorf(chunkOffset.y / 2.0f);
 			bc.setPrimitiveType(sf::PrimitiveType::Quads);
 			bc.resize((size_t)CHUNK_SQUARED * 4);
-			fc.setPrimitiveType(sf::PrimitiveType::Quads);
-			fc.resize((size_t)CHUNK_SQUARED * 4);
 			for (int r = 0; r < CHUNK_SIZE; r++) { // iterate through every tile in the chunk
 				for (int q = 0, qoff = (int)-floorf(r / 2.0); q < CHUNK_SIZE; q++, qoff++) {
 					p = { (float)qoff + chunkOffset.x, (float)r + chunkOffset.y };
@@ -210,6 +204,18 @@ sf::Vector2i HexMap::hexToPixel(sf::Vector2i hex) const
 {
 	hex.x = hexAdvance_[zoomLevel].x * (hex.x + hex.y / 2);
 	hex.y = hexAdvance_[zoomLevel].y * hex.y;
+	return hex;
+}
+sf::Vector2f HexMap::hexToPixel(sf::Vector2f hex, int zoom) const
+{
+	hex.x = hexAdvance_[zoom].x * (hex.x + hex.y / 2.0f);
+	hex.y = hexAdvance_[zoom].y * hex.y;
+	return hex;
+}
+sf::Vector2i HexMap::hexToPixel(sf::Vector2i hex, int zoom) const
+{
+	hex.x = hexAdvance_[zoom].x * (hex.x + hex.y / 2);
+	hex.y = hexAdvance_[zoom].y * hex.y;
 	return hex;
 }
 sf::Vector2f HexMap::pixelToHex(sf::Vector2f pixel) const
@@ -327,7 +333,6 @@ void HexMap::setZoomLevel(int zoom)
 {
 	zoomLevel = clamp(zoom, 0, 2);
 	activeBgVertices_ = &bgVertices_[zoomLevel];
-	activeFgVertices_ = &fgVertices_[zoomLevel];
 	setOrigin({ hexSize_[zoomLevel].x * 0.5f, hexSize_[zoomLevel].y * 0.5f });
 }
 const sf::Vector2f HexMap::getHexAdvance()
@@ -392,47 +397,26 @@ void HexMap::setTileColor(sf::Vector2i offsetPos, sf::Color col)
 }
 void HexMap::setTileFeature(sf::Vector2i offsetPos, const TileFeatureS& tfs, mt19937& urng)
 {
-	sf::Vector2f axialPos = offsetToAxial((sf::Vector2f)offsetPos);
-	auto& hex = hexes_(offsetPos.x, offsetPos.y);
-	hex.tfs = &tfs;
-	sf::Vector2i chunkPos = { offsetPos.x / CHUNK_SIZE, offsetPos.y / CHUNK_SIZE };
-	int index = ((offsetPos.y % CHUNK_SIZE) * CHUNK_SIZE + (offsetPos.x % CHUNK_SIZE)) * 4;
-	int zoom = zoomLevel;
-	for (int a = 0; a < 3; a++) {
-		zoomLevel = a;
-		sf::Vector2f pixelPos = hexToPixel(axialPos) + tfs.pos_[zoomLevel];
-		const sf::FloatRect& rect = *tfs.getRect(a, urng);
-		sf::VertexArray& chunk = fgVertices_[a](chunkPos.x, chunkPos.y);
-		chunk[index].texCoords = { rect.left, rect.top };
-		chunk[index].position = pixelPos;
-		chunk[index + 1].texCoords = { rect.left + rect.width, rect.top };
-		chunk[index + 1].position = { pixelPos.x + rect.width, pixelPos.y };
-		chunk[index + 2].texCoords = { rect.left + rect.width, rect.top + rect.height };
-		chunk[index + 2].position = { pixelPos.x + rect.width, pixelPos.y + rect.height };
-		chunk[index + 3].texCoords = { rect.left, rect.top + rect.height };
-		chunk[index + 3].position = { pixelPos.x, pixelPos.y + rect.height };
+	auto& spr = hexes_(offsetPos.x, offsetPos.y).spr;
+	for (int s = 0; s < 3; s++) {
+		sf::Vector2f pix = hexToPixel((sf::Vector2f)offsetToAxial(offsetPos), s);
+		spr[s].setTexture(*tex_);
+		spr[s].setTextureRect((sf::IntRect)*tfs.getRect(s, urng));
+		spr[s].setPosition(pix + tfs.pos_[s]);
 	}
-	zoomLevel = zoom;
 }
 void HexMap::setFeatureColor(sf::Vector2i offsetPos, const sf::Color& col)
 {
-	sf::Vector2i chunkPos = { (int)(offsetPos.x / CHUNK_SIZE), (int)(offsetPos.y / CHUNK_SIZE) };
-	int index = (((int)offsetPos.y % CHUNK_SIZE) * CHUNK_SIZE + ((int)offsetPos.x % CHUNK_SIZE)) * 4;
-	for (int a = 0; a < 3; a++) {
-		sf::VertexArray& chunk = fgVertices_[a](chunkPos.x, chunkPos.y);
-		chunk[index].color = col;
-		chunk[index + 1].color = col;
-		chunk[index + 2].color = col;
-		chunk[index + 3].color = col;
+	auto& spr = hexes_(offsetPos.x, offsetPos.y).spr;
+	for (int s = 0; s < 3; s++) {
+		spr[s].setColor(col);
 	}
 }
 void HexMap::clearTileFeatures()
 {
-	for (auto& v : fgVertices_) {
-		for (auto* c : v) { // iterate through all chunks, row order
-			for (int h = 0; h < c->getVertexCount(); h++) {
-				(*c)[h].position = { 0.0f, 0.0f };
-			}
+	for (int s = 0; s < 3; s++) {
+		for (auto* h : hexes_) {
+			h->spr[s].setTextureRect({ 0, 0, 0, 0 });
 		}
 	}
 }
@@ -447,14 +431,13 @@ void HexMap::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	}
 	for (int h = drawingBounds.top; h <= drawingBounds.height; h++) {
 		for (int w = drawingBounds.left; w <= drawingBounds.width; w++) {
-			if (hexes_(w, h).ent != nullptr) {
-				hexes_(w, h).ent->draw(target, states);
+			auto& hex = hexes_(w, h);
+			if (hex.ent != nullptr) {
+				hex.ent->draw(target, states);
 			}
-		}
-	}
-	for (int h = chunkDrawingBounds.top; h <= chunkDrawingBounds.height; h++) {
-		for (int w = chunkDrawingBounds.left; w <= chunkDrawingBounds.width; w++) {
-			target.draw((*activeFgVertices_)(w, h), states);
+			if (hex.spr[zoomLevel].getTextureRect().width != 0) {
+				target.draw(hex.spr[zoomLevel], states);
+			}
 		}
 	}
 }

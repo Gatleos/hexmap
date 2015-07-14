@@ -32,6 +32,7 @@ sf::Vector2f mouseMapPos;
 sf::Vector2f camPos;
 char camDeltaX = 0, camDeltaY = 0;
 int mtMilli = 0;
+bool timeDisplay = false;
 
 void EngineState::init()
 {
@@ -101,25 +102,18 @@ void EngineState::init()
 	//	s->setAnimationData(*RESOURCE.anim("monsters.anim"));
 	//	s->setAnimation("Eye");
 	//}
-	//ofstream file;
-	//file.open("local/test.txt");
-	//sf::Clock timer;
-	//for (int a = 0; a < 10000; a++) {
-	//	hg.generateMountainRange(rng::r);
-	//}
-	//file << timer.restart().asMicroseconds();
-	//file.close();
 }
 void EngineState::end()
 {
 }
 void EngineState::update()
 {
+	int move = engine->getLastTick().asMilliseconds()*1.25f;
 	const sf::Vector2f& size = mapView.getSize();
 	const sf::Vector2f& center = mapView.getCenter();
 	camPos = { center.x, center.y };
 	if (camDeltaX != 0 || camDeltaY != 0) {
-		mapView.move({ (float)camDeltaX*20.0f, (float)camDeltaY*20.0f });
+		mapView.move({ (float)camDeltaX*move, (float)camDeltaY*move });
 		hg.constrainView(mapView);
 		hg.calculateViewArea(mapView);
 	}
@@ -127,9 +121,16 @@ void EngineState::update()
 }
 void EngineState::render(sf::RenderWindow &window)
 {
-	if (frames.getElapsedTime().asSeconds() >= 1.0f) {
-		frames.restart();
-		snprintf(str, 50, "SFML Test    last tick (ms): %d", engine->getLastTick().asMilliseconds());
+	static float elapsed = 0.0f;
+	elapsed += engine->getLastTick().asSeconds();
+	if (elapsed >= 0.5f) {
+		elapsed = 0.0f;
+		if (timeDisplay) {
+			snprintf(str, 50, "SFML Test    last tick (ms): %d", engine->getLastTick().asMilliseconds());
+		}
+		else {
+			snprintf(str, 50, "SFML Test    FPS: %d", engine->getFPS());
+		}
 		window.setTitle(str);
 	}
 	window.setView(mapView);
@@ -232,6 +233,7 @@ void EngineState::input(sf::Event &e)
 			camDeltaY = 1;
 		}
 		else if (e.key.code == sf::Keyboard::BackSpace) {
+			timeDisplay = !timeDisplay;
 		}
 		else if (e.key.code == sf::Keyboard::Return) {
 			generate();

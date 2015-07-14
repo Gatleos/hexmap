@@ -44,7 +44,9 @@ class HexMap : public sf::Drawable, public sf::Transformable
 	static const int CHUNK_SQUARED;
 	static int hexRad_[3];
 	static sf::Vector2i hexSize_[3];
+public:
 	static sf::Vector2f hexAdvance_[3];
+private:
 	sf::Vector2f hexExtent_[3];
 	sf::Texture* tex_;
 	sf::IntRect drawingBounds;
@@ -58,8 +60,6 @@ class HexMap : public sf::Drawable, public sf::Transformable
 	Array2D<HexTile> hexes_;
 	array<Array2D<sf::VertexArray>, 3U> bgVertices_;
 	Array2D<sf::VertexArray>* activeBgVertices_;
-	array<Array2D<sf::VertexArray>, 3U> fgVertices_;
-	Array2D<sf::VertexArray>* activeFgVertices_;
 	// Pathfinding
 	unordered_map<sf::Vector2i, sf::Vector2i, Vector2iHash> cameFrom;
 	unordered_map<sf::Vector2i, int, Vector2iHash> costSoFar;
@@ -103,6 +103,10 @@ public:
 	sf::Vector2f hexToPixel(sf::Vector2f hex) const;
 	// Convert axial hex coordinate to local pixel coordinate
 	sf::Vector2i hexToPixel(sf::Vector2i hex) const;
+	// Convert axial hex coordinate to local pixel coordinate
+	sf::Vector2f hexToPixel(sf::Vector2f hex, int zoom) const;
+	// Convert axial hex coordinate to local pixel coordinate
+	sf::Vector2i hexToPixel(sf::Vector2i hex, int zoom) const;
 	// Convert local pixel coordinate to axial hex coordinate
 	sf::Vector2f pixelToHex(sf::Vector2f pixel) const;
 	// Check if axial coordinate is within map bounds

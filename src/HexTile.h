@@ -52,6 +52,7 @@ public:
 	char riverType;
 	bitset<6> roads;
 	MapEntity* ent;
+	sf::Sprite spr[3];
 	HexTile();
 };
 
