@@ -3,7 +3,6 @@
 #include <queue>
 #include "json.h"
 #include "HexTile.h"
-#include "ResourceLoader.h"
 #include "lerp.h"
 #include "clamp.h"
 
@@ -17,25 +16,10 @@ array<unique_ptr<HexTileS>, HexTileS::TERRAIN_NUM> HexTileS::terrain = { {
 	terptr("t_taiga_m"), terptr("t_taiga_l"), terptr("t_forest_s"), terptr("t_forest_m"),
 	terptr("t_forest_l"), terptr("t_grassland"), terptr("t_semiarid"), terptr("t_jungle_s"),
 	terptr("t_jungle_m"), terptr("t_jungle_l"), terptr("t_savanna"), terptr("t_desert"), terptr("t_swamp")
-} };
+	} };
 
 HexTileS::HexTileS(string idSet) :id(idSet), townChance(1.0f)
 {
-}
-
-const sf::FloatRect* HexTileS::getRect(int rectNum, mt19937& urng) const
-{
-	if (!randomRect[rectNum]) {
-		return &rect[rectNum].begin()->second;
-	}
-	int r = rng::getInt(probTotal[rectNum] - 1, urng);
-	for (auto f = rect[rectNum].rbegin(); f != rect[rectNum].rend(); f++) {
-		if (r < f->first) {
-			return &f->second;
-		}
-		r -= f->first;
-	}
-	return nullptr;
 }
 
 void HexTileS::loadJson(string filename)
@@ -73,35 +57,18 @@ void HexTileS::loadJson(string filename)
 			element = "name";
 			hex->name = tdata.get(element, "").asString();
 			// rect
-			const sf::FloatRect* rectData = nullptr;
+			Json::Value rectData;
 			for (int i = 0; i < 3; i++) {
 				element = rectNames[i];
-				Json::Value j = tdata.get(element, Json::Value::null);
-				hex->probTotal[i] = 0;
-				if (j.isArray()) {
-					hex->randomRect[i] = true;
-					if (j.size() & 1) {
-						throw runtime_error("incorrect number of arguments");
-					}
-					for (int f = 0; f < j.size(); f += 2) {
-						rectData = sheet->spr(j[f].asString());
-						if (rectData == nullptr) {
-							throw runtime_error("couldn't find tile sprite");
-						}
-						int prob = clamp(j[f + 1].asInt(), 0, 100);
-						hex->probTotal[i] += prob;
-						hex->rect[i].emplace(make_pair(clamp(j[f + 1].asInt(), 0, 100), *rectData));
-					}
-				}
-				else {
-					hex->randomRect[i] = false;
-					rectData = sheet->spr(j.asString());
-					if (rectData == nullptr) {
-						throw runtime_error("couldn't find tile sprite");
-					}
-					hex->rect[i].emplace(make_pair(100, *rectData));
-					hex->probTotal[i] = 100;
-				}
+				rectData = tdata.get(element, Json::Value::null);
+				hex->tiles[i].loadJson(rectData, sheet);
+				element = featureNames[i];
+				rectData = tdata.get(element, Json::Value::null);
+				// features are optional
+				//hex->features[i] = 
+				//if (!rectData.isNull()) {
+				//	hex->features[i].loadJson(rectData, sheet);
+				//}
 			}
 			// gradient - optional
 			Json::Value gradient;
@@ -152,10 +119,8 @@ void HexTileS::loadJson(string filename)
 		catch (runtime_error e) { // report the error with the name of the object and member
 			// make sure we have placeholder drawing rects!
 			for (int r = 0; r < 3; r++) {
-				auto& rect = hex->rect[r];
-				if (rect.empty()) {
-					rect.emplace(make_pair(0, sf::FloatRect()));
-					hex->randomRect[r] = false;
+				if (hex->tiles[r].empty()) {
+					hex->tiles[r].setToDefaultRect();
 				}
 			}
 			cerr << "[" << filename << ", " << hex->id << ", " << element << "] " << e.what() << "\n";

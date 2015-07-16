@@ -7,6 +7,20 @@
 #include <map>
 #include <SFML/Graphics.hpp>
 #include "rng.h"
+#include "ResourceLoader.h"
+
+class RandomRect
+{
+	std::map<int, sf::FloatRect> rect;
+	int probTotal;
+	bool active;
+public:
+	const sf::FloatRect* getRect(std::mt19937& urng) const;
+	bool operator!();
+	void setToDefaultRect();
+	void loadJson(Json::Value& rdata, SpriteSheet* sheet);
+	bool empty();
+};
 
 class TileFeatureS
 {
@@ -25,10 +39,7 @@ public:
 	std::string id_;
 	std::string name_;
 	std::array<sf::Vector2f, 3> pos_;
-	std::array<std::map<int, sf::FloatRect>, 3> rect_;
-	std::array<int, 3> probTotal_;
-	std::array<bool, 3> randomRect_;
-	const sf::FloatRect* getRect(int rectNum, std::mt19937& urng = rng::r) const;
+	std::array<RandomRect, 3> rects_;
 };
 
 #endif

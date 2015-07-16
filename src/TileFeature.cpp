@@ -1,14 +1,70 @@
 #include <iostream>
 #include "json.h"
 #include "TileFeature.h"
-#include "ResourceLoader.h"
 #include "clamp.h"
 
 #define ftrptr(x) unique_ptr<TileFeatureS>(new TileFeatureS(x))
 
 array<unique_ptr<TileFeatureS>, TileFeatureS::FEATURE_NUM> TileFeatureS::feature = { {
 	ftrptr("f_null"), ftrptr("f_mountain")
-} };
+	} };
+
+const sf::FloatRect* RandomRect::getRect(mt19937& urng) const
+{
+	if (!active) {
+		return &rect.begin()->second;
+	}
+	int r = rng::getInt(probTotal - 1, urng);
+	for (auto f = rect.rbegin(); f != rect.rend(); f++) {
+		if (r < f->first) {
+			return &f->second;
+		}
+		r -= f->first;
+	}
+	return nullptr;
+}
+bool RandomRect::operator!()
+{
+	return !active;
+}
+void RandomRect::setToDefaultRect()
+{
+	rect.emplace(make_pair(0, sf::FloatRect()));
+	active = false;
+}
+void RandomRect::loadJson(Json::Value& rdata, SpriteSheet* sheet)
+{
+	const sf::FloatRect* rectData = nullptr;
+	probTotal = 0;
+	if (rdata.isArray()) {
+		active = true;
+		if (rdata.size() & 1) {
+			throw runtime_error("incorrect number of arguments");
+		}
+		for (int f = 0; f < rdata.size(); f += 2) {
+			rectData = sheet->spr(rdata[f].asString());
+			if (rectData == nullptr) {
+				throw runtime_error("couldn't find tile sprite");
+			}
+			int prob = clamp(rdata[f + 1].asInt(), 0, 100);
+			probTotal += prob;
+			rect.emplace(make_pair(clamp(rdata[f + 1].asInt(), 0, 100), *rectData));
+		}
+	}
+	else {
+		active = false;
+		rectData = sheet->spr(rdata.asString());
+		if (rectData == nullptr) {
+			throw runtime_error("couldn't find tile sprite");
+		}
+		rect.emplace(make_pair(100, *rectData));
+		probTotal = 100;
+	}
+}
+bool RandomRect::empty()
+{
+	return rect.empty();
+}
 
 const sf::Color TileFeatureS::fade = { 255, 255, 255, 64 };
 
@@ -21,21 +77,6 @@ TileFeatureS::TileFeatureS(string id) :
 vert_(sf::PrimitiveType::Quads, 4U),
 id_(id)
 {
-}
-
-const sf::FloatRect* TileFeatureS::getRect(int rectNum, mt19937& urng) const
-{
-	if (!randomRect_[rectNum]) {
-		return &rect_[rectNum].begin()->second;
-	}
-	int r = rng::getInt(probTotal_[rectNum] - 1, urng);
-	for (auto f = rect_[rectNum].rbegin(); f != rect_[rectNum].rend(); f++) {
-		if (r < f->first) {
-			return &f->second;
-		}
-		r -= f->first;
-	}
-	return nullptr;
 }
 
 void TileFeatureS::loadJson(string filename)
@@ -74,43 +115,17 @@ void TileFeatureS::loadJson(string filename)
 				feat->pos_[i] = { j[0].asFloat(), j[1].asFloat() };
 			}
 			// rect
-			const sf::FloatRect* rectData = nullptr;
 			for (int i = 0; i < 3; i++) {
 				element = rectNames[i];
 				j = fdata.get(element, Json::Value::null);
-				feat->probTotal_[i] = 0;
-				if (j.isArray()) {
-					feat->randomRect_[i] = true;
-					if (j.size() & 1) {
-						throw runtime_error("incorrect number of arguments");
-					}
-					for (int f = 0; f < j.size(); f += 2) {
-						rectData = sheet->spr(j[f].asString());
-						if (rectData == nullptr) {
-							throw runtime_error("couldn't find tile sprite");
-						}
-						int prob = clamp(j[f + 1].asInt(), 0, 100);
-						feat->probTotal_[i] += prob;
-						feat->rect_[i].emplace(make_pair(clamp(j[f + 1].asInt(), 0, 100), *rectData));
-					}
-				}
-				else {
-					feat->randomRect_[i] = false;
-					rectData = sheet->spr(j.asString());
-					if (rectData == nullptr) {
-						throw runtime_error("couldn't find tile sprite");
-					}
-					feat->rect_[i].emplace(make_pair(0, *rectData));
-				}
+				feat->rects_[i].loadJson(j, sheet);
 			}
 		}
 		catch (runtime_error e) { // report the error with the name of the object and member
 			// make sure we have placeholder drawing rects!
 			for (int r = 0; r < 3; r++) {
-				auto& rect = feat->rect_[r];
-				if (rect.empty()) {
-					rect.emplace(make_pair(0, sf::FloatRect()));
-					feat->randomRect_[r] = false;
+				if (feat->rects_[r].empty()) {
+					feat->rects_[r].setToDefaultRect();
 				}
 			}
 			cerr << "[" << filename << ", " << feat->id_ << ", " << element << "] " << e.what() << "\n";

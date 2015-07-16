@@ -95,12 +95,10 @@ void EngineState::init()
 	hg.setAllTiles(HexTileS::get(HexTileS::OCEAN));
 	hg.calculateViewArea(mapView);
 	// Entities
+	//uniform_int_distribution<int> size(0, 127);
 	//auto* f = hg.addFaction();
-	//for (int x = 0; x < 16384; x++) {
-	//	if (x == 128) {
-	//		int y = 0;
-	//	}
-	//	sf::Vector2i pos = { x % 128, x / 128 };
+	//for (int x = 0; x < 300; x++) {
+	//	sf::Vector2i pos = { size(rng::r), size(rng::r) };
 	//	auto* s = hg.addSite(SiteS::get("si_castle"), f);
 	//	s->initMapPos(HexMap::offsetToAxial(pos));
 	//}
