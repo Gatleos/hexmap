@@ -92,15 +92,17 @@ void EngineState::init()
 	hex.loadFromFile("data/iso.png");
 	hg.init(MAPX, MAPY);
 	hg.setTexture(hex);
-	hg.setAllTiles(HexTileS::get(terraintypes::OCEAN));
+	hg.setAllTiles(HexTileS::get(HexTileS::OCEAN));
 	hg.calculateViewArea(mapView);
+	// Entities
 	//auto* f = hg.addFaction();
 	//for (int x = 0; x < 16384; x++) {
+	//	if (x == 128) {
+	//		int y = 0;
+	//	}
 	//	sf::Vector2i pos = { x % 128, x / 128 };
-	//	auto* s = hg.addSite(f);
-	//	s->setMapPos(HexMap::offsetToAxial(pos));
-	//	s->setAnimationData(*RESOURCE.anim("monsters.anim"));
-	//	s->setAnimation("Eye");
+	//	auto* s = hg.addSite(SiteS::get("si_castle"), f);
+	//	s->initMapPos(HexMap::offsetToAxial(pos));
 	//}
 }
 void EngineState::end()
@@ -108,12 +110,12 @@ void EngineState::end()
 }
 void EngineState::update()
 {
-	int move = engine->getLastTick().asMilliseconds()*1.25f;
+	float move = 60.0f / engine->getFPS();
 	const sf::Vector2f& size = mapView.getSize();
 	const sf::Vector2f& center = mapView.getCenter();
 	camPos = { center.x, center.y };
 	if (camDeltaX != 0 || camDeltaY != 0) {
-		mapView.move({ (float)camDeltaX*move, (float)camDeltaY*move });
+		mapView.move({ (float)camDeltaX * 20 * move, (float)camDeltaY * 20 * move });
 		hg.constrainView(mapView);
 		hg.calculateViewArea(mapView);
 	}

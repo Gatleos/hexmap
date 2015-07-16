@@ -12,11 +12,13 @@
 const int HexMap::CHUNK_SIZE = 16;
 const int HexMap::CHUNK_SQUARED = CHUNK_SIZE * CHUNK_SIZE;
 
-int HexMap::hexRad_[] = { 37, 18, 11 };
-// hexSize_ = { round(hexRadius * 0.864864f), (float)hexRadius };
-sf::Vector2i HexMap::hexSize_[] = { { 64, 74 }, { 32, 36 }, { 20, 22 } };
-// hexOffset_ = { roundf(hexRad_ * ROOT3), roundf(hexRad_ * 3.0 / 2.0) }
-sf::Vector2f HexMap::hexAdvance_[] = { { 64, 56 }, { 32, 27 }, { 20, 16 } };
+int HexMap::hexRad_[ZOOM_LEVELS] = { 37, 18, 11 };
+// hexSize_ = { round(hexRadius * 0.864864), hexRadius };
+sf::Vector2i HexMap::hexSize_[ZOOM_LEVELS] = { { 64, 74 }, { 32, 36 }, { 20, 22 } };
+// hexOffset_ = { roundf(hexRad_ * ROOT3), roundf(hexRad_ * 3.0 / 2.0) };
+sf::Vector2f HexMap::hexAdvance_[ZOOM_LEVELS] = { { 64, 56 }, { 32, 27 }, { 20, 16 } };
+// mapOrigin_ = { hexSize_.x * 0.5, hexSize_.y * 0.5 };
+sf::Vector2f HexMap::mapOrigin_[ZOOM_LEVELS] = { { 32, 37 }, { 16, 18 }, { 10, 11 } };
 
 array<Road, 6> roadSprites;
 std::vector<sf::FloatRect> mountainSprites;
@@ -27,7 +29,7 @@ float distHex(sf::Vector2f& a, sf::Vector2f& b)
 }
 float distHex(sf::Vector2i& a, sf::Vector2i& b)
 {
-	return (abs(a.x - b.x) + abs(a.x + a.y - b.x - b.y) + abs(a.y - b.y)) / 2;
+	return (float)((abs(a.x - b.x) + abs(a.x + a.y - b.x - b.y) + abs(a.y - b.y)) / 2);
 }
 void polarToCartesian(sf::Vector2f& p)
 {
@@ -109,6 +111,25 @@ std::deque<sf::Vector2i>& HexMap::getPath(std::deque<sf::Vector2i>& path, sf::Ve
 	}
 	return path;
 }
+const int& HexMap::getHexRadius(int zoom)
+{
+	return hexRad_[zoom];
+}
+
+const sf::Vector2i& HexMap::getHexSize(int zoom)
+{
+	return hexSize_[zoom];
+}
+
+const sf::Vector2f& HexMap::getHexAdvance(int zoom)
+{
+	return hexAdvance_[zoom];
+}
+
+const sf::Vector2f& HexMap::getMapOrigin(int zoom)
+{
+	return mapOrigin_[zoom];
+}
 
 std::deque<sf::Vector2i>& HexMap::neighborsBounded(sf::Vector2i posAxial, std::deque<sf::Vector2i>& n)
 {
@@ -143,7 +164,7 @@ void HexMap::init(int width, int height)
 	xRange.param(uniform_int_distribution<int>(0, width - 1).param());
 	yRange.param(uniform_int_distribution<int>(0, height - 1).param());
 	hexes_.set(width, height);
-	for (int bv = 0; bv < bgVertices_.size(); bv++) {
+	for (int bv = 0; bv < ZOOM_LEVELS; bv++) {
 		hexExtent_[currentVertices] = { (mapSize_.x - 1) * hexAdvance_[currentVertices].x, (mapSize_.y - 1) * hexAdvance_[currentVertices].y };
 		setZoomLevel(currentVertices);
 		sf::Vector2f p;
@@ -202,7 +223,7 @@ sf::Vector2f HexMap::hexToPixel(sf::Vector2f hex) const
 }
 sf::Vector2i HexMap::hexToPixel(sf::Vector2i hex) const
 {
-	hex.x = hexAdvance_[zoomLevel].x * (hex.x + hex.y / 2);
+	hex.x = hexAdvance_[zoomLevel].x * (hex.x + hex.y / 2.0);
 	hex.y = hexAdvance_[zoomLevel].y * hex.y;
 	return hex;
 }
@@ -214,7 +235,7 @@ sf::Vector2f HexMap::hexToPixel(sf::Vector2f hex, int zoom) const
 }
 sf::Vector2i HexMap::hexToPixel(sf::Vector2i hex, int zoom) const
 {
-	hex.x = hexAdvance_[zoom].x * (hex.x + hex.y / 2);
+	hex.x = hexAdvance_[zoom].x * (hex.x + hex.y / 2.0);
 	hex.y = hexAdvance_[zoom].y * hex.y;
 	return hex;
 }
@@ -333,7 +354,7 @@ void HexMap::setZoomLevel(int zoom)
 {
 	zoomLevel = clamp(zoom, 0, 2);
 	activeBgVertices_ = &bgVertices_[zoomLevel];
-	setOrigin({ hexSize_[zoomLevel].x * 0.5f, hexSize_[zoomLevel].y * 0.5f });
+	setOrigin(mapOrigin_[zoomLevel]);
 }
 const sf::Vector2f HexMap::getHexAdvance()
 {
@@ -433,7 +454,7 @@ void HexMap::draw(sf::RenderTarget& target, sf::RenderStates states) const
 		for (int w = drawingBounds.left; w <= drawingBounds.width; w++) {
 			auto& hex = hexes_(w, h);
 			if (hex.ent != nullptr) {
-				hex.ent->draw(target, states);
+				hex.ent->handlers_[zoomLevel].draw(target, states);
 			}
 			if (hex.spr[zoomLevel].getTextureRect().width != 0) {
 				target.draw(hex.spr[zoomLevel], states);
@@ -506,17 +527,17 @@ Faction* HexMap::addFaction()
 	return &factions.back();
 }
 
-Site* HexMap::addSite(Faction* parent)
+Site* HexMap::addSite(const SiteS* sSite, Faction* parent)
 {
-	auto& s = sites.emplace(nextSiteId, Site(parent)).first->second;
+	auto& s = sites.emplace(nextSiteId, Site(sSite, parent)).first->second;
 	s.setParentMap(this);
 	nextSiteId++;
 	return &s;
 }
 
-MapUnit* HexMap::addMapUnit(Faction* parent)
+MapUnit* HexMap::addMapUnit(const MapEntityS* sEnt, Faction* parent)
 {
-	auto& u = units.emplace(nextUnitId, MapUnit(parent)).first->second;
+	auto& u = units.emplace(nextUnitId, MapUnit(sEnt, parent)).first->second;
 	u.setParentMap(this);
 	nextUnitId++;
 	return &u;
@@ -525,11 +546,11 @@ MapUnit* HexMap::addMapUnit(Faction* parent)
 void HexMap::update(const sf::Time& timeElapsed)
 {
 	for (auto& u : units) {
-		u.second.updateAnimation(timeElapsed);
+		u.second.handlers_[zoomLevel].updateAnimation(timeElapsed);
 		u.second.update(timeElapsed);
 	}
 	for (auto& s : sites) {
-		s.second.updateAnimation(timeElapsed);
+		s.second.handlers_[zoomLevel].updateAnimation(timeElapsed);
 		s.second.update(timeElapsed);
 	}
 }

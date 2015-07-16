@@ -1,0 +1,17 @@
+{
+	"si_castle": {
+		"name": "Castle",
+		"full": {
+			"animFile": "castle.anim",
+			"idle": "full"
+		},
+		"half": {
+			"animFile": "castle.anim",
+			"idle": "half"
+		},
+		"quart": {
+			"animFile": "castle.anim",
+			"idle": "quart"
+		}
+	}
+}

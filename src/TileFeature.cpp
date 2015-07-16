@@ -6,7 +6,7 @@
 
 #define ftrptr(x) unique_ptr<TileFeatureS>(new TileFeatureS(x))
 
-array<unique_ptr<TileFeatureS>, featuretypes::SIZE> TileFeatureS::feature = { {
+array<unique_ptr<TileFeatureS>, TileFeatureS::FEATURE_NUM> TileFeatureS::feature = { {
 	ftrptr("f_null"), ftrptr("f_mountain")
 } };
 
@@ -54,7 +54,7 @@ void TileFeatureS::loadJson(string filename)
 	const char* posNames[] = { "pos", "posHalf", "posQuart" };
 	const char* rectNames[] = { "rect", "rectHalf", "rectQuart" };
 	// Cycle through defined feature types; make sure to skip f_null!
-	for (int a = 1; a < featuretypes::SIZE; a++) {
+	for (int a = 1; a < TileFeatureS::FEATURE_NUM; a++) {
 		auto& feat = TileFeatureS::feature[a];
 		Json::Value fdata = root.get(feat->id_, Json::Value::null);
 		if (fdata.isNull()) { // feature not found

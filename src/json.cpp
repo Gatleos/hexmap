@@ -27,5 +27,6 @@ void config::loadAllJson() {
 	TileFeatureS::loadJson("data/feature.json");
 	HexTileS::loadJson("data/terrain.json");
 	Species::loadJson("data/species.json");
+	SiteS::loadJson("data/sites.json");
 	cerr << "------------\nParsing Done\n\n";
 }

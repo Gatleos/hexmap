@@ -1,9 +1,13 @@
+#include "ResourceLoader.h"
 #include "Species.h"
 #include "MapEntity.h"
 #include "HexMap.h"
 #include "clamp.h"
+#include "json.h"
 
-
+const array<string, MapEntityS::ANIM_NUM> MapEntityS::animTypes = { {
+		"idle"
+	} };
 const int Population::POP_LIMIT = 100000;
 
 Population::Population(const Species& s) :species(s), size(0)
@@ -46,18 +50,24 @@ void Population::takePop(Population& p)
 	}
 }
 
-MapEntity::MapEntity(Faction* parent) :hm(nullptr)
-{
-	faction = parent;
-	pops.reserve(Species::map.size());
-	for (auto& s : Species::map) {
-		pops.emplace_back(s.second);
-	}
-}
-
 void MapEntity::setParentMap(HexMap* hmSet)
 {
 	hm = hmSet;
+}
+
+bool MapEntity::initMapPos(sf::Vector2i axialCoord)
+{
+	if (!hm->isAxialInBounds(axialCoord)) {
+		return false;
+	}
+	pos = axialCoord;
+	sf::Vector2i offset = HexMap::axialToOffset(pos);
+	hm->getAxial(pos.x, pos.y).ent = this;
+	hm->setFeatureColor(offset, TileFeatureS::fade);
+	for (int a = 0; a < 3; a++) {
+		handlers_[a].setPosition((sf::Vector2f)hm->hexToPixel(pos, a) + HexMap::getMapOrigin(a));
+	}
+	return true;
 }
 
 bool MapEntity::setMapPos(sf::Vector2i axialCoord)
@@ -72,7 +82,9 @@ bool MapEntity::setMapPos(sf::Vector2i axialCoord)
 	offset = HexMap::axialToOffset(pos);
 	hm->getAxial(pos.x, pos.y).ent = this;
 	hm->setFeatureColor(offset, TileFeatureS::fade);
-	setPosition((sf::Vector2f)hm->hexToPixel(pos));
+	for (int a = 0; a < 3; a++) {
+		handlers_[a].setPosition((sf::Vector2f)hm->hexToPixel(pos, a) + HexMap::getMapOrigin(a));
+	}
 	return true;
 }
 
@@ -81,8 +93,54 @@ bool MapEntity::isOnscreen(const sf::View& mapView)
 	return true;
 }
 
+MapEntityS::MapEntityS()
+{
+}
 
-MapUnit::MapUnit(Faction* parent) :moveTimer(0), MapEntity(parent){}
+void MapEntityS::loadEntityJson(Json::Value& edata, string& element, string id)
+{
+	id_ = id;
+	//name
+	element = "name";
+	name_ = edata.get(element, "").asString();
+	// anims
+	const sf::FloatRect* rectData = nullptr;
+	const char* zoomNames[ZOOM_LEVELS] = { "full", "half", "quart" };
+	for (int i = 0; i < ZOOM_LEVELS; i++) {
+		element = zoomNames[i];
+		auto anims = edata.get(element, Json::Value::null);
+		element = "animFile";
+		animData_[i] = RESOURCE.anim(anims.get("animFile", Json::Value::null).asString());
+		for (int s = 0; s < ANIM_NUM; s++) {
+			element = animTypes[s];
+			const string* animName = &animTypes[s];
+			animNames_[i][s] = anims.get(*animName, Json::Value::null).asString();
+		}
+	}
+}
+
+MapEntity::MapEntity(const MapEntityS* sEnt, Faction* parent)
+{
+	mes = sEnt;
+	for (int i = 0; i < ZOOM_LEVELS; i++) {
+		handlers_[i].setAnimationData(*mes->animData_[i]);
+	}
+	faction = parent;
+	pops.reserve(Species::map.size());
+	for (auto& s : Species::map) {
+		pops.emplace_back(s.second);
+	}
+}
+
+void MapEntity::setAnimation(MapEntityS::anim num)
+{	
+	for (int i = 0; i < ZOOM_LEVELS; i++) {
+		handlers_[i].setAnimation(mes->animNames_[i][num]);
+	}
+}
+
+
+MapUnit::MapUnit(const MapEntityS* sEnt, Faction* parent) :moveTimer(0), MapEntity(sEnt, parent){}
 
 bool MapUnit::walkPath()
 {

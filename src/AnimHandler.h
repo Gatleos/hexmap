@@ -73,6 +73,6 @@ public:
 	void setAnimationData(const AnimationData &ai);
 	void setAnimation(std::string name);
 	void setFrame(int num);
-};//SpriteHandler
+};//AnimHandler
 
 #endif

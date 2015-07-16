@@ -4,14 +4,19 @@
 #include "MapEntity.h"
 #include "Species.h"
 
-
+class SiteS : public MapEntityS
+{
+	static map<string, SiteS> sites;
+public:
+	static void loadJson(string filename);
+	static const SiteS* get(string id);
+};
 
 class Site : public MapEntity
 {
-	char type;
-	string name;
 public:
-	Site(Faction* parent);
+	const SiteS* ss;
+	Site(const SiteS* sSite, Faction* parent);
 	void update(const sf::Time& timeElapsed);
 };
 

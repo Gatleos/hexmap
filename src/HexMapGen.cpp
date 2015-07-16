@@ -12,7 +12,7 @@ void HexMap::generateBiomes(mt19937& urng)
 {
 	static uniform_real_distribution<float> offset(-10000000.0f, 10000000.0f);
 	int townChance = 16384 / 24;
-	const HexTileS* type = &HexTileS::get(terraintypes::NONE);
+	const HexTileS* type = &HexTileS::get(HexTileS::NONE);
 	int colorIndex = 0;
 	sf::Vector2f offsetHeight = { offset(urng), offset(urng) };
 	sf::Vector2f offsetTemperature = { offset(urng), offset(urng) };
@@ -47,7 +47,7 @@ void HexMap::generateBiomes(mt19937& urng)
 			}
 			// Determine the terrain type based on elevation, temperature, moisture and drainage
 			if (heightVal < SEA_LEVEL) {
-				type = &HexTileS::get(terraintypes::OCEAN);
+				type = &HexTileS::get(HexTileS::OCEAN);
 				colorIndex = heightVal;
 			}
 			else {
@@ -55,45 +55,45 @@ void HexMap::generateBiomes(mt19937& urng)
 				if (tempVal < config::cold) {
 					if (moistVal >= config::forest[0]) {
 						if (moistVal >= config::forest[2]) {
-							type = &HexTileS::get(terraintypes::TAIGA_L);
+							type = &HexTileS::get(HexTileS::TAIGA_L);
 						}
 						else if (moistVal >= config::forest[1]) {
-							type = &HexTileS::get(terraintypes::TAIGA_M);
+							type = &HexTileS::get(HexTileS::TAIGA_M);
 						}
 						else {
-							type = &HexTileS::get(terraintypes::TAIGA_S);
+							type = &HexTileS::get(HexTileS::TAIGA_S);
 						}
 					}
 					else {
-						type = &HexTileS::get(terraintypes::TUNDRA);
+						type = &HexTileS::get(HexTileS::TUNDRA);
 					}
 				}
 				else if (tempVal < config::hot) {
 					if (moistVal >= config::forest[0]) {
 						if (drainVal >= config::swamp) {
 							if (moistVal >= config::forest[2]) {
-								type = &HexTileS::get(terraintypes::FOREST_L);
+								type = &HexTileS::get(HexTileS::FOREST_L);
 							}
 							else if (moistVal >= config::forest[1]) {
-								type = &HexTileS::get(terraintypes::FOREST_M);
+								type = &HexTileS::get(HexTileS::FOREST_M);
 							}
 							else {
-								type = &HexTileS::get(terraintypes::FOREST_S);
+								type = &HexTileS::get(HexTileS::FOREST_S);
 							}
 						}
 						else {
-							type = &HexTileS::get(terraintypes::SWAMP);
+							type = &HexTileS::get(HexTileS::SWAMP);
 						}
 					}
 					else if (moistVal >= config::desert) {
-						type = &HexTileS::get(terraintypes::GRASSLAND);
+						type = &HexTileS::get(HexTileS::GRASSLAND);
 					}
 					else {
 						if (drainVal >= config::sand) {
-							type = &HexTileS::get(terraintypes::SEMIARID);
+							type = &HexTileS::get(HexTileS::SEMIARID);
 						}
 						else {
-							type = &HexTileS::get(terraintypes::DESERT);
+							type = &HexTileS::get(HexTileS::DESERT);
 						}
 					}
 				}
@@ -101,28 +101,28 @@ void HexMap::generateBiomes(mt19937& urng)
 					if (moistVal >= config::forest[0]) {
 						if (drainVal >= config::swamp) {
 							if (moistVal >= config::forest[2]) {
-								type = &HexTileS::get(terraintypes::JUNGLE_L);
+								type = &HexTileS::get(HexTileS::JUNGLE_L);
 							}
 							else if (moistVal >= config::forest[1]) {
-								type = &HexTileS::get(terraintypes::JUNGLE_M);
+								type = &HexTileS::get(HexTileS::JUNGLE_M);
 							}
 							else {
-								type = &HexTileS::get(terraintypes::JUNGLE_S);
+								type = &HexTileS::get(HexTileS::JUNGLE_S);
 							}
 						}
 						else {
-							type = &HexTileS::get(terraintypes::SWAMP);
+							type = &HexTileS::get(HexTileS::SWAMP);
 						}
 					}
 					else if (moistVal >= config::desert) {
-						type = &HexTileS::get(terraintypes::SAVANNA);
+						type = &HexTileS::get(HexTileS::SAVANNA);
 					}
 					else {
 						if (drainVal >= config::sand) {
-							type = &HexTileS::get(terraintypes::SEMIARID);
+							type = &HexTileS::get(HexTileS::SEMIARID);
 						}
 						else {
-							type = &HexTileS::get(terraintypes::DESERT);
+							type = &HexTileS::get(HexTileS::DESERT);
 						}
 					}
 				}
@@ -191,7 +191,7 @@ void HexMap::generateMountainRange(mt19937& urng)
 			continue;
 		}
 		//setTileColor((sf::Vector2i)l, sf::Color::White);
-		setTileFeature((sf::Vector2i)l, TileFeatureS::get(featuretypes::MOUNTAIN), urng);
+		setTileFeature((sf::Vector2i)l, TileFeatureS::get(TileFeatureS::MOUNTAIN), urng);
 	}
 }
 

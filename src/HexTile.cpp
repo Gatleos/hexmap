@@ -12,7 +12,7 @@ const int HEIGHT_LIMIT = 256;
 
 #define terptr(x) unique_ptr<HexTileS>(new HexTileS(x))
 
-array<unique_ptr<HexTileS>, terraintypes::SIZE> HexTileS::terrain = { {
+array<unique_ptr<HexTileS>, HexTileS::TERRAIN_NUM> HexTileS::terrain = { {
 	terptr("t_null"), terptr("t_ocean"), terptr("t_mountain"), terptr("t_tundra"), terptr("t_taiga_s"),
 	terptr("t_taiga_m"), terptr("t_taiga_l"), terptr("t_forest_s"), terptr("t_forest_m"),
 	terptr("t_forest_l"), terptr("t_grassland"), terptr("t_semiarid"), terptr("t_jungle_s"),
@@ -54,7 +54,7 @@ void HexTileS::loadJson(string filename)
 	const char* rectNames[] = { "rect", "rectHalf", "rectQuart" };
 	const char* featureNames[] = { "feature", "featureHalf", "featureQuart" };
 	// Cycle through defined terrain types; make sure to skip t_null!
-	for (int a = 1; a < terraintypes::SIZE; a++) {
+	for (int a = 1; a < HexTileS::TERRAIN_NUM; a++) {
 		auto& hex = HexTileS::terrain[a];
 		Json::Value tdata = root.get(hex->id, Json::Value::null);
 		if (tdata.isNull()) { // terrain not found

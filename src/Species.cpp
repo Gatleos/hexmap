@@ -2,6 +2,7 @@
 #include "Species.h"
 #include "json.h"
 #include "ResourceLoader.h"
+#include "MapEntity.h"
 
 
 
@@ -44,7 +45,7 @@ void Species::loadJson(string filename)
 			element = "animFile";
 			spc.anims = ResourceLoader::instance().anim(sdata["animFile"].asString());
 			element = "idleAnim";
-			spc.animKeys[SPC_ANIM_IDLE] = sdata["idleAnim"].asString();
+			spc.animKeys[MapEntityS::IDLE] = sdata["idleAnim"].asString();
 		}
 		catch (runtime_error e) {
 			cerr << "[data/species.json, " << idSet << ", " << element << "] " << e.what() << "\n";

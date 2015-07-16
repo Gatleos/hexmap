@@ -4,26 +4,26 @@
 #include <map>
 #include <string>
 #include <bitset>
-#include "MapEntity.h"
+#include <memory>
 #include "rng.h"
 #include "TileFeature.h"
 
+using namespace std;
 
+class MapEntity;
 
 extern const int SEA_LEVEL;
 extern const int HEIGHT_LIMIT;
 
-namespace terraintypes
-{
-	enum {
-		NONE, OCEAN, MOUNTAIN, TUNDRA, TAIGA_S, TAIGA_M, TAIGA_L, FOREST_S, FOREST_M, FOREST_L,
-		GRASSLAND, SEMIARID, JUNGLE_S, JUNGLE_M, JUNGLE_L, SAVANNA, DESERT, SWAMP, SIZE
-	};
-};
-
 class HexTileS
 {
-	static array<unique_ptr<HexTileS>, terraintypes::SIZE> terrain;
+public:
+	enum {
+		NONE, OCEAN, MOUNTAIN, TUNDRA, TAIGA_S, TAIGA_M, TAIGA_L, FOREST_S, FOREST_M, FOREST_L,
+		GRASSLAND, SEMIARID, JUNGLE_S, JUNGLE_M, JUNGLE_L, SAVANNA, DESERT, SWAMP, TERRAIN_NUM
+	};
+private:
+	static array<unique_ptr<HexTileS>, TERRAIN_NUM> terrain;
 public:
 	enum {
 		GRADIENT, FLAG_MAX

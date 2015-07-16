@@ -8,8 +8,6 @@
 
 using namespace std;
 
-enum{ SPC_ANIM_IDLE };
-
 class Species
 {
 public:

@@ -44,9 +44,8 @@ class HexMap : public sf::Drawable, public sf::Transformable
 	static const int CHUNK_SQUARED;
 	static int hexRad_[3];
 	static sf::Vector2i hexSize_[3];
-public:
 	static sf::Vector2f hexAdvance_[3];
-private:
+	static sf::Vector2f mapOrigin_[3];
 	sf::Vector2f hexExtent_[3];
 	sf::Texture* tex_;
 	sf::IntRect drawingBounds;
@@ -58,7 +57,7 @@ private:
 	int zoomLevel;
 	// Contents
 	Array2D<HexTile> hexes_;
-	array<Array2D<sf::VertexArray>, 3U> bgVertices_;
+	array<Array2D<sf::VertexArray>, ZOOM_LEVELS> bgVertices_;
 	Array2D<sf::VertexArray>* activeBgVertices_;
 	// Pathfinding
 	unordered_map<sf::Vector2i, sf::Vector2i, Vector2iHash> cameFrom;
@@ -95,6 +94,10 @@ public:
 	void init(int width, int height);
 	const sf::Vector2i& getMapSize() const;
 	deque<sf::Vector2i>& getPath(deque<sf::Vector2i>& path, sf::Vector2i startAxial, sf::Vector2i goalAxial);
+	static const int& getHexRadius(int zoom);
+	static const sf::Vector2i& getHexSize(int zoom);
+	static const sf::Vector2f& getHexAdvance(int zoom);
+	static const sf::Vector2f& getMapOrigin(int zoom);
 	deque<sf::Vector2i>& neighborsBounded(sf::Vector2i posAxial, deque<sf::Vector2i>& n);
 	// Measurement
 	// Round a floating point axial coordinate to the nearest hex
@@ -145,8 +148,8 @@ public:
 	void constrainView(sf::View& view);
 	// MapEntities
 	Faction* addFaction();
-	Site* addSite(Faction* parent);
-	MapUnit* addMapUnit(Faction* parent);
+	Site* addSite(const SiteS* sSite, Faction* parent);
+	MapUnit* addMapUnit(const MapEntityS* sEnt, Faction* parent);
 	void update(const sf::Time& timeElapsed);
 	// MapGen
 	void generateBiomes(mt19937& urng = rng::r);
