@@ -65,10 +65,9 @@ void HexTileS::loadJson(string filename)
 				element = featureNames[i];
 				rectData = tdata.get(element, Json::Value::null);
 				// features are optional
-				//hex->features[i] = 
-				//if (!rectData.isNull()) {
-				//	hex->features[i].loadJson(rectData, sheet);
-				//}
+				if (rectData.isString()) {
+					hex->features[i] = &TileFeatureS::get(rectData.asString());
+				}
 			}
 			// gradient - optional
 			Json::Value gradient;

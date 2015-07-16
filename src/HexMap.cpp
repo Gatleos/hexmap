@@ -384,6 +384,20 @@ void HexMap::setAllTiles(const HexTileS& hts, mt19937& urng)
 		}
 		a++;
 	}
+	sf::Vector2f pix;
+	for (int s = 0; s < 3; s++) {
+		if (hts.features[s] != nullptr) {
+			auto& feat = hts.features[s]->rects_[s];
+			int index = 0;
+			for (auto* h : hexes_) {
+				h->spr[s].setTexture(*tex_);
+				h->spr[s].setTextureRect((sf::IntRect)*feat.getRect(urng));
+				pix = hexToPixel((sf::Vector2f)offsetToAxial(sf::Vector2f( index % mapSize_.y, index / mapSize_.y )), s);
+				h->spr[s].setPosition(pix + hts.features[s]->pos_[s]);
+				index++;
+			}
+		}
+	}
 }
 void HexMap::setTexture(sf::Texture& tex)
 {
@@ -397,6 +411,9 @@ void HexMap::setTile(sf::Vector2i offsetPos, const HexTileS& hts, mt19937& urng)
 	int index = ((offsetPos.y % CHUNK_SIZE) * CHUNK_SIZE + (offsetPos.x % CHUNK_SIZE)) * 4;
 	for (int a = 0; a < 3; a++) {
 		const sf::FloatRect& rect = *hts.tiles[a].getRect(urng);
+		if (hts.features[a] != nullptr) {
+			setTileFeature(offsetPos, *hts.features[a], a, urng);
+		}
 		sf::VertexArray& chunk = bgVertices_[a](chunkPos.x, chunkPos.y);
 		chunk[index].texCoords = { rect.left, rect.top };
 		chunk[index + 1].texCoords = { rect.left + rect.width, rect.top };
@@ -425,6 +442,14 @@ void HexMap::setTileFeature(sf::Vector2i offsetPos, const TileFeatureS& tfs, mt1
 		spr[s].setTextureRect((sf::IntRect)*tfs.rects_[s].getRect(urng));
 		spr[s].setPosition(pix + tfs.pos_[s]);
 	}
+}
+void HexMap::setTileFeature(sf::Vector2i offsetPos, const TileFeatureS& tfs, int zoom, mt19937& urng)
+{
+	auto& spr = hexes_(offsetPos.x, offsetPos.y).spr;
+	sf::Vector2f pix = hexToPixel((sf::Vector2f)offsetToAxial(offsetPos), zoom);
+	spr[zoom].setTexture(*tex_);
+	spr[zoom].setTextureRect((sf::IntRect)*tfs.rects_[zoom].getRect(urng));
+	spr[zoom].setPosition(pix + tfs.pos_[zoom]);
 }
 void HexMap::setFeatureColor(sf::Vector2i offsetPos, const sf::Color& col)
 {

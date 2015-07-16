@@ -26,7 +26,7 @@ class TileFeatureS
 {
 public:
 	enum {
-		NONE, MOUNTAIN, FEATURE_NUM
+		NONE, MOUNTAIN, FOREST_L, FEATURE_NUM
 	};
 private:
 	static std::array<std::unique_ptr<TileFeatureS>, FEATURE_NUM> feature;
@@ -35,6 +35,10 @@ public:
 	const static sf::Color fade;
 	static void loadJson(std::string filename);
 	static const TileFeatureS& get(int t);
+	// Finds a TileFeature based on its id; will return f_null
+	// if it can't find one! Just scans the array, so worst
+	// case is O(n)
+	static const TileFeatureS& get(std::string t);
 	sf::VertexArray vert_;
 	std::string id_;
 	std::string name_;

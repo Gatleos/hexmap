@@ -6,7 +6,7 @@
 #define ftrptr(x) unique_ptr<TileFeatureS>(new TileFeatureS(x))
 
 array<unique_ptr<TileFeatureS>, TileFeatureS::FEATURE_NUM> TileFeatureS::feature = { {
-	ftrptr("f_null"), ftrptr("f_mountain")
+		ftrptr("f_null"), ftrptr("f_mountain"), ftrptr("f_forest_l")
 	} };
 
 const sf::FloatRect* RandomRect::getRect(mt19937& urng) const
@@ -71,6 +71,16 @@ const sf::Color TileFeatureS::fade = { 255, 255, 255, 64 };
 const TileFeatureS& TileFeatureS::get(int t)
 {
 	return *feature[t];
+}
+
+const TileFeatureS& TileFeatureS::get(string t)
+{
+	for (auto& tf : feature) {
+		if (tf->id_ == t) {
+			return *tf;
+		}
+	}
+	return *feature[0];
 }
 
 TileFeatureS::TileFeatureS(string id) :
