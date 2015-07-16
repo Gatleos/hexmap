@@ -92,7 +92,7 @@ void EngineState::init()
 	hex.loadFromFile("data/iso.png");
 	hg.init(MAPX, MAPY);
 	hg.setTexture(hex);
-	hg.setAllTiles(HexTileS::get(HexTileS::OCEAN));
+	hg.setAllTiles(HexTileS::get(HexTileS::OCEAN), rng::r);
 	hg.calculateViewArea(mapView);
 	// Entities
 	//uniform_int_distribution<int> size(0, 127);

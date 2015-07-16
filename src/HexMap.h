@@ -132,10 +132,11 @@ public:
 	const sf::Vector2f getHexAdvance();
 	// Texture used to draw hex tiles
 	void setTexture(sf::Texture& tex);
-	void setTile(sf::Vector2i offsetPos, const HexTileS& hts, mt19937& urng = rng::r);
-	void setAllTiles(const HexTileS& hts, mt19937& urng = rng::r);
+	void setTile(sf::Vector2i offsetPos, const HexTileS& hts, mt19937& urng);
+	void setAllTiles(const HexTileS& hts, mt19937& urng);
 	void setTileColor(sf::Vector2i offsetPos, sf::Color col);
-	void setTileFeature(sf::Vector2i offsetPos, const TileFeatureS& tfs, mt19937& urng = rng::r);
+	void setTileFeature(sf::Vector2i offsetPos, const TileFeatureS& tfs, mt19937& urng);
+	void setTileFeature(sf::Vector2i offsetPos, const TileFeatureS& tfs, int zoom, mt19937& urng);
 	void setFeatureColor(sf::Vector2i offsetPos, const sf::Color& col);
 	void clearTileFeatures();
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
@@ -152,7 +153,7 @@ public:
 	MapUnit* addMapUnit(const MapEntityS* sEnt, Faction* parent);
 	void update(const sf::Time& timeElapsed);
 	// MapGen
-	void generateBiomes(mt19937& urng = rng::r);
+	void generateBiomes(mt19937& urng);
 	void generateMountainRange(mt19937& urng);
 	void findRegions();
 };
