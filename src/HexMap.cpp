@@ -177,7 +177,7 @@ void HexMap::init(int width, int height)
 			auto& bc = b[chunkIndex];
 			chunkOffset.x = chunkIndex % mapSizeChunks_.x * CHUNK_SIZE;
 			chunkOffset.y = chunkIndex / mapSizeChunks_.x * CHUNK_SIZE;
-			chunkOffset.x += chunkOffset.y / 2;
+			chunkOffset.x += -chunkOffset.y / 2;
 			bc.setPrimitiveType(sf::PrimitiveType::Quads);
 			bc.resize((size_t)CHUNK_SQUARED * 4);
 			for (int r = 0; r < CHUNK_SIZE; r++) { // iterate through every tile in the chunk
@@ -579,10 +579,10 @@ MapUnit* HexMap::addMapUnit(const MapEntityS* sEnt, Faction* parent)
 
 void HexMap::update(const sf::Time& timeElapsed)
 {
-	//for (auto& u : units) {
-	//	u.second.handlers_[zoomLevel].updateAnimation(timeElapsed);
-	//	u.second.update(timeElapsed);
-	//}
+	for (auto& u : units) {
+		u.second.handlers_[zoomLevel].updateAnimation(timeElapsed);
+		u.second.update(timeElapsed);
+	}
 	for (auto& s : sites) {
 		s.second.handlers_[zoomLevel].updateAnimation(timeElapsed);
 		s.second.update(timeElapsed);
