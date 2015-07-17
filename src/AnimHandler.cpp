@@ -18,6 +18,11 @@ const std::string& SpriteSheet::getImageName()
 	return imageName;
 }
 
+AnimationData::anim::anim(int frameNum) :
+frames(frameNum),
+frameChance(0, frameNum - 1)
+{
+}
 
 const char* AnimationData::darkFunctionVersion()
 {
@@ -79,6 +84,13 @@ void AnimHandler::setAnimation(string name)
 
 void AnimHandler::setFrame(int num)
 {
+	currentFrame = &currentAnim->frames[num];
+	cframe = num;
+}
+
+void AnimHandler::randomFrame(std::mt19937& urng)
+{
+	int num = currentAnim->frameChance(urng);
 	currentFrame = &currentAnim->frames[num];
 	cframe = num;
 }

@@ -2,9 +2,11 @@
 #define ANIMHANDLER_H
 
 #include <map>
+#include <memory>
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 #include <pugixml.hpp>
+#include "rng.h"
 
 
 
@@ -41,6 +43,8 @@ class AnimationData
 	};
 	struct anim
 	{
+		anim(int frameNum);
+		const std::uniform_int_distribution<int> frameChance;
 		std::string name;
 		unsigned int loops;
 		std::vector<frame> frames;
@@ -74,6 +78,7 @@ public:
 	void setAnimationData(const AnimationData &ai);
 	void setAnimation(std::string name);
 	void setFrame(int num);
+	void randomFrame(std::mt19937& urng);
 };//AnimHandler
 
 #endif

@@ -120,13 +120,14 @@ bool ResourceLoader::loadAnimData(AnimationData& aData, const pugi::xml_document
 	// Iterate through all animations
 	for (auto& animXml : animationsXml.children()) {
 		string name = animXml.attribute("name").value();
-		AnimationData::anim& a = aData.animations.emplace(make_pair(name, AnimationData::anim())).first->second;
+		int frameNum = (int)std::distance(animXml.children().begin(), animXml.children().end());
+		AnimationData::anim& a = aData.animations.emplace(make_pair(name, AnimationData::anim(frameNum))).first->second;
 		a.name = name;
 		a.loops = animXml.attribute("loops").as_uint();
 		// Iterate through cells in the current animation
+		int cellIndex = 0;
 		for (auto& cellXml : animXml.children()) {
-			a.frames.emplace_back();
-			AnimationData::frame& f = a.frames.back();
+			AnimationData::frame& f = a.frames[cellIndex];
 			f.delay = cellXml.attribute("delay").as_uint() * 30900;
 			std::multimap<int, AnimationData::sprite> zList;
 			// Iterate through sprites in the current cell
@@ -182,6 +183,7 @@ bool ResourceLoader::loadAnimData(AnimationData& aData, const pugi::xml_document
 				}
 				i += 4;
 			}
+			cellIndex++;
 		}
 	}
 	return true;
