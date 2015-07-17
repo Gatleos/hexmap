@@ -24,7 +24,7 @@ ifneq ("$(or $(RELEASE),$(R))","")
 	OUT := $(OUTR)
 	LIB := -lsfml-graphics -lsfml-window -lsfml-system
 else
-	CXXFLAGS += -D_DEBUG
+	CXXFLAGS += -D_DEBUG -g
 	OBJDIR := obj/debug/
 	OUT := $(OUTD)
 	LIB := -lsfml-graphics-d -lsfml-window-d -lsfml-system-d
