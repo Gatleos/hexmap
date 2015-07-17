@@ -67,7 +67,7 @@ void AnimHandler::setAnimationData(const AnimationData &ai)
 
 void AnimHandler::setAnimation(string name)
 {
-	auto& a = animInfo->animations.find(name);
+	const auto& a = animInfo->animations.find(name);
 	if (a == animInfo->animations.end()) {
 		cerr << "ERROR: Couldn't find animation \"" << name << "\"\n";
 		return;

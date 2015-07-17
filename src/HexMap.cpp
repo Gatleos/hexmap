@@ -366,7 +366,8 @@ void HexMap::setAllTiles(const HexTileS& hts, mt19937& urng)
 	sf::Vector2i tilePos;
 	int a = 0;
 	for (auto& v : bgVertices_) {
-		const sf::FloatRect& rect = *hts.tiles[a].getRect(urng);
+		int rNum = hts.tiles[a].randomize(urng);
+		const sf::FloatRect& rect = hts.tiles[a].getRect(rNum);
 		int chunkIndex = 0;
 		for (auto* c : v) { // iterate through all chunks, row order
 			chunkPos = { chunkIndex % (int)mapSizeChunks_.x * CHUNK_SIZE, chunkIndex / (int)mapSizeChunks_.x * CHUNK_SIZE };
@@ -389,11 +390,13 @@ void HexMap::setAllTiles(const HexTileS& hts, mt19937& urng)
 		if (hts.features[s] != nullptr) {
 			auto& feat = hts.features[s]->rects_[s];
 			int index = 0;
+			int rNum = 0;
 			for (auto* h : hexes_) {
 				h->spr[s].setTexture(TileFeatureS::getTexture());
-				h->spr[s].setTextureRect((sf::IntRect)*feat.getRect(urng));
+				rNum = feat.randomize(urng);
+				h->spr[s].setTextureRect((sf::IntRect)feat.getRect(rNum));
 				pix = hexToPixel((sf::Vector2f)offsetToAxial(sf::Vector2f( index % mapSize_.y, index / mapSize_.y )), s);
-				h->spr[s].setPosition(pix + hts.features[s]->pos_[s]);
+				h->spr[s].setPosition(pix + feat.getPos(rNum));
 				index++;
 			}
 		}
@@ -409,8 +412,10 @@ void HexMap::setTile(sf::Vector2i offsetPos, const HexTileS& hts, mt19937& urng)
 	hex.hts = &hts;
 	sf::Vector2i chunkPos = { (offsetPos.x / CHUNK_SIZE), (offsetPos.y / CHUNK_SIZE) };
 	int index = ((offsetPos.y % CHUNK_SIZE) * CHUNK_SIZE + (offsetPos.x % CHUNK_SIZE)) * 4;
+	int rNum = 0;
 	for (int a = 0; a < 3; a++) {
-		const sf::FloatRect& rect = *hts.tiles[a].getRect(urng);
+		rNum = hts.tiles[a].randomize(urng);
+		const sf::FloatRect& rect = hts.tiles[a].getRect(rNum);
 		if (hts.features[a] != nullptr) {
 			setTileFeature(offsetPos, *hts.features[a], a, urng);
 		}
@@ -436,11 +441,13 @@ void HexMap::setTileColor(sf::Vector2i offsetPos, sf::Color col)
 void HexMap::setTileFeature(sf::Vector2i offsetPos, const TileFeatureS& tfs, mt19937& urng)
 {
 	auto& spr = hexes_(offsetPos.x, offsetPos.y).spr;
+	int rNum = 0;
 	for (int s = 0; s < 3; s++) {
 		sf::Vector2f pix = hexToPixel((sf::Vector2f)offsetToAxial(offsetPos), s);
 		spr[s].setTexture(TileFeatureS::getTexture());
-		spr[s].setTextureRect((sf::IntRect)*tfs.rects_[s].getRect(urng));
-		spr[s].setPosition(pix + tfs.pos_[s]);
+		rNum = tfs.rects_[s].randomize(urng);
+		spr[s].setTextureRect((sf::IntRect)tfs.rects_[s].getRect(rNum));
+		spr[s].setPosition(pix + tfs.rects_[s].getPos(rNum));
 	}
 }
 void HexMap::setTileFeature(sf::Vector2i offsetPos, const TileFeatureS& tfs, int zoom, mt19937& urng)
@@ -448,8 +455,9 @@ void HexMap::setTileFeature(sf::Vector2i offsetPos, const TileFeatureS& tfs, int
 	auto& spr = hexes_(offsetPos.x, offsetPos.y).spr;
 	sf::Vector2f pix = hexToPixel((sf::Vector2f)offsetToAxial(offsetPos), zoom);
 	spr[zoom].setTexture(TileFeatureS::getTexture());
-	spr[zoom].setTextureRect((sf::IntRect)*tfs.rects_[zoom].getRect(urng));
-	spr[zoom].setPosition(pix + tfs.pos_[zoom]);
+	int rNum = tfs.rects_[zoom].randomize(urng);
+	spr[zoom].setTextureRect((sf::IntRect)tfs.rects_[zoom].getRect(rNum));
+	spr[zoom].setPosition(pix + tfs.rects_[zoom].getPos(rNum));
 }
 void HexMap::setFeatureColor(sf::Vector2i offsetPos, const sf::Color& col)
 {

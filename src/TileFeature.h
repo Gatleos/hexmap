@@ -11,15 +11,19 @@
 
 class RandomRect
 {
-	std::map<int, sf::FloatRect> rect;
+	std::unique_ptr<std::discrete_distribution<int>> rectChance;
+	std::vector<sf::FloatRect> rects;
+	std::vector<sf::Vector2f> pos;
 	int probTotal;
 	bool active;
 public:
 	RandomRect();
-	const sf::FloatRect* getRect(std::mt19937& urng) const;
+	int RandomRect::randomize(std::mt19937& urng) const;
+	const sf::FloatRect& getRect(int index) const;
+	const sf::Vector2f& getPos(int index) const;
 	bool operator!();
 	void setToDefaultRect();
-	void loadJson(Json::Value& rdata, SpriteSheet* sheet);
+	void loadJson(Json::Value& rData, SpriteSheet* sheet, const sf::Vector2i& hexSize);
 	bool empty();
 };
 
@@ -27,7 +31,7 @@ class TileFeatureS
 {
 public:
 	enum {
-		NONE, MOUNTAIN, FOREST_L, FEATURE_NUM
+		NONE, MOUNTAIN, FOREST_S, FOREST_M, FOREST_L, TAIGA_S, TAIGA_M, TAIGA_L, FEATURE_NUM
 	};
 private:
 	static const sf::Texture* tex;
@@ -45,7 +49,6 @@ public:
 	sf::VertexArray vert_;
 	std::string id_;
 	std::string name_;
-	std::array<sf::Vector2f, 3> pos_;
 	std::array<RandomRect, 3> rects_;
 };
 

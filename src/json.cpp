@@ -7,6 +7,8 @@
 #include "ResourceLoader.h"
 
 array<const char*, 6> config::roadTypes = { "r_e", "r_ne", "r_nw", "r_w", "r_sw", "r_se" };
+const array<const char*, ZOOM_LEVELS> config::rectNames = { "full", "half", "quarter" };
+const array<const char*, ZOOM_LEVELS> config::featureNames = { "featureFull", "featureHalf", "featureQuarter" };
 
 Json::Value config::openJson(string file) {
 	Json::Value root;

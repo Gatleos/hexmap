@@ -9,8 +9,12 @@
 #endif
 #include "HexTile.h"
 
+#define ZOOM_LEVELS 3
+
 namespace config {
 	extern std::array<const char*, 6> roadTypes;
+	extern const array<const char*, ZOOM_LEVELS> rectNames;
+	extern const array<const char*, ZOOM_LEVELS> featureNames;
 	void load();
 	void save(); // TODO
 	extern float heightParams[3];

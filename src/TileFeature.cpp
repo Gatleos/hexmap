@@ -1,79 +1,106 @@
 #include <iostream>
+#include <functional>
 #include "json.h"
 #include "TileFeature.h"
 #include "clamp.h"
+#include "HexMap.h"
 
 #define ftrptr(x) unique_ptr<TileFeatureS>(new TileFeatureS(x))
 
 array<unique_ptr<TileFeatureS>, TileFeatureS::FEATURE_NUM> TileFeatureS::feature = { {
-		ftrptr("f_null"), ftrptr("f_mountain"), ftrptr("f_forest_l")
+		ftrptr("f_null"), ftrptr("f_mountain"), ftrptr("f_forest_s"), ftrptr("f_forest_m"), ftrptr("f_forest_l"),
+		ftrptr("f_taiga_s"), ftrptr("f_taiga_m"), ftrptr("f_taiga_l")
 	} };
 
-RandomRect::RandomRect() :active(false)
+RandomRect::RandomRect() :rectChance(new std::discrete_distribution <int>{ 1 })
 {
-	rect.emplace(make_pair(0, sf::FloatRect()));
+	rects.resize(1U);
+	pos.resize(1U);
 }
-const sf::FloatRect* RandomRect::getRect(mt19937& urng) const
+int RandomRect::randomize(std::mt19937& urng) const
 {
-	if (!active) {
-		return &rect.begin()->second;
-	}
-	int r = rng::getInt(probTotal - 1, urng);
-	for (auto f = rect.rbegin(); f != rect.rend(); f++) {
-		if (r < f->first) {
-			return &f->second;
-		}
-		r -= f->first;
-	}
-	return nullptr;
+	return (*rectChance)(urng);
 }
-bool RandomRect::operator!()
+const sf::FloatRect& RandomRect::getRect(int index) const
 {
-	return !active;
+	return rects[index];
+}
+const sf::Vector2f& RandomRect::getPos(int index) const
+{
+    return pos[index];
 }
 void RandomRect::setToDefaultRect()
 {
-	rect.clear();
-	rect.emplace(make_pair(0, sf::FloatRect()));
-	active = false;
+	rects.clear();
+	rects.resize(1U);
+	pos.resize(1U);
+	rectChance = unique_ptr<std::discrete_distribution<int>>(new std::discrete_distribution <int>{ 1 });
 }
-void RandomRect::loadJson(Json::Value& rdata, SpriteSheet* sheet)
+void RandomRect::loadJson(Json::Value& rData, SpriteSheet* sheet, const sf::Vector2i& hexSize)
 {
 	// If a rect isn't provided, stick with the default
-	if (rdata.isNull()) {
+	if (rData.isNull() || rData.empty()) {
 		return;
 	}
-	rect.clear();
-	const sf::FloatRect* rectData = nullptr;
-	probTotal = 0;
-	if (rdata.isArray()) { // A series of rects and their probabilities
-		active = true;
-		if (rdata.size() & 1) {
-			throw runtime_error("incorrect number of arguments");
+	std::function<void(Json::Value&, const sf::FloatRect&)> setPos = [hexSize, this](Json::Value& r, const sf::FloatRect& rectData) {
+		if (r.size() == 3) {
+			if (r[2].asString() == "center") {
+				pos.emplace_back((hexSize.x - rectData.width) / 2.0f, (hexSize.y - rectData.height) / 2.0f);
+			}
+			else {
+				cerr << "Warning: unrecognized position token \"" << r[2].asString() << "\"";
+			}
 		}
-		for (int f = 0; f < rdata.size(); f += 2) {
-			rectData = sheet->spr(rdata[f].asString());
+		else {
+			pos.emplace_back(r[2].asFloat(), r[3].asFloat());
+		}
+	};
+	std::vector<double> probs;
+	rects.clear();
+	pos.clear();
+	const sf::FloatRect* rectData = nullptr;
+	if (rData.size() > 1) { // A series of rects and their probabilities
+		for (auto& r : rData) {
+			int size = r.size();
+			if (size < 3 || size > 4) {
+				throw runtime_error("incorrect number of arguments");
+			}
+			// probability
+			probs.push_back(clamp(r[0].asInt(), 0, 100));
+			// rect
+			rectData = sheet->spr(r[1].asString());
 			if (rectData == nullptr) {
 				throw runtime_error("couldn't find sprite");
 			}
-			int prob = clamp(rdata[f + 1].asInt(), 0, 100);
-			probTotal += prob;
-			rect.emplace(make_pair(clamp(rdata[f + 1].asInt(), 0, 100), *rectData));
+			rects.emplace_back(*rectData);
+			// pos
+			setPos(r, *rectData);
 		}
+		// OH MY GOD
+		// This is just a hoop you have to jump through to get a dynamic-sized array
+		// into a discrete_distribution. It's a lambda function that loops through the
+		// vector of probabilities and inserts them.
+		rectChance = unique_ptr<std::discrete_distribution<int>>(
+			new std::discrete_distribution<int>(probs.size(), 0, probs.size(), [probs](double x)->double {
+				return probs[(int)x];
+			}
+		));
 	}
-	else { // A single rect, drawn 100% of the time
-		active = false;
-		rectData = sheet->spr(rdata.asString());
+	else if(rData.size() == 1) { // A single rect, drawn 100% of the time
+		rectData = sheet->spr(rData[0][1].asString());
 		if (rectData == nullptr) {
 			throw runtime_error("couldn't find sprite");
 		}
-		rect.emplace(make_pair(100, *rectData));
-		probTotal = 100;
+		rects.push_back(*rectData);
+		setPos(rData[0], *rectData);
+	}
+	else {
+		setToDefaultRect();
 	}
 }
 bool RandomRect::empty()
 {
-	return rect.empty();
+	return rects.empty();
 }
 
 
@@ -97,6 +124,7 @@ const TileFeatureS& TileFeatureS::get(string t)
 			return *tf;
 		}
 	}
+	cerr << "Warning: couldn't find feature \"" << t << "\"\n";
 	return *feature[0];
 }
 
@@ -124,8 +152,6 @@ void TileFeatureS::loadJson(string filename)
 		cerr << "\t(requested by \"" << filename << "\")\n";
 		return;
 	}
-	const char* posNames[] = { "posFull", "posHalf", "posQuart" };
-	const char* rectNames[] = { "rectFull", "rectHalf", "rectQuart" };
 	// Cycle through defined feature types; make sure to skip f_null!
 	for (int a = 1; a < TileFeatureS::FEATURE_NUM; a++) {
 		auto& feat = TileFeatureS::feature[a];
@@ -139,18 +165,11 @@ void TileFeatureS::loadJson(string filename)
 			//name
 			element = "name";
 			feat->name_ = fdata.get(element, "").asString();
-			// pos
-			Json::Value j;
-			for (int i = 0; i < 3; i++) {
-				element = posNames[i];
-				j = fdata.get(element, Json::Value::null);
-				feat->pos_[i] = { j[0].asFloat(), j[1].asFloat() };
-			}
 			// rect
 			for (int i = 0; i < 3; i++) {
-				element = rectNames[i];
-				j = fdata.get(element, Json::Value::null);
-				feat->rects_[i].loadJson(j, sheet);
+				element = config::rectNames[i];
+				Json::Value rData = fdata.get(element, Json::Value::null);
+				feat->rects_[i].loadJson(rData, sheet, HexMap::getHexSize(i));
 			}
 		}
 		catch (runtime_error e) { // report the error with the name of the object and member

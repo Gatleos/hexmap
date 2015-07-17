@@ -10,8 +10,6 @@
 
 class HexMap;
 
-#define ZOOM_LEVELS 3
-
 class Population
 {
 public:
