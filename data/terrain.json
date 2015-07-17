@@ -9,7 +9,7 @@
 		"half": [
 			[1, "/tiles/half/ocean", 0, 0]
 		],
-		"quart": [
+		"quarter": [
 			[1, "/tiles/quarter/ocean", 0, 0]
 		],
 		"gradient": {
@@ -27,7 +27,7 @@
 		"half": [
 			[1, "/tiles/half/taiga", 0, 0]
 		],
-		"quart": [
+		"quarter": [
 			[1, "/tiles/quarter/taiga", 0, 0]
 		],
 		"feature": "f_taiga_s",
@@ -41,7 +41,7 @@
 		"half": [
 			[1, "/tiles/half/taiga", 0, 0]
 		],
-		"quart": [
+		"quarter": [
 			[1, "/tiles/quarter/taiga", 0, 0]
 		],
 		"feature": "f_taiga_m",
@@ -55,7 +55,7 @@
 		"half": [
 			[1, "/tiles/half/taiga", 0, 0]
 		],
-		"quart": [
+		"quarter": [
 			[1, "/tiles/quarter/taiga", 0, 0]
 		],
 		"feature": "f_taiga_l",
@@ -69,7 +69,7 @@
 		"half": [
 			[1, "/tiles/half/tundra", 0, 0]
 		],
-		"quart": [
+		"quarter": [
 			[1, "/tiles/quarter/tundra", 0, 0]
 		],
 		"townChance": 1.0
@@ -82,7 +82,7 @@
 		"half": [
 			[1, "/tiles/half/forest", 0, 0]
 		],
-		"quart": [
+		"quarter": [
 			[1, "/tiles/quarter/forest", 0, 0]
 		],
 		"feature": "f_forest_s",
@@ -96,7 +96,7 @@
 		"half": [
 			[1, "/tiles/half/forest", 0, 0]
 		],
-		"quart": [
+		"quarter": [
 			[1, "/tiles/quarter/forest", 0, 0]
 		],
 		"feature": "f_forest_m",
@@ -110,7 +110,7 @@
 		"half": [
 			[1, "/tiles/half/forest", 0, 0]
 		],
-		"quart": [
+		"quarter": [
 			[1, "/tiles/quarter/forest", 0, 0]
 		],
 		"feature": "f_forest_l",
@@ -124,7 +124,7 @@
 		"half": [
 			[1, "/tiles/half/grassland", 0, 0]
 		],
-		"quart": [
+		"quarter": [
 			[1, "/tiles/quarter/grassland", 0, 0]
 		],
 		"townChance": 1.0
@@ -137,7 +137,7 @@
 		"half": [
 			[1, "/tiles/half/semiarid", 0, 0]
 		],
-		"quart": [
+		"quarter": [
 			[1, "/tiles/quarter/semiarid", 0, 0]
 		],
 		"townChance": 1.0
@@ -150,7 +150,7 @@
 		"half": [
 			[1, "/tiles/half/jungle", 0, 0]
 		],
-		"quart": [
+		"quarter": [
 			[1, "/tiles/quarter/jungle", 0, 0]
 		],
 		"townChance": 1.0
@@ -163,7 +163,7 @@
 		"half": [
 			[1, "/tiles/half/jungle", 0, 0]
 		],
-		"quart": [
+		"quarter": [
 			[1, "/tiles/quarter/jungle", 0, 0]
 		],
 		"townChance": 1.0
@@ -176,7 +176,7 @@
 		"half": [
 			[1, "/tiles/half/jungle", 0, 0]
 		],
-		"quart": [
+		"quarter": [
 			[1, "/tiles/quarter/jungle", 0, 0]
 		],
 		"townChance": 1.0
@@ -190,7 +190,7 @@
 		"half": [
 			[1, "/tiles/half/savanna", 0, 0]
 		],
-		"quart": [
+		"quarter": [
 			[1, "/tiles/quarter/savanna", 0, 0]
 		],
 		"townChance": 1.0
@@ -203,7 +203,7 @@
 		"half": [
 			[1, "/tiles/half/desert", 0, 0]
 		],
-		"quart": [
+		"quarter": [
 			[1, "/tiles/quarter/desert", 0, 0]
 		],
 		"townChance": 0.5
@@ -217,7 +217,7 @@
 		"half": [
 			[1, "/tiles/half/swamp", 0, 0]
 		],
-		"quart": [
+		"quarter": [
 			[1, "/tiles/quarter/swamp", 0, 0]
 		],
 		"townChance": 0.5
