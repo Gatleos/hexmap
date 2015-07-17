@@ -12,7 +12,11 @@
         <spr name="pine3" x="130" y="77" w="50" h="35"/>
       </dir>
       <dir name="mountains">
-        <spr name="mountain1" x="189" y="23" w="62" h="87"/>
+        <dir name="full">
+          <spr name="mountain1" x="189" y="23" w="62" h="87"/>
+        </dir>
+        <dir name="half"/>
+        <dir name="quarter"/>
       </dir>
     </dir>
   </definitions>

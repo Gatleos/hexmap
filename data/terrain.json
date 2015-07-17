@@ -3,9 +3,15 @@
 	
 	"t_ocean": {
 		"name": "Ocean",
-		"rectFull": "/tiles/full/ocean",
-		"rectHalf": "/tiles/half/ocean",
-		"rectQuart": "/tiles/quarter/ocean",
+		"full": [
+			[1, "/tiles/full/ocean", 0, 0]
+		],
+		"half": [
+			[1, "/tiles/half/ocean", 0, 0]
+		],
+		"quart": [
+			[1, "/tiles/quarter/ocean", 0, 0]
+		],
 		"gradient": {
 			"0.0": [0, 42, 179],
 			"0.3": [0, 42, 179],
@@ -13,125 +19,207 @@
 		},
 		"townChance": 0.0
 	},
-	"t_mountain": {
-		"name": "Mountains",
-		"rectFull": "/tiles/full/mountain",
-		"rectHalf": "/tiles/half/mountain",
-		"rectQuart": "/tiles/quarter/mountain",
-		"townChance": 0.5
-	},
 	"t_taiga_s": {
 		"name": "Taiga",
-		"rectFull": "/tiles/full/taiga1",
-		"rectHalf": "/tiles/half/taiga1",
-		"rectQuart": "/tiles/quarter/taiga1",
+		"full": [
+			[1, "/tiles/full/taiga", 0, 0]
+		],
+		"half": [
+			[1, "/tiles/half/taiga", 0, 0]
+		],
+		"quart": [
+			[1, "/tiles/quarter/taiga", 0, 0]
+		],
+		"feature": "f_taiga_s",
 		"townChance": 1.0
 	},
 	"t_taiga_m": {
 		"name": "Taiga",
-		"rectFull": "/tiles/full/taiga2",
-		"rectHalf": "/tiles/half/taiga2",
-		"rectQuart": "/tiles/quarter/taiga2",
+		"full": [
+			[1, "/tiles/full/taiga", 0, 0]
+		],
+		"half": [
+			[1, "/tiles/half/taiga", 0, 0]
+		],
+		"quart": [
+			[1, "/tiles/quarter/taiga", 0, 0]
+		],
+		"feature": "f_taiga_m",
 		"townChance": 1.0
 	},
 	"t_taiga_l": {
 		"name": "Taiga",
-		"rectFull": "/tiles/full/taiga3",
-		"rectHalf": "/tiles/half/taiga3",
-		"rectQuart": "/tiles/quarter/taiga3",
+		"full": [
+			[1, "/tiles/full/taiga", 0, 0]
+		],
+		"half": [
+			[1, "/tiles/half/taiga", 0, 0]
+		],
+		"quart": [
+			[1, "/tiles/quarter/taiga", 0, 0]
+		],
+		"feature": "f_taiga_l",
 		"townChance": 1.0
 	},
 	"t_tundra": {
 		"name": "Tundra",
-		"rectFull": "/tiles/full/tundra",
-		"rectHalf": "/tiles/half/tundra",
-		"rectQuart": "/tiles/quarter/tundra",
+		"full": [
+			[1, "/tiles/full/tundra", 0, 0]
+		],
+		"half": [
+			[1, "/tiles/half/tundra", 0, 0]
+		],
+		"quart": [
+			[1, "/tiles/quarter/tundra", 0, 0]
+		],
 		"townChance": 1.0
 	},
 	"t_forest_s": {
 		"name": "Forest",
-		"rectFull": "/tiles/full/grassland",
-		"rectHalf": "/tiles/half/grassland",
-		"rectQuart": "/tiles/quarter/grassland",
-		"feature": "f_forest_l",
+		"full": [
+			[1, "/tiles/full/forest", 0, 0]
+		],
+		"half": [
+			[1, "/tiles/half/forest", 0, 0]
+		],
+		"quart": [
+			[1, "/tiles/quarter/forest", 0, 0]
+		],
+		"feature": "f_forest_s",
 		"townChance": 1.0
 	},
 	"t_forest_m": {
 		"name": "Forest",
-		"rectFull": "/tiles/full/grassland",
-		"rectHalf": "/tiles/half/grassland",
-		"rectQuart": "/tiles/quarter/grassland",
-		"feature": "f_forest_l",
+		"full": [
+			[1, "/tiles/full/forest", 0, 0]
+		],
+		"half": [
+			[1, "/tiles/half/forest", 0, 0]
+		],
+		"quart": [
+			[1, "/tiles/quarter/forest", 0, 0]
+		],
+		"feature": "f_forest_m",
 		"townChance": 1.0
 	},
 	"t_forest_l": {
 		"name": "Forest",
-		"rectFull": "/tiles/full/grassland",
-		"rectHalf": "/tiles/half/grassland",
-		"rectQuart": "/tiles/quarter/grassland",
+		"full": [
+			[1, "/tiles/full/forest", 0, 0]
+		],
+		"half": [
+			[1, "/tiles/half/forest", 0, 0]
+		],
+		"quart": [
+			[1, "/tiles/quarter/forest", 0, 0]
+		],
 		"feature": "f_forest_l",
 		"townChance": 1.0
 	},
 	"t_grassland": {
 		"name": "Grassland",
-		"rectFull": "/tiles/full/grassland",
-		"rectHalf": "/tiles/half/grassland",
-		"rectQuart": "/tiles/quarter/grassland",
+		"full": [
+			[1, "/tiles/full/grassland", 0, 0]
+		],
+		"half": [
+			[1, "/tiles/half/grassland", 0, 0]
+		],
+		"quart": [
+			[1, "/tiles/quarter/grassland", 0, 0]
+		],
 		"townChance": 1.0
 	},
 	"t_semiarid": {
 		"name": "Semiarid Desert",
-		"rectFull": "/tiles/full/semiarid",
-		"rectHalf": "/tiles/half/semiarid",
-		"rectQuart": "/tiles/quarter/semiarid",
+		"full": [
+			[1, "/tiles/full/semiarid", 0, 0]
+		],
+		"half": [
+			[1, "/tiles/half/semiarid", 0, 0]
+		],
+		"quart": [
+			[1, "/tiles/quarter/semiarid", 0, 0]
+		],
 		"townChance": 1.0
 	},
 	"t_jungle_s": {
 		"name": "Jungle",
-		"rectFull": "/tiles/full/jungle1",
-		"rectHalf": "/tiles/half/jungle1",
-		"rectQuart": "/tiles/quarter/jungle1",
+		"full": [
+			[1, "/tiles/full/jungle", 0, 0]
+		],
+		"half": [
+			[1, "/tiles/half/jungle", 0, 0]
+		],
+		"quart": [
+			[1, "/tiles/quarter/jungle", 0, 0]
+		],
 		"townChance": 1.0
 	},
 	"t_jungle_m": {
 		"name": "Jungle",
-		"rectFull": "/tiles/full/jungle2",
-		"rectHalf": "/tiles/half/jungle2",
-		"rectQuart": "/tiles/quarter/jungle2",
+		"full": [
+			[1, "/tiles/full/jungle", 0, 0]
+		],
+		"half": [
+			[1, "/tiles/half/jungle", 0, 0]
+		],
+		"quart": [
+			[1, "/tiles/quarter/jungle", 0, 0]
+		],
 		"townChance": 1.0
 	},
 	"t_jungle_l": {
 		"name": "Jungle",
-		"rectFull": "/tiles/full/jungle3",
-		"rectHalf": "/tiles/half/jungle3",
-		"rectQuart": "/tiles/quarter/jungle3",
+		"full": [
+			[1, "/tiles/full/jungle", 0, 0]
+		],
+		"half": [
+			[1, "/tiles/half/jungle", 0, 0]
+		],
+		"quart": [
+			[1, "/tiles/quarter/jungle", 0, 0]
+		],
 		"townChance": 1.0
 	},
 	"t_savanna": {
 		"name": "Savanna",
-		"rectFull": [
-			"/tiles/full/savanna", 17,
-			"/tiles/full/savannaTree", 3
+		"full": [
+			[17, "/tiles/full/savanna", 0, 0],
+			[3, "/tiles/full/savannaTree", 0, 0]
 		],
-		"rectHalf": "/tiles/half/savanna",
-		"rectQuart": "/tiles/quarter/savanna",
+		"half": [
+			[1, "/tiles/half/savanna", 0, 0]
+		],
+		"quart": [
+			[1, "/tiles/quarter/savanna", 0, 0]
+		],
 		"townChance": 1.0
 	},
 	"t_desert": {
 		"name": "Sand Desert",
-		"rectFull": "/tiles/full/desert",
-		"rectHalf": "/tiles/half/desert",
-		"rectQuart": "/tiles/quarter/desert",
+		"full": [
+			[1, "/tiles/full/desert", 0, 0]
+		],
+		"half": [
+			[1, "/tiles/half/desert", 0, 0]
+		],
+		"quart": [
+			[1, "/tiles/quarter/desert", 0, 0]
+		],
 		"townChance": 0.5
 	},
 	"t_swamp": {
 		"name": "Swamp",
-		"rectFull": [
-			"/tiles/full/swamp", 19,
-			"/tiles/full/swampPlant", 1
+		"full": [
+			[19, "/tiles/full/swamp", 0, 0],
+			[1, "/tiles/full/swampPlant", 0, 0]
 		],
-		"rectHalf": "/tiles/half/swamp",
-		"rectQuart": "/tiles/quarter/swamp",
+		"half": [
+			[1, "/tiles/half/swamp", 0, 0]
+		],
+		"quart": [
+			[1, "/tiles/quarter/swamp", 0, 0]
+		],
 		"townChance": 0.5
 	}
 }

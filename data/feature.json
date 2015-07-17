@@ -3,12 +3,44 @@
 	
 	"f_mountain": {
 		"name": "Mountain",
-		"posFull": [1, -14],
-		"rectFull": "/mountains/mountain1"
+		"full": [
+			[1, "/mountains/full/mountain1", 1, -14]
+		]
+	},
+	"f_forest_s": {
+		"name": "Forest S",
+		"full": [
+			[1, "/plants/forest1", "center"]
+		]
+	},
+	"f_forest_m": {
+		"name": "Forest M",
+		"full": [
+			[1, "/plants/forest2", "center"]
+		]
 	},
 	"f_forest_l": {
 		"name": "Forest L",
-		"posFull": [0, 0],
-		"rectFull": "/plants/forest3"
+		"full": [
+			[1, "/plants/forest3", "center"]
+		]
+	},
+	"f_taiga_s": {
+		"name": "Taiga S",
+		"full": [
+			[1, "/plants/pine1", "center"]
+		]
+	},
+	"f_taiga_m": {
+		"name": "Taiga M",
+		"full": [
+			[1, "/plants/pine2", "center"]
+		]
+	},
+	"f_taiga_l": {
+		"name": "Taiga L",
+		"full": [
+			[1, "/plants/pine3", "center"]
+		]
 	}
 }
