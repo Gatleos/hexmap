@@ -37,7 +37,7 @@ class AnimationData
 	};
 	struct frame
 	{
-		unsigned int delay;
+		int delay;
 		sf::VertexArray sprites;
 		frame() :sprites(sf::PrimitiveType::Quads){}
 	};

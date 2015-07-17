@@ -128,7 +128,7 @@ bool ResourceLoader::loadAnimData(AnimationData& aData, const pugi::xml_document
 		int cellIndex = 0;
 		for (auto& cellXml : animXml.children()) {
 			AnimationData::frame& f = a.frames[cellIndex];
-			f.delay = cellXml.attribute("delay").as_uint() * 30900;
+			f.delay = max(1, cellXml.attribute("delay").as_int() * 30900);
 			std::multimap<int, AnimationData::sprite> zList;
 			// Iterate through sprites in the current cell
 			for (auto& spriteXml : cellXml.children()) {

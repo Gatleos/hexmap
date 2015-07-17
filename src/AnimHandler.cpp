@@ -44,10 +44,10 @@ AnimHandler::AnimHandler() :cframe(0), ctime(0){}
 
 void AnimHandler::updateAnimation(const sf::Time& time_elapsed)//Update the current frame (must be called at least once before draw()!)
 {
-	ctime += time_elapsed.asMicroseconds();
+	ctime += (int)time_elapsed.asMicroseconds();
 	if (ctime < currentFrame->delay) return;
 	cframe++;
-	if (cframe >= currentAnim->frames.size() || cframe < 0)
+	if (cframe >= (int)currentAnim->frames.size() || cframe < 0)
 	{
 		cframe = 0;
 	}

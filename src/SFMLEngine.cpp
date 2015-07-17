@@ -75,7 +75,7 @@ void SFMLEngine::popAllStates() {
 	}
 }
 int SFMLEngine::getFPS() const {
-	return 1000000LL / max(lastFrame.asMicroseconds(), 1LL);
+	return (int)(1000000LL / max(lastFrame.asMicroseconds(), 1LL));
 }
 const sf::Time& SFMLEngine::getLastTick() const {
 	return lastFrame;

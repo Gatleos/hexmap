@@ -45,12 +45,12 @@ void EngineState::init()
 	auto table1 = sfg::Table::Create();
 	array<const char*, 6U> s = { "Camera:", "Mouse:", "Hex:", "Terrain:", "Gen (ms):", "Chunks:" };
 	array<shared_ptr<sfg::Label>, 6U> label2;
-	for (int a = 0; a < debugInfo.size(); a++) {
+	for (int a = 0; a < (int)debugInfo.size(); a++) {
 		label2[a] = sfg::Label::Create(s[a]);
 		label2[a]->SetAlignment({ 0.0f, 0.0f });
 		table1->Attach(label2[a], { 0U, (sf::Uint32)a, 1U, 1U });
 	}
-	for (int a = 0; a < debugInfo.size(); a++) {
+	for (int a = 0; a < (int)debugInfo.size(); a++) {
 		debugInfo[a] = sfg::Label::Create("");
 		debugInfo[a]->SetAlignment({ 0.0f, 0.0f });
 		table1->Attach(debugInfo[a], { 1U, (sf::Uint32)a, 1U, 1U });
@@ -89,15 +89,13 @@ void EngineState::init()
 	RESOURCE.setRoot("data/");
 	config::loadAllJson();
 	// Set up map
-	hex.loadFromFile("data/iso.png");
 	hg.init(MAPX, MAPY);
-	hg.setTexture(hex);
 	hg.setAllTiles(HexTileS::get(HexTileS::OCEAN), rng::r);
 	hg.calculateViewArea(mapView);
 	// Entities
 	//uniform_int_distribution<int> size(0, 127);
 	//auto* f = hg.addFaction();
-	//for (int x = 0; x < 300; x++) {
+	//for (int x = 0; x < 10000; x++) {
 	//	sf::Vector2i pos = { size(rng::r), size(rng::r) };
 	//	auto* s = hg.addSite(SiteS::get("si_castle"), f);
 	//	s->initMapPos(HexMap::offsetToAxial(pos));
@@ -126,7 +124,7 @@ void EngineState::render(sf::RenderWindow &window)
 	if (elapsed >= 0.5f) {
 		elapsed = 0.0f;
 		if (timeDisplay) {
-			snprintf(str, 50, "SFML Test    last tick (ms): %d", engine->getLastTick().asMilliseconds());
+			snprintf(str, 50, "SFML Test    last tick: %d", engine->getLastTick().asMicroseconds());
 		}
 		else {
 			snprintf(str, 50, "SFML Test    FPS: %d", engine->getFPS());
@@ -167,7 +165,7 @@ void EngineState::input(sf::Event &e)
 		mouseMapPos = { e.mouseMove.x - size.x / 2.0f + center.x, e.mouseMove.y - size.y / 2.0f + center.y };
 		tilePos = hg.pixelToHex(mouseMapPos);
 		if (hg.isAxialInBounds((sf::Vector2i)tilePos)) {
-			debugInfo[3]->SetText(hg.getAxial(tilePos.x, tilePos.y).hts->name);
+			debugInfo[3]->SetText(hg.getAxial((int)tilePos.x, (int)tilePos.y).hts->name);
 		}
 		else {
 			debugInfo[3]->SetText("");
@@ -202,15 +200,15 @@ void EngineState::input(sf::Event &e)
 		mButtonPressed = false;
 	}
 	else if (e.type == sf::Event::KeyReleased) {
-		if (e.key.code == sf::Keyboard::Left || 
+		if (e.key.code == sf::Keyboard::Left ||
 			e.key.code == sf::Keyboard::Right ||
 			e.key.code == sf::Keyboard::A ||
 			e.key.code == sf::Keyboard::D) {
 			camDeltaX = 0;
 		}
 		else if (e.key.code == sf::Keyboard::Up ||
-			e.key.code == sf::Keyboard::Down || 
-			e.key.code == sf::Keyboard::W || 
+			e.key.code == sf::Keyboard::Down ||
+			e.key.code == sf::Keyboard::W ||
 			e.key.code == sf::Keyboard::S) {
 			camDeltaY = 0;
 		}
@@ -241,9 +239,9 @@ void EngineState::input(sf::Event &e)
 	}
 	else if (e.type == sf::Event::Resized)
 	{
-		mapView.setSize(sf::Vector2f(e.size.width, e.size.height));
+		mapView.setSize(sf::Vector2f((float)e.size.width, (float)e.size.height));
 		mapView.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
-		uiView.setSize(sf::Vector2f(roundf(e.size.width), roundf(e.size.height)));
+		uiView.setSize(sf::Vector2f(roundf((float)e.size.width), roundf((float)e.size.height)));
 		uiView.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
 		uiView.setCenter(uiView.getSize() / 2.0f);
 		miniMapView = mapView;

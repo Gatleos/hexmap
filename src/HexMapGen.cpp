@@ -34,24 +34,24 @@ void HexMap::generateBiomes(mt19937& urng)
 			drainVal = scaled_octave_noise_2d(config::drainParams[0], config::drainParams[1], config::drainParams[2], 0.0f, 255.0f, p.x + offsetDrainage.x, p.y + offsetDrainage.y);
 			switch (0) { // fix
 			case 0:
-				tempVal += (r - 64) * 1.5;
+				tempVal += (r - 64) * 1.5f;
 				break;
 			case 1:
-				tempVal -= (r - 64) * 1.5;
+				tempVal -= (r - 64) * 1.5f;
 				break;
 			case 2:
-				tempVal += (q - 64) * 1.5;
+				tempVal += (q - 64) * 1.5f;
 				break;
 			case 3:
-				tempVal -= (q - 64) * 1.5;
+				tempVal -= (q - 64) * 1.5f;
 			}
 			// Determine the terrain type based on elevation, temperature, moisture and drainage
 			if (heightVal < SEA_LEVEL) {
 				type = &HexTileS::get(HexTileS::OCEAN);
-				colorIndex = heightVal;
+				colorIndex = (int)heightVal;
 			}
 			else {
-				colorIndex = heightVal - SEA_LEVEL;
+				colorIndex = (int)heightVal - SEA_LEVEL;
 				if (tempVal < config::cold) {
 					if (moistVal >= config::forest[0]) {
 						if (moistVal >= config::forest[2]) {
@@ -127,7 +127,7 @@ void HexMap::generateBiomes(mt19937& urng)
 					}
 				}
 			}
-			getOffset(hexPos.x, hexPos.y).height = heightVal;
+			getOffset(hexPos.x, hexPos.y).height = (unsigned int)heightVal;
 			setTile(hexPos, *type, urng);
 			if (type->FLAGS[HexTileS::GRADIENT]) {
 				setTileColor(hexPos, type->colors[colorIndex]);
@@ -155,7 +155,7 @@ void HexMap::generateMountainRange(mt19937& urng)
 	sf::Vector2f offset = { (float)rng::getInt(2, 85, urng), (float)rng::getInt(2, 85, urng) };
 	for (int a = 0; a < 100; a++) {
 		w[0] = { (float)xRange(urng), (float)yRange(urng) };
-		if (isAxialInBounds((sf::Vector2i)w[0]) && getAxial(w[0].x, w[0].y).hts->walkable) {
+		if (isAxialInBounds((sf::Vector2i)w[0]) && getAxial((int)w[0].x, (int)w[0].y).hts->walkable) {
 			break;
 		}
 	}
@@ -177,7 +177,7 @@ void HexMap::generateMountainRange(mt19937& urng)
 	sf::Vector2f p;
 	for (float f = 0.0f; f < 1.0f; f += advance) {
 		Bezier::curveCubic(p, f, w);
-		if (!isAxialInBounds((sf::Vector2i)p) || !getAxial(p.x, p.y).hts->walkable) {
+		if (!isAxialInBounds((sf::Vector2i)p) || !getAxial((int)p.x, (int)p.y).hts->walkable) {
 			break;
 		}
 		VectorSet& s = splat[rng::getInt(0, splat.size() - 1, urng)];

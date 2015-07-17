@@ -172,16 +172,16 @@ void HexMap::init(int width, int height)
 		auto& b = bgVertices_[bv];
 		b.set(mapSizeChunks_.x, mapSizeChunks_.y);
 		chunkOffset = { 0, 0 };
-		for (int chunkIndex = 0; chunkIndex < b.size(); chunkIndex++) { // iterate through all chunks, row order
+		for (int chunkIndex = 0; chunkIndex < (int)b.size(); chunkIndex++) { // iterate through all chunks, row order
 			int index = 0;
 			auto& bc = b[chunkIndex];
 			chunkOffset.x = chunkIndex % mapSizeChunks_.x * CHUNK_SIZE;
 			chunkOffset.y = chunkIndex / mapSizeChunks_.x * CHUNK_SIZE;
-			chunkOffset.x += -floorf(chunkOffset.y / 2.0f);
+			chunkOffset.x += chunkOffset.y / 2;
 			bc.setPrimitiveType(sf::PrimitiveType::Quads);
 			bc.resize((size_t)CHUNK_SQUARED * 4);
 			for (int r = 0; r < CHUNK_SIZE; r++) { // iterate through every tile in the chunk
-				for (int q = 0, qoff = (int)-floorf(r / 2.0); q < CHUNK_SIZE; q++, qoff++) {
+				for (int q = 0, qoff = -r / 2; q < CHUNK_SIZE; q++, qoff++) {
 					p = { (float)qoff + chunkOffset.x, (float)r + chunkOffset.y };
 					p = hexToPixel(p);
 					bc[index++].position = p;
@@ -223,8 +223,8 @@ sf::Vector2f HexMap::hexToPixel(sf::Vector2f hex) const
 }
 sf::Vector2i HexMap::hexToPixel(sf::Vector2i hex) const
 {
-	hex.x = hexAdvance_[zoomLevel].x * (hex.x + hex.y / 2.0);
-	hex.y = hexAdvance_[zoomLevel].y * hex.y;
+	hex.x = (int)(hexAdvance_[zoomLevel].x * (hex.x + hex.y / 2.0));
+	hex.y = (int)hexAdvance_[zoomLevel].y * hex.y;
 	return hex;
 }
 sf::Vector2f HexMap::hexToPixel(sf::Vector2f hex, int zoom) const
@@ -235,8 +235,8 @@ sf::Vector2f HexMap::hexToPixel(sf::Vector2f hex, int zoom) const
 }
 sf::Vector2i HexMap::hexToPixel(sf::Vector2i hex, int zoom) const
 {
-	hex.x = hexAdvance_[zoom].x * (hex.x + hex.y / 2.0);
-	hex.y = hexAdvance_[zoom].y * hex.y;
+	hex.x = (int)(hexAdvance_[zoom].x * (hex.x + hex.y / 2.0));
+	hex.y = (int)hexAdvance_[zoom].y * hex.y;
 	return hex;
 }
 sf::Vector2f HexMap::pixelToHex(sf::Vector2f pixel) const
@@ -280,8 +280,9 @@ VectorSet& HexMap::area(sf::Vector2i h, int radius, VectorSet& n)
 	cp.y = -cp.x - cp.z;
 	cubepoint d;
 	cubepoint np;
-	for (d.x = -radius; d.x <= radius; d.x++) {
-		for (d.y = std::max(-radius, (int)-d.x - radius); d.y <= std::min(radius, (int)-d.x + radius); d.y++) {
+	np.y = (float)radius;
+	for (d.x = -np.y; d.x <= np.y; d.x++) {
+		for (d.y = std::max(-np.y, -d.x - np.y); d.y <= std::min(np.y, -d.x + np.y); d.y++) {
 			d.z = -d.x - d.y;
 			np = d + cp;
 			n.insert({ (int)np.x, (int)np.z });
@@ -395,7 +396,7 @@ void HexMap::setAllTiles(const HexTileS& hts, mt19937& urng)
 				h->spr[s].setTexture(TileFeatureS::getTexture());
 				rNum = feat.randomize(urng);
 				h->spr[s].setTextureRect((sf::IntRect)feat.getRect(rNum));
-				pix = hexToPixel((sf::Vector2f)offsetToAxial(sf::Vector2f( index % mapSize_.y, index / mapSize_.y )), s);
+				pix = hexToPixel((sf::Vector2f)offsetToAxial(sf::Vector2f((float)(index % mapSize_.y), (float)(index / mapSize_.y))), s);
 				h->spr[s].setPosition(pix + feat.getPos(rNum));
 				index++;
 			}
@@ -578,10 +579,10 @@ MapUnit* HexMap::addMapUnit(const MapEntityS* sEnt, Faction* parent)
 
 void HexMap::update(const sf::Time& timeElapsed)
 {
-	for (auto& u : units) {
-		u.second.handlers_[zoomLevel].updateAnimation(timeElapsed);
-		u.second.update(timeElapsed);
-	}
+	//for (auto& u : units) {
+	//	u.second.handlers_[zoomLevel].updateAnimation(timeElapsed);
+	//	u.second.update(timeElapsed);
+	//}
 	for (auto& s : sites) {
 		s.second.handlers_[zoomLevel].updateAnimation(timeElapsed);
 		s.second.update(timeElapsed);
