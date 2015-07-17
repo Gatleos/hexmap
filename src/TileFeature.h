@@ -15,6 +15,7 @@ class RandomRect
 	int probTotal;
 	bool active;
 public:
+	RandomRect();
 	const sf::FloatRect* getRect(std::mt19937& urng) const;
 	bool operator!();
 	void setToDefaultRect();
@@ -29,12 +30,14 @@ public:
 		NONE, MOUNTAIN, FOREST_L, FEATURE_NUM
 	};
 private:
+	static const sf::Texture* tex;
 	static std::array<std::unique_ptr<TileFeatureS>, FEATURE_NUM> feature;
 	TileFeatureS(std::string id);
 public:
 	const static sf::Color fade;
 	static void loadJson(std::string filename);
 	static const TileFeatureS& get(int t);
+	static const sf::Texture& getTexture();
 	// Finds a TileFeature based on its id; will return f_null
 	// if it can't find one! Just scans the array, so worst
 	// case is O(n)

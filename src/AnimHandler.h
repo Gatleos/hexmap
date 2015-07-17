@@ -19,6 +19,7 @@ class SpriteSheet
 	friend ResourceLoader;
 public:
 	const sf::FloatRect* spr(std::string spriteName);
+	const std::string& getImageName();
 };
 
 class AnimationData

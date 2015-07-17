@@ -19,6 +19,7 @@ public:
 		GRASSLAND, SEMIARID, JUNGLE_S, JUNGLE_M, JUNGLE_L, SAVANNA, DESERT, SWAMP, TERRAIN_NUM
 	};
 private:
+	static const sf::Texture* tex;
 	static std::array<unique_ptr<HexTileS>, TERRAIN_NUM> terrain;
 public:
 	enum {
@@ -26,6 +27,7 @@ public:
 	};
 	static void loadJson(string filename);
 	static const HexTileS& get(int t);
+	static const sf::Texture& getTexture();
 	std::string id;
 	std::string name;
 	std::array<RandomRect, 3> tiles;

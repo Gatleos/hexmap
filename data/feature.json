@@ -1,11 +1,14 @@
 {
-	"spriteSheet": "terrain.sprites",
+	"spriteSheet": "feature.sprites",
 	
 	"f_mountain": {
 		"name": "Mountain",
-		"pos": [1, -14],
-		"rect": "/mountains/mountain",
-		"rectHalf": "/tiles/half/mountain",
-		"rectQuart": "/tiles/quarter/mountain"
+		"posFull": [1, -14],
+		"rectFull": "/mountains/mountain1"
+	},
+	"f_forest_l": {
+		"name": "Forest L",
+		"posFull": [0, 0],
+		"rectFull": "/plants/forest3"
 	}
 }

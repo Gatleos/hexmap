@@ -17,6 +17,7 @@ array<unique_ptr<HexTileS>, HexTileS::TERRAIN_NUM> HexTileS::terrain = { {
 	terptr("t_forest_l"), terptr("t_grassland"), terptr("t_semiarid"), terptr("t_jungle_s"),
 	terptr("t_jungle_m"), terptr("t_jungle_l"), terptr("t_savanna"), terptr("t_desert"), terptr("t_swamp")
 	} };
+const sf::Texture* HexTileS::tex = nullptr;
 
 HexTileS::HexTileS(string idSet) :id(idSet), townChance(1.0f)
 {
@@ -35,8 +36,13 @@ void HexTileS::loadJson(string filename)
 		cerr << "\t(requested by \"" << filename << "\")\n";
 		return;
 	}
-	const char* rectNames[] = { "rect", "rectHalf", "rectQuart" };
-	const char* featureNames[] = { "feature", "featureHalf", "featureQuart" };
+	tex = RESOURCE.tex(sheet->getImageName());
+	if (tex == nullptr) {
+		cerr << "\t(requested by \"" << filename << "\")\n";
+		return;
+	}
+	const char* rectNames[] = { "rectFull", "rectHalf", "rectQuart" };
+	const char* featureNames[] = { "featureFull", "featureHalf", "featureQuart" };
 	// Cycle through defined terrain types; make sure to skip t_null!
 	for (int a = 1; a < HexTileS::TERRAIN_NUM; a++) {
 		auto& hex = HexTileS::terrain[a];
@@ -58,6 +64,18 @@ void HexTileS::loadJson(string filename)
 			hex->name = tdata.get(element, "").asString();
 			// rect
 			Json::Value rectData;
+			// First, look for a whole feature link
+			element = "feature";
+			rectData = tdata.get(element, Json::Value::null);
+			if (rectData.isString()) {
+				auto featureAll = &TileFeatureS::get(rectData.asString());
+				if (featureAll != nullptr) {
+					for (int i = 0; i < 3; i++) {
+						hex->features[i] = featureAll;
+					}
+				}
+			}
+			// Now we iterate through zoom levels
 			for (int i = 0; i < 3; i++) {
 				element = rectNames[i];
 				rectData = tdata.get(element, Json::Value::null);
@@ -130,6 +148,11 @@ void HexTileS::loadJson(string filename)
 const HexTileS& HexTileS::get(int t)
 {
 	return *terrain[t];
+}
+
+const sf::Texture& HexTileS::getTexture()
+{
+	return *tex;
 }
 
 HexTile::HexTile() :ent(nullptr)

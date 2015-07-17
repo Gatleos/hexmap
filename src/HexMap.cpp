@@ -390,7 +390,7 @@ void HexMap::setAllTiles(const HexTileS& hts, mt19937& urng)
 			auto& feat = hts.features[s]->rects_[s];
 			int index = 0;
 			for (auto* h : hexes_) {
-				h->spr[s].setTexture(*tex_);
+				h->spr[s].setTexture(TileFeatureS::getTexture());
 				h->spr[s].setTextureRect((sf::IntRect)*feat.getRect(urng));
 				pix = hexToPixel((sf::Vector2f)offsetToAxial(sf::Vector2f( index % mapSize_.y, index / mapSize_.y )), s);
 				h->spr[s].setPosition(pix + hts.features[s]->pos_[s]);
@@ -438,7 +438,7 @@ void HexMap::setTileFeature(sf::Vector2i offsetPos, const TileFeatureS& tfs, mt1
 	auto& spr = hexes_(offsetPos.x, offsetPos.y).spr;
 	for (int s = 0; s < 3; s++) {
 		sf::Vector2f pix = hexToPixel((sf::Vector2f)offsetToAxial(offsetPos), s);
-		spr[s].setTexture(*tex_);
+		spr[s].setTexture(TileFeatureS::getTexture());
 		spr[s].setTextureRect((sf::IntRect)*tfs.rects_[s].getRect(urng));
 		spr[s].setPosition(pix + tfs.pos_[s]);
 	}
@@ -447,7 +447,7 @@ void HexMap::setTileFeature(sf::Vector2i offsetPos, const TileFeatureS& tfs, int
 {
 	auto& spr = hexes_(offsetPos.x, offsetPos.y).spr;
 	sf::Vector2f pix = hexToPixel((sf::Vector2f)offsetToAxial(offsetPos), zoom);
-	spr[zoom].setTexture(*tex_);
+	spr[zoom].setTexture(TileFeatureS::getTexture());
 	spr[zoom].setTextureRect((sf::IntRect)*tfs.rects_[zoom].getRect(urng));
 	spr[zoom].setPosition(pix + tfs.pos_[zoom]);
 }
@@ -469,7 +469,7 @@ void HexMap::clearTileFeatures()
 void HexMap::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	states.transform *= getTransform();
-	states.texture = tex_;
+	states.texture = &HexTileS::getTexture();
 	for (int h = chunkDrawingBounds.top; h <= chunkDrawingBounds.height; h++) {
 		for (int w = chunkDrawingBounds.left; w <= chunkDrawingBounds.width; w++) {
 			target.draw((*activeBgVertices_)(w, h), states);

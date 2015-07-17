@@ -13,6 +13,11 @@ const sf::FloatRect* SpriteSheet::spr(string spriteName)
 	return &spr->second;
 }
 
+const std::string& SpriteSheet::getImageName()
+{
+	return imageName;
+}
+
 
 const char* AnimationData::darkFunctionVersion()
 {

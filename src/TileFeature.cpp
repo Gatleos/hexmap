@@ -9,6 +9,10 @@ array<unique_ptr<TileFeatureS>, TileFeatureS::FEATURE_NUM> TileFeatureS::feature
 		ftrptr("f_null"), ftrptr("f_mountain"), ftrptr("f_forest_l")
 	} };
 
+RandomRect::RandomRect() :active(false)
+{
+	rect.emplace(make_pair(0, sf::FloatRect()));
+}
 const sf::FloatRect* RandomRect::getRect(mt19937& urng) const
 {
 	if (!active) {
@@ -29,14 +33,20 @@ bool RandomRect::operator!()
 }
 void RandomRect::setToDefaultRect()
 {
+	rect.clear();
 	rect.emplace(make_pair(0, sf::FloatRect()));
 	active = false;
 }
 void RandomRect::loadJson(Json::Value& rdata, SpriteSheet* sheet)
 {
+	// If a rect isn't provided, stick with the default
+	if (rdata.isNull()) {
+		return;
+	}
+	rect.clear();
 	const sf::FloatRect* rectData = nullptr;
 	probTotal = 0;
-	if (rdata.isArray()) {
+	if (rdata.isArray()) { // A series of rects and their probabilities
 		active = true;
 		if (rdata.size() & 1) {
 			throw runtime_error("incorrect number of arguments");
@@ -44,18 +54,18 @@ void RandomRect::loadJson(Json::Value& rdata, SpriteSheet* sheet)
 		for (int f = 0; f < rdata.size(); f += 2) {
 			rectData = sheet->spr(rdata[f].asString());
 			if (rectData == nullptr) {
-				throw runtime_error("couldn't find tile sprite");
+				throw runtime_error("couldn't find sprite");
 			}
 			int prob = clamp(rdata[f + 1].asInt(), 0, 100);
 			probTotal += prob;
 			rect.emplace(make_pair(clamp(rdata[f + 1].asInt(), 0, 100), *rectData));
 		}
 	}
-	else {
+	else { // A single rect, drawn 100% of the time
 		active = false;
 		rectData = sheet->spr(rdata.asString());
 		if (rectData == nullptr) {
-			throw runtime_error("couldn't find tile sprite");
+			throw runtime_error("couldn't find sprite");
 		}
 		rect.emplace(make_pair(100, *rectData));
 		probTotal = 100;
@@ -66,11 +76,18 @@ bool RandomRect::empty()
 	return rect.empty();
 }
 
+
 const sf::Color TileFeatureS::fade = { 255, 255, 255, 64 };
+const sf::Texture* TileFeatureS::tex = nullptr;
 
 const TileFeatureS& TileFeatureS::get(int t)
 {
 	return *feature[t];
+}
+
+const sf::Texture& TileFeatureS::getTexture()
+{
+	return *tex;
 }
 
 const TileFeatureS& TileFeatureS::get(string t)
@@ -102,8 +119,13 @@ void TileFeatureS::loadJson(string filename)
 		cerr << "\t(requested by \"" << filename << "\")\n";
 		return;
 	}
-	const char* posNames[] = { "pos", "posHalf", "posQuart" };
-	const char* rectNames[] = { "rect", "rectHalf", "rectQuart" };
+	tex = RESOURCE.tex(sheet->getImageName());
+	if (tex == nullptr) {
+		cerr << "\t(requested by \"" << filename << "\")\n";
+		return;
+	}
+	const char* posNames[] = { "posFull", "posHalf", "posQuart" };
+	const char* rectNames[] = { "rectFull", "rectHalf", "rectQuart" };
 	// Cycle through defined feature types; make sure to skip f_null!
 	for (int a = 1; a < TileFeatureS::FEATURE_NUM; a++) {
 		auto& feat = TileFeatureS::feature[a];
