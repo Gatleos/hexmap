@@ -579,12 +579,12 @@ MapUnit* HexMap::addMapUnit(const MapEntityS* sEnt, Faction* parent)
 
 void HexMap::update(const sf::Time& timeElapsed)
 {
-	for (auto& u : units) {
-		u.second.handlers_[zoomLevel].updateAnimation(timeElapsed);
-		u.second.update(timeElapsed);
-	}
-	for (auto& s : sites) {
-		s.second.handlers_[zoomLevel].updateAnimation(timeElapsed);
-		s.second.update(timeElapsed);
+	for (int h = drawingBounds.top; h <= drawingBounds.height; h++) {
+		for (int w = drawingBounds.left; w <= drawingBounds.width; w++) {
+			auto& hex = hexes_(w, h);
+			if (hex.ent != nullptr) {
+				hex.ent->handlers_[zoomLevel].updateAnimation(timeElapsed);
+			}
+		}
 	}
 }

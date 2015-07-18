@@ -132,10 +132,11 @@ MapEntity::MapEntity(const MapEntityS* sEnt, Faction* parent)
 	}
 }
 
-void MapEntity::setAnimation(MapEntityS::anim num)
+void MapEntity::setAnimationType(MapEntityS::anim num)
 {	
 	for (int i = 0; i < ZOOM_LEVELS; i++) {
 		handlers_[i].setAnimation(mes->animNames_[i][num]);
+		handlers_[i].randomFrame(rng::r);
 	}
 }
 

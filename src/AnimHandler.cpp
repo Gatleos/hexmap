@@ -93,4 +93,5 @@ void AnimHandler::randomFrame(std::mt19937& urng)
 	int num = currentAnim->frameChance(urng);
 	currentFrame = &currentAnim->frames[num];
 	cframe = num;
+	ctime = rng::getInt(currentFrame->delay, urng);
 }

@@ -56,7 +56,7 @@ protected:
 	Faction* faction;
 public:
 	MapEntity(const MapEntityS* sEnt, Faction* parent);
-	void setAnimation(MapEntityS::anim num);
+	void setAnimationType(MapEntityS::anim num);
 	vector<Population> pops;
 	void setParentMap(HexMap* hmSet);
 	bool initMapPos(sf::Vector2i axialCoord);
