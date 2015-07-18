@@ -1,7 +1,7 @@
 #include <sstream>
 #include <iostream>
 #include <queue>
-#include "json.h"
+#include "config.h"
 #include "HexTile.h"
 #include "HexMap.h"
 #include "lerp.h"

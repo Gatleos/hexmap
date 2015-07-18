@@ -1,6 +1,6 @@
 #include <iostream>
 #include "Site.h"
-#include "json.h"
+#include "config.h"
 #include "ResourceLoader.h"
 
 using namespace std;

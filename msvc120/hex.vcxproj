@@ -24,7 +24,7 @@
     <ClInclude Include="..\src\compat.h" />
     <ClInclude Include="..\src\HexMap.h" />
     <ClInclude Include="..\src\HexTile.h" />
-    <ClInclude Include="..\src\json.h" />
+    <ClInclude Include="..\src\config.h" />
     <ClInclude Include="..\src\lerp.h" />
     <ClInclude Include="..\src\MapEntity.h" />
     <ClInclude Include="..\src\rng.h" />
@@ -46,11 +46,10 @@
     <ClCompile Include="..\jsoncpp\src\jsoncpp.cpp" />
     <ClCompile Include="..\pugixml\src\pugixml.cpp" />
     <ClCompile Include="..\src\AnimHandler.cpp" />
-    <ClCompile Include="..\src\config.cpp" />
     <ClCompile Include="..\src\EngineState.cpp" />
     <ClCompile Include="..\src\HexMapGen.cpp" />
     <ClCompile Include="..\src\HexTile.cpp" />
-    <ClCompile Include="..\src\json.cpp" />
+    <ClCompile Include="..\src\config.cpp" />
     <ClCompile Include="..\src\lerp.cpp" />
     <ClCompile Include="..\src\HexMap.cpp" />
     <ClCompile Include="..\src\main.cpp" />

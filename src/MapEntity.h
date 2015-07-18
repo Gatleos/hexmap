@@ -6,7 +6,7 @@
 #include <array>
 #include "Faction.h"
 #include "Species.h"
-#include "json.h"
+#include "config.h"
 
 class HexMap;
 

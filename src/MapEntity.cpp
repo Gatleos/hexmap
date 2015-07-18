@@ -3,7 +3,7 @@
 #include "MapEntity.h"
 #include "HexMap.h"
 #include "clamp.h"
-#include "json.h"
+#include "config.h"
 
 const array<string, MapEntityS::ANIM_NUM> MapEntityS::animTypes = { {
 		"idle"
@@ -105,9 +105,8 @@ void MapEntityS::loadEntityJson(Json::Value& edata, string& element, string id)
 	name_ = edata.get(element, "").asString();
 	// anims
 	const sf::FloatRect* rectData = nullptr;
-	const char* zoomNames[ZOOM_LEVELS] = { "full", "half", "quart" };
 	for (int i = 0; i < ZOOM_LEVELS; i++) {
-		element = zoomNames[i];
+		element = config::rectNames[i];
 		auto anims = edata.get(element, Json::Value::null);
 		element = "animFile";
 		animData_[i] = RESOURCE.anim(anims.get("animFile", Json::Value::null).asString());

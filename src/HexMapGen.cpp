@@ -5,7 +5,7 @@
 #include "simplexnoise.h"
 #include "clamp.h"
 #include "BezierCurve.h"
-#include "json.h"
+#include "config.h"
 #include "rng.h"
 
 void HexMap::generateBiomes(mt19937& urng)
@@ -28,10 +28,10 @@ void HexMap::generateBiomes(mt19937& urng)
 		for (int q = 0, qoff = (int)-floor(r / 2.0); q < mapSize_.x; q++, qoff++) {
 			hexPos = { q, r };
 			p = { qoff + r * 0.5f, (float)r };
-			heightVal = scaled_octave_noise_2d(config::heightParams[0], config::heightParams[1], config::heightParams[2], 0.0f, 255.0f, p.x + offsetHeight.x, p.y + offsetHeight.y);
-			tempVal = scaled_octave_noise_2d(config::tempParams[0], config::tempParams[1], config::tempParams[2], 96.0f, 160.0f, p.x + offsetTemperature.x, p.y + offsetTemperature.y);
-			moistVal = scaled_octave_noise_2d(config::moistParams[0], config::moistParams[1], config::moistParams[2], 0.0f, 255.0f, p.x + offsetMoisture.x, p.y + offsetMoisture.y);
-			drainVal = scaled_octave_noise_2d(config::drainParams[0], config::drainParams[1], config::drainParams[2], 0.0f, 255.0f, p.x + offsetDrainage.x, p.y + offsetDrainage.y);
+			heightVal = scaled_octave_noise_2d(config::gen::heightParams[0], config::gen::heightParams[1], config::gen::heightParams[2], 0.0f, 255.0f, p.x + offsetHeight.x, p.y + offsetHeight.y);
+			tempVal = scaled_octave_noise_2d(config::gen::tempParams[0], config::gen::tempParams[1], config::gen::tempParams[2], 96.0f, 160.0f, p.x + offsetTemperature.x, p.y + offsetTemperature.y);
+			moistVal = scaled_octave_noise_2d(config::gen::moistParams[0], config::gen::moistParams[1], config::gen::moistParams[2], 0.0f, 255.0f, p.x + offsetMoisture.x, p.y + offsetMoisture.y);
+			drainVal = scaled_octave_noise_2d(config::gen::drainParams[0], config::gen::drainParams[1], config::gen::drainParams[2], 0.0f, 255.0f, p.x + offsetDrainage.x, p.y + offsetDrainage.y);
 			switch (0) { // fix
 			case 0:
 				tempVal += (r - 64) * 1.5f;
@@ -52,12 +52,12 @@ void HexMap::generateBiomes(mt19937& urng)
 			}
 			else {
 				colorIndex = (int)heightVal - SEA_LEVEL;
-				if (tempVal < config::cold) {
-					if (moistVal >= config::forest[0]) {
-						if (moistVal >= config::forest[2]) {
+				if (tempVal < config::gen::cold) {
+					if (moistVal >= config::gen::forest[0]) {
+						if (moistVal >= config::gen::forest[2]) {
 							type = &HexTileS::get(HexTileS::TAIGA_L);
 						}
-						else if (moistVal >= config::forest[1]) {
+						else if (moistVal >= config::gen::forest[1]) {
 							type = &HexTileS::get(HexTileS::TAIGA_M);
 						}
 						else {
@@ -68,13 +68,13 @@ void HexMap::generateBiomes(mt19937& urng)
 						type = &HexTileS::get(HexTileS::TUNDRA);
 					}
 				}
-				else if (tempVal < config::hot) {
-					if (moistVal >= config::forest[0]) {
-						if (drainVal >= config::swamp) {
-							if (moistVal >= config::forest[2]) {
+				else if (tempVal < config::gen::hot) {
+					if (moistVal >= config::gen::forest[0]) {
+						if (drainVal >= config::gen::swamp) {
+							if (moistVal >= config::gen::forest[2]) {
 								type = &HexTileS::get(HexTileS::FOREST_L);
 							}
-							else if (moistVal >= config::forest[1]) {
+							else if (moistVal >= config::gen::forest[1]) {
 								type = &HexTileS::get(HexTileS::FOREST_M);
 							}
 							else {
@@ -85,11 +85,11 @@ void HexMap::generateBiomes(mt19937& urng)
 							type = &HexTileS::get(HexTileS::SWAMP);
 						}
 					}
-					else if (moistVal >= config::desert) {
+					else if (moistVal >= config::gen::desert) {
 						type = &HexTileS::get(HexTileS::GRASSLAND);
 					}
 					else {
-						if (drainVal >= config::sand) {
+						if (drainVal >= config::gen::sand) {
 							type = &HexTileS::get(HexTileS::SEMIARID);
 						}
 						else {
@@ -98,12 +98,12 @@ void HexMap::generateBiomes(mt19937& urng)
 					}
 				}
 				else {
-					if (moistVal >= config::forest[0]) {
-						if (drainVal >= config::swamp) {
-							if (moistVal >= config::forest[2]) {
+					if (moistVal >= config::gen::forest[0]) {
+						if (drainVal >= config::gen::swamp) {
+							if (moistVal >= config::gen::forest[2]) {
 								type = &HexTileS::get(HexTileS::JUNGLE_L);
 							}
-							else if (moistVal >= config::forest[1]) {
+							else if (moistVal >= config::gen::forest[1]) {
 								type = &HexTileS::get(HexTileS::JUNGLE_M);
 							}
 							else {
@@ -114,11 +114,11 @@ void HexMap::generateBiomes(mt19937& urng)
 							type = &HexTileS::get(HexTileS::SWAMP);
 						}
 					}
-					else if (moistVal >= config::desert) {
+					else if (moistVal >= config::gen::desert) {
 						type = &HexTileS::get(HexTileS::SAVANNA);
 					}
 					else {
-						if (drainVal >= config::sand) {
+						if (drainVal >= config::gen::sand) {
 							type = &HexTileS::get(HexTileS::SEMIARID);
 						}
 						else {

@@ -8,7 +8,7 @@
 #include "simplexnoise.h"
 #include "clamp.h"
 #include "lerp.h"
-#include "json.h"
+#include "config.h"
 #include "BezierCurve.h"
 #include "ResourceLoader.h"
 #include "MapEntity.h"
@@ -95,10 +95,11 @@ void EngineState::init()
 	// Entities
 	//uniform_int_distribution<int> size(0, 127);
 	//auto* f = hg.addFaction();
-	//for (int x = 0; x < 10000; x++) {
-	//	sf::Vector2i pos = { size(rng::r), size(rng::r) };
+	//for (int x = 0; x < 16384; x++) {
+	//	sf::Vector2i pos = { x % 128, x / 128 };
 	//	auto* s = hg.addSite(SiteS::get("si_castle"), f);
 	//	s->initMapPos(HexMap::offsetToAxial(pos));
+	//	s->setAnimationType(MapEntityS::anim::IDLE);
 	//}
 }
 void EngineState::end()
@@ -269,7 +270,7 @@ void EngineState::generate()
 	customSeed.seed(hexSeed);
 	sf::Clock mtClock;
 	hg.generateBiomes(customSeed);
-	for (int a = 0; a < config::mountNum; a++) {
+	for (int a = 0; a < config::gen::mountNum; a++) {
 		hg.generateMountainRange(customSeed);
 	}
 	sf::Time mtTime = mtClock.getElapsedTime();
@@ -292,7 +293,7 @@ void EngineState::loadResourcesInPlace()
 	customSeed.seed(hexSeed);
 	sf::Clock mtClock;
 	hg.generateBiomes(customSeed);
-	for (int a = 0; a < config::mountNum; a++) {
+	for (int a = 0; a < config::gen::mountNum; a++) {
 		hg.generateMountainRange(customSeed);
 	}
 	sf::Time mtTime = mtClock.getElapsedTime();

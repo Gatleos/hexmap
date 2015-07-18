@@ -1,6 +1,6 @@
 #include <iostream>
 #include <functional>
-#include "json.h"
+#include "config.h"
 #include "TileFeature.h"
 #include "clamp.h"
 #include "HexMap.h"
@@ -104,7 +104,7 @@ bool RandomRect::empty()
 }
 
 
-const sf::Color TileFeatureS::fade = { 255, 255, 255, 64 };
+const sf::Color TileFeatureS::fade = { 255, 255, 255, 100 };
 const sf::Texture* TileFeatureS::tex = nullptr;
 
 const TileFeatureS& TileFeatureS::get(int t)

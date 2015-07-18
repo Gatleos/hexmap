@@ -1,6 +1,6 @@
 #include <iostream>
 #include "Species.h"
-#include "json.h"
+#include "config.h"
 #include "ResourceLoader.h"
 #include "MapEntity.h"
 
