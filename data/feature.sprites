@@ -15,8 +15,12 @@
         <dir name="full">
           <spr name="mountain1" x="189" y="23" w="62" h="87"/>
         </dir>
-        <dir name="half"/>
-        <dir name="quarter"/>
+        <dir name="half">
+          <spr name="mountain1" x="258" y="25" w="30" h="41"/>
+        </dir>
+        <dir name="quarter">
+          <spr name="mountain1" x="263" y="70" w="18" h="23"/>
+        </dir>
       </dir>
     </dir>
   </definitions>

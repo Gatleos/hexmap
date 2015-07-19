@@ -5,6 +5,12 @@
 		"name": "Mountain",
 		"full": [
 			[1, "/mountains/full/mountain1", 1, -14]
+		],
+		"half": [
+			[1, "/mountains/half/mountain1", 1, -6]
+		],
+		"quarter": [
+			[1, "/mountains/quarter/mountain1", 1, -2]
 		]
 	},
 	"f_forest_s": {
