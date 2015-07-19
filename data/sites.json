@@ -2,14 +2,14 @@
 	"si_castle": {
 		"name": "Castle",
 		"full": {
-			"animFile": "castle.anim",
-			"idle": "full"
+			"animFile": "monsters.anim",
+			"idle": "Eye"
 		},
 		"half": {
 			"animFile": "castle.anim",
 			"idle": "half"
 		},
-		"quart": {
+		"quarter": {
 			"animFile": "castle.anim",
 			"idle": "quart"
 		}

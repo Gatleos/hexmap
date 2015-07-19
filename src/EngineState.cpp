@@ -93,7 +93,6 @@ void EngineState::init()
 	hg.setAllTiles(HexTileS::get(HexTileS::OCEAN), rng::r);
 	hg.calculateViewArea(mapView);
 	// Entities
-	//uniform_int_distribution<int> size(0, 127);
 	//auto* f = hg.addFaction();
 	//for (int x = 0; x < 16384; x++) {
 	//	sf::Vector2i pos = { x % 128, x / 128 };

@@ -15,7 +15,9 @@ namespace config {
 	extern std::array<const char*, 6> roadTypes;
 	extern const array<const char*, ZOOM_LEVELS> rectNames;
 	extern const array<const char*, ZOOM_LEVELS> featureNames;
+	extern const vector<string> bindings;
 	// keys
+	void loadKeyJson(std::string file);
 	bool key(sf::Event& e, std::string binding);
 	// map generation
 	namespace gen {
