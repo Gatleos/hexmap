@@ -47,7 +47,6 @@ class HexMap : public sf::Drawable, public sf::Transformable
 	static sf::Vector2f hexAdvance_[3];
 	static sf::Vector2f mapOrigin_[3];
 	sf::Vector2f hexExtent_[3];
-	sf::Texture* tex_;
 	sf::IntRect drawingBounds;
 	sf::IntRect chunkDrawingBounds;
 	// Properties
@@ -130,8 +129,6 @@ public:
 	// The amount that a hex tile's center is offset from the previous one;
 	// use this one to measure screen space in hexes, not hexSize!
 	const sf::Vector2f getHexAdvance();
-	// Texture used to draw hex tiles
-	void setTexture(sf::Texture& tex);
 	void setTile(sf::Vector2i offsetPos, const HexTileS& hts, mt19937& urng);
 	void setAllTiles(const HexTileS& hts, mt19937& urng);
 	void setTileColor(sf::Vector2i offsetPos, sf::Color col);

@@ -45,7 +45,6 @@ sf::Vector2f roundvf(sf::Vector2f p)
 }
 
 HexMap::HexMap() :
-tex_(nullptr),
 activeBgVertices_(&bgVertices_[0]),
 nextUnitId(0),
 nextSiteId(0)
@@ -403,10 +402,6 @@ void HexMap::setAllTiles(const HexTileS& hts, mt19937& urng)
 		}
 	}
 }
-void HexMap::setTexture(sf::Texture& tex)
-{
-	tex_ = &tex;
-}
 void HexMap::setTile(sf::Vector2i offsetPos, const HexTileS& hts, mt19937& urng)
 {
 	auto& hex = hexes_(offsetPos.x, offsetPos.y);
@@ -481,7 +476,8 @@ void HexMap::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	states.texture = &HexTileS::getTexture();
 	for (int h = chunkDrawingBounds.top; h <= chunkDrawingBounds.height; h++) {
 		for (int w = chunkDrawingBounds.left; w <= chunkDrawingBounds.width; w++) {
-			target.draw((*activeBgVertices_)(w, h), states);
+			auto& m = (*activeBgVertices_)(w, h);
+			target.draw(m, states);
 		}
 	}
 	for (int h = drawingBounds.top; h <= drawingBounds.height; h++) {
