@@ -9,9 +9,6 @@
 array<const char*, 6> config::roadTypes = { "r_e", "r_ne", "r_nw", "r_w", "r_sw", "r_se" };
 const array<const char*, ZOOM_LEVELS> config::rectNames = { "full", "half", "quarter" };
 const array<const char*, ZOOM_LEVELS> config::featureNames = { "featureFull", "featureHalf", "featureQuarter" };
-extern const vector<string> config::bindings = {
-
-};
 
 Json::Value config::openJson(string file) {
 	Json::Value root;
@@ -33,25 +30,8 @@ void config::loadAllJson() {
 	HexTileS::loadJson("data/terrain.json");
 	Species::loadJson("data/species.json");
 	SiteS::loadJson("data/sites.json");
+	config::loadKeyJson("data/keybindings.json");
 	cerr << "------------\nParsing Done\n\n";
-}
-
-// keys.json
-
-void config::loadKeyJson(std::string file)
-{
-	Json::Value root = openJson(file);
-	for (auto& b : bindings) {
-		auto& k = root.get(b, Json::Value::null);
-		if (k.isNull()) {
-			cerr << "ERROR: couldn't find key binding for \"" << b << "\"\n";
-			continue;
-		}
-	}
-}
-
-bool config::key(sf::Event& e, std::string binding) {
-	return true;
 }
 
 // config.json

@@ -50,6 +50,7 @@
     <ClCompile Include="..\src\HexMapGen.cpp" />
     <ClCompile Include="..\src\HexTile.cpp" />
     <ClCompile Include="..\src\config.cpp" />
+    <ClCompile Include="..\src\KeyBindings.cpp" />
     <ClCompile Include="..\src\lerp.cpp" />
     <ClCompile Include="..\src\HexMap.cpp" />
     <ClCompile Include="..\src\main.cpp" />

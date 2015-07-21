@@ -105,6 +105,9 @@
     <ClCompile Include="..\src\config.cpp">
       <Filter>json</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\KeyBindings.cpp">
+      <Filter>json</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="utility">

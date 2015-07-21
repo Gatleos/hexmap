@@ -199,44 +199,6 @@ void EngineState::input(sf::Event &e)
 	else if (e.type == sf::Event::MouseLeft) {
 		mButtonPressed = false;
 	}
-	else if (e.type == sf::Event::KeyReleased) {
-		if (e.key.code == sf::Keyboard::Left ||
-			e.key.code == sf::Keyboard::Right ||
-			e.key.code == sf::Keyboard::A ||
-			e.key.code == sf::Keyboard::D) {
-			camDeltaX = 0;
-		}
-		else if (e.key.code == sf::Keyboard::Up ||
-			e.key.code == sf::Keyboard::Down ||
-			e.key.code == sf::Keyboard::W ||
-			e.key.code == sf::Keyboard::S) {
-			camDeltaY = 0;
-		}
-	}
-	else if (e.type == sf::Event::KeyPressed) {
-		if (e.key.code == sf::Keyboard::Num1) {
-		}
-		else if (e.key.code == sf::Keyboard::Num2) {
-		}
-		else if (e.key.code == sf::Keyboard::Left || e.key.code == sf::Keyboard::A) {
-			camDeltaX = -1;
-		}
-		else if (e.key.code == sf::Keyboard::Right || e.key.code == sf::Keyboard::D) {
-			camDeltaX = 1;
-		}
-		else if (e.key.code == sf::Keyboard::Up || e.key.code == sf::Keyboard::W) {
-			camDeltaY = -1;
-		}
-		else if (e.key.code == sf::Keyboard::Down || e.key.code == sf::Keyboard::S) {
-			camDeltaY = 1;
-		}
-		else if (e.key.code == sf::Keyboard::BackSpace) {
-			timeDisplay = !timeDisplay;
-		}
-		else if (e.key.code == sf::Keyboard::Return) {
-			generate();
-		}
-	}
 	else if (e.type == sf::Event::Resized)
 	{
 		mapView.setSize(sf::Vector2f((float)e.size.width, (float)e.size.height));
@@ -244,11 +206,35 @@ void EngineState::input(sf::Event &e)
 		uiView.setSize(sf::Vector2f(roundf((float)e.size.width), roundf((float)e.size.height)));
 		uiView.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
 		uiView.setCenter(uiView.getSize() / 2.0f);
-		miniMapView = mapView;
-		miniMapView.setViewport(sf::FloatRect(0.9f, 0.9f, 1.0f, 1.0f));
 		//
 		hg.constrainView(mapView);
 		hg.calculateViewArea(mapView);
+	}
+	else {
+		if (config::pressed(e, "scroll_left")) {
+			camDeltaX = -1;
+		}
+		else if (config::pressed(e, "scroll_right")) {
+			camDeltaX = 1;
+		}
+		else if (config::pressed(e, "scroll_up")) {
+			camDeltaY = -1;
+		}
+		else if (config::pressed(e, "scroll_down")) {
+			camDeltaY = 1;
+		}
+		else if (config::released(e, "scroll_left") || config::released(e, "scroll_right")) {
+			camDeltaX = 0;
+		}
+		else if (config::released(e, "scroll_up") || config::released(e, "scroll_down")) {
+			camDeltaY = 0;
+		}
+		else if (e.key.code == sf::Keyboard::BackSpace) {
+			timeDisplay = !timeDisplay;
+		}
+		else if (e.key.code == sf::Keyboard::Return) {
+			generate();
+		}
 	}
 }
 

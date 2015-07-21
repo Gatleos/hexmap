@@ -1,0 +1,6 @@
+{
+	"scroll_left": ["Key", "Left", "Key", "A"],
+	"scroll_right": ["Key", "Right", "Key", "D"],
+	"scroll_up": ["Key", "Up", "Key", "W"],
+	"scroll_down": ["Key", "Down", "Key", "S"]
+}

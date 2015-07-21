@@ -1,5 +1,5 @@
-#ifndef JSON_H
-#define JSON_H
+#ifndef CONFIG_H
+#define CONFIG_H
 
 #include <array>
 #ifdef _WIN32
@@ -15,10 +15,18 @@ namespace config {
 	extern std::array<const char*, 6> roadTypes;
 	extern const array<const char*, ZOOM_LEVELS> rectNames;
 	extern const array<const char*, ZOOM_LEVELS> featureNames;
-	extern const vector<string> bindings;
 	// keys
+	extern const map<string, sf::Keyboard::Key> keyNames;
+	struct KeyBinding {
+		sf::Event::EventType typePress;
+		sf::Event::EventType typeRelease;
+		vector<int> keys;
+	};
 	void loadKeyJson(std::string file);
-	bool key(sf::Event& e, std::string binding);
+	bool pressed(sf::Event& e, std::string binding);
+	bool released(sf::Event& e, std::string binding);
+	const char *getMouseButtonName(const sf::Mouse::Button button);
+	const char *getKeyName(const sf::Keyboard::Key key);
 	// map generation
 	namespace gen {
 		extern float heightParams[3];
