@@ -86,7 +86,7 @@ void EngineState::init()
 	uiView = mapView;
 	// Resources
 	config::load();
-	RESOURCE.setRoot("data/");
+	RESOURCE.setRoot("data/sprites/");
 	config::loadAllJson();
 	// Set up map
 	hg.init(MAPX, MAPY);
