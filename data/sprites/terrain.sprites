@@ -7,7 +7,7 @@
         <dir name="full">
           <spr name="blank" x="0" y="0" w="64" h="74"/>
           <spr name="ocean" x="65" y="0" w="64" h="74"/>
-          <spr name="mountain" x="130" y="0" w="64" h="74"/>
+          <spr name="tundraSnow" x="130" y="0" w="64" h="74"/>
           <spr name="tundra" x="195" y="0" w="64" h="74"/>
           <spr name="grassland" x="260" y="0" w="64" h="74"/>
           <spr name="semiarid" x="325" y="0" w="64" h="74"/>
@@ -19,11 +19,12 @@
           <spr name="swampPlant" x="260" y="75" w="64" h="74"/>
           <spr name="savanna" x="325" y="75" w="64" h="74"/>
           <spr name="savannaTree" x="390" y="75" w="64" h="74"/>
+          <spr name="taigaSnow" x="0" y="150" w="64" h="74"/>
         </dir>
         <dir name="half">
           <spr name="blank" x="0" y="299" w="32" h="36"/>
           <spr name="ocean" x="33" y="299" w="32" h="36"/>
-          <spr name="mountain" x="66" y="299" w="32" h="36"/>
+          <spr name="tundraSnow" x="66" y="299" w="32" h="36"/>
           <spr name="tundra" x="99" y="299" w="32" h="36"/>
           <spr name="grassland" x="132" y="299" w="32" h="36"/>
           <spr name="semiarid" x="165" y="299" w="32" h="36"/>
@@ -35,11 +36,12 @@
           <spr name="swampPlant" x="363" y="299" w="32" h="36"/>
           <spr name="savanna" x="396" y="299" w="32" h="36"/>
           <spr name="savannaTree" x="0" y="336" w="32" h="36"/>
+          <spr name="taigaSnow" x="33" y="336" w="32" h="36"/>
         </dir>
         <dir name="quarter">
           <spr name="blank" x="0" y="373" w="20" h="22"/>
           <spr name="ocean" x="21" y="373" w="20" h="22"/>
-          <spr name="mountain" x="42" y="373" w="20" h="22"/>
+          <spr name="tundraSnow" x="42" y="373" w="20" h="22"/>
           <spr name="tundra" x="63" y="373" w="20" h="22"/>
           <spr name="grassland" x="84" y="373" w="20" h="22"/>
           <spr name="semiarid" x="105" y="373" w="20" h="22"/>
@@ -51,6 +53,7 @@
           <spr name="swampPlant" x="231" y="373" w="20" h="22"/>
           <spr name="savanna" x="252" y="373" w="20" h="22"/>
           <spr name="savannaTree" x="273" y="373" w="20" h="22"/>
+          <spr name="taigaSnow" x="294" y="373" w="20" h="22"/>
         </dir>
       </dir>
       <dir name="roads">
