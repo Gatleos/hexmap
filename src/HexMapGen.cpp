@@ -54,18 +54,36 @@ void HexMap::generateBiomes(mt19937& urng)
 				colorIndex = (int)heightVal - SEA_LEVEL;
 				if (tempVal < config::gen::cold) {
 					if (moistVal >= config::gen::forest[0]) {
-						if (moistVal >= config::gen::forest[2]) {
-							type = &HexTileS::get(HexTileS::TAIGA_L);
-						}
-						else if (moistVal >= config::gen::forest[1]) {
-							type = &HexTileS::get(HexTileS::TAIGA_M);
+						if (tempVal < 50.0f) {
+							if (moistVal >= config::gen::forest[2]) {
+								type = &HexTileS::get(HexTileS::TAIGA_SNOW_L);
+							}
+							else if (moistVal >= config::gen::forest[1]) {
+								type = &HexTileS::get(HexTileS::TAIGA_SNOW_M);
+							}
+							else {
+								type = &HexTileS::get(HexTileS::TAIGA_SNOW_S);
+							}
 						}
 						else {
-							type = &HexTileS::get(HexTileS::TAIGA_S);
+							if (moistVal >= config::gen::forest[2]) {
+								type = &HexTileS::get(HexTileS::TAIGA_L);
+							}
+							else if (moistVal >= config::gen::forest[1]) {
+								type = &HexTileS::get(HexTileS::TAIGA_M);
+							}
+							else {
+								type = &HexTileS::get(HexTileS::TAIGA_S);
+							}
 						}
 					}
 					else {
-						type = &HexTileS::get(HexTileS::TUNDRA);
+						if (tempVal < 50.0f) {
+							type = &HexTileS::get(HexTileS::TUNDRA_SNOW);
+						}
+						else {
+							type = &HexTileS::get(HexTileS::TUNDRA);
+						}
 					}
 				}
 				else if (tempVal < config::gen::hot) {

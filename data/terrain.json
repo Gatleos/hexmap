@@ -1,6 +1,32 @@
 {
 	"spriteSheet": "terrain.sprites",
 	
+	"t_tundra": {
+		"name": "Tundra",
+		"full": [
+			[1, "/tiles/full/tundra", 0, 0]
+		],
+		"half": [
+			[1, "/tiles/half/tundra", 0, 0]
+		],
+		"quarter": [
+			[1, "/tiles/quarter/tundra", 0, 0]
+		],
+		"townChance": 1.0
+	},
+	"t_tundra_snow": {
+		"name": "Tundra",
+		"full": [
+			[1, "/tiles/full/tundraSnow", 0, 0]
+		],
+		"half": [
+			[1, "/tiles/half/tundraSnow", 0, 0]
+		],
+		"quarter": [
+			[1, "/tiles/quarter/tundraSnow", 0, 0]
+		],
+		"townChance": 1.0
+	},
 	"t_ocean": {
 		"name": "Ocean",
 		"full": [
@@ -61,17 +87,46 @@
 		"feature": "f_taiga_l",
 		"townChance": 1.0
 	},
-	"t_tundra": {
-		"name": "Tundra",
+	"t_taiga_snow_s": {
+		"name": "Taiga",
 		"full": [
-			[1, "/tiles/full/tundra", 0, 0]
+			[1, "/tiles/full/taigaSnow", 0, 0]
 		],
 		"half": [
-			[1, "/tiles/half/tundra", 0, 0]
+			[1, "/tiles/half/taigaSnow", 0, 0]
 		],
 		"quarter": [
-			[1, "/tiles/quarter/tundra", 0, 0]
+			[1, "/tiles/quarter/taigaSnow", 0, 0]
 		],
+		"feature": "f_taiga_s",
+		"townChance": 1.0
+	},
+	"t_taiga_snow_m": {
+		"name": "Taiga",
+		"full": [
+			[1, "/tiles/full/taigaSnow", 0, 0]
+		],
+		"half": [
+			[1, "/tiles/half/taigaSnow", 0, 0]
+		],
+		"quarter": [
+			[1, "/tiles/quarter/taigaSnow", 0, 0]
+		],
+		"feature": "f_taiga_m",
+		"townChance": 1.0
+	},
+	"t_taiga_snow_l": {
+		"name": "Taiga",
+		"full": [
+			[1, "/tiles/full/taigaSnow", 0, 0]
+		],
+		"half": [
+			[1, "/tiles/half/taigaSnow", 0, 0]
+		],
+		"quarter": [
+			[1, "/tiles/quarter/taigaSnow", 0, 0]
+		],
+		"feature": "f_taiga_l",
 		"townChance": 1.0
 	},
 	"t_forest_s": {

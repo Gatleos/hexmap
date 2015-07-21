@@ -13,8 +13,9 @@ const int HEIGHT_LIMIT = 256;
 #define terptr(x) unique_ptr<HexTileS>(new HexTileS(x))
 
 array<unique_ptr<HexTileS>, HexTileS::TERRAIN_NUM> HexTileS::terrain = { {
-	terptr("t_null"), terptr("t_ocean"), terptr("t_tundra"), terptr("t_taiga_s"),
-	terptr("t_taiga_m"), terptr("t_taiga_l"), terptr("t_forest_s"), terptr("t_forest_m"),
+	terptr("t_null"), terptr("t_ocean"), terptr("t_tundra"), terptr("t_tundra_snow"),
+	terptr("t_taiga_s"), terptr("t_taiga_m"), terptr("t_taiga_l"), terptr("t_taiga_snow_s"),
+	terptr("t_taiga_snow_m"), terptr("t_taiga_snow_l"), terptr("t_forest_s"), terptr("t_forest_m"),
 	terptr("t_forest_l"), terptr("t_grassland"), terptr("t_semiarid"), terptr("t_jungle_s"),
 	terptr("t_jungle_m"), terptr("t_jungle_l"), terptr("t_savanna"), terptr("t_desert"), terptr("t_swamp")
 	} };
@@ -81,7 +82,7 @@ void HexTileS::loadJson(string filename)
 				hex->tiles[i].loadJson(rectData, sheet, HexMap::getHexSize(i));
 				element = config::featureNames[i];
 				rectData = tdata.get(element, Json::Value::null);
-				// features are optional
+				// Features are optional
 				if (rectData.isString()) {
 					hex->features[i] = &TileFeatureS::get(rectData.asString());
 				}
