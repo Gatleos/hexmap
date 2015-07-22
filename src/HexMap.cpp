@@ -142,6 +142,11 @@ std::deque<sf::Vector2i>& HexMap::neighborsBounded(sf::Vector2i posAxial, std::d
 	return n;
 }
 
+const sf::Time& HexMap::getLifetime()
+{
+	return lifetime;
+}
+
 const sf::Vector2i& HexMap::getMapSize() const
 {
 	return mapSize_;
@@ -575,6 +580,7 @@ MapUnit* HexMap::addMapUnit(const MapEntityS* sEnt, Faction* parent)
 
 void HexMap::update(const sf::Time& timeElapsed)
 {
+	lifetime += timeElapsed;
 	for (int h = drawingBounds.top; h <= drawingBounds.height; h++) {
 		for (int w = drawingBounds.left; w <= drawingBounds.width; w++) {
 			auto& hex = hexes_(w, h);

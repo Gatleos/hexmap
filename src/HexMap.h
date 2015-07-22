@@ -46,14 +46,15 @@ class HexMap : public sf::Drawable, public sf::Transformable
 	static sf::Vector2i hexSize_[3];
 	static sf::Vector2f hexAdvance_[3];
 	static sf::Vector2f mapOrigin_[3];
-	sf::Vector2f hexExtent_[3];
-	sf::IntRect drawingBounds;
-	sf::IntRect chunkDrawingBounds;
 	// Properties
 	sf::Vector2i mapSize_;
 	sf::Vector2i mapSizeChunks_;
+	sf::Vector2f hexExtent_[3];
+	sf::IntRect drawingBounds;
+	sf::IntRect chunkDrawingBounds;
 	// 0-2, 0 is the closest
 	int zoomLevel;
+	sf::Time lifetime;
 	// Contents
 	Array2D<HexTile> hexes_;
 	array<Array2D<sf::VertexArray>, ZOOM_LEVELS> bgVertices_;
@@ -98,7 +99,10 @@ public:
 	static const sf::Vector2f& getHexAdvance(int zoom);
 	static const sf::Vector2f& getMapOrigin(int zoom);
 	deque<sf::Vector2i>& neighborsBounded(sf::Vector2i posAxial, deque<sf::Vector2i>& n);
-	// Measurement
+	const sf::Time& getLifetime();
+	/////////////////
+	// Measurement //
+	/////////////////
 	// Round a floating point axial coordinate to the nearest hex
 	static sf::Vector2f roundHex(sf::Vector2f hex);
 	// Convert axial hex coordinate to local pixel coordinate
@@ -121,7 +125,9 @@ public:
 	// Retrieve hex based on coordinate (offset)
 	HexTile& getOffset(int x, int y);
 	void floodSelect(VectorSet& fill, int minHeight, int maxHeight);
-	// Drawing
+	/////////////
+	// Drawing //
+	/////////////
 	// 0-2, 0 is the closest
 	int getZoomLevel();
 	// 0-2, 0 is the closest
