@@ -229,10 +229,10 @@ void EngineState::input(sf::Event &e)
 		else if (config::released(e, "scroll_up") || config::released(e, "scroll_down")) {
 			camDeltaY = 0;
 		}
-		else if (e.key.code == sf::Keyboard::BackSpace) {
+		else if (config::pressed(e, "fps_display")) {
 			timeDisplay = !timeDisplay;
 		}
-		else if (e.key.code == sf::Keyboard::Return) {
+		else if (config::pressed(e, "generate")) {
 			generate();
 		}
 	}
