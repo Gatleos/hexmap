@@ -50,11 +50,6 @@ void Population::takePop(Population& p)
 	}
 }
 
-void MapEntity::setParentMap(HexMap* hmSet)
-{
-	hm = hmSet;
-}
-
 bool MapEntity::initMapPos(sf::Vector2i axialCoord)
 {
 	if (!hm->isAxialInBounds(axialCoord)) {
@@ -118,13 +113,16 @@ void MapEntityS::loadEntityJson(Json::Value& edata, string& element, string id)
 	}
 }
 
-MapEntity::MapEntity(const MapEntityS* sEnt, Faction* parent)
+MapEntity::MapEntity(const MapEntityS* sEnt, HexMap* hmSet, Faction* parent)
 {
 	mes = sEnt;
+	hm = hmSet;
+	faction = parent;
+	// Get animation data from associated MapEntityS
 	for (int i = 0; i < ZOOM_LEVELS; i++) {
 		handlers_[i].setAnimationData(*mes->animData_[i]);
 	}
-	faction = parent;
+	// Create space for creature populations
 	pops.reserve(Species::map.size());
 	for (auto& s : Species::map) {
 		pops.emplace_back(s.second);
@@ -140,7 +138,7 @@ void MapEntity::setAnimationType(MapEntityS::anim num)
 }
 
 
-MapUnit::MapUnit(const MapEntityS* sEnt, Faction* parent) :moveTimer(0), MapEntity(sEnt, parent){}
+MapUnit::MapUnit(const MapEntityS* sEnt, HexMap* hmSet, Faction* parent) :moveTimer(0), MapEntity(sEnt, hmSet, parent){}
 
 bool MapUnit::walkPath()
 {

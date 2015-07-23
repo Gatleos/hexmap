@@ -569,16 +569,14 @@ Faction* HexMap::addFaction()
 
 Site* HexMap::addSite(const SiteS* sSite, Faction* parent)
 {
-	auto& s = sites.emplace(nextSiteId, Site(sSite, parent)).first->second;
-	s.setParentMap(this);
+	auto& s = sites.emplace(nextSiteId, Site(sSite, this, parent)).first->second;
 	nextSiteId++;
 	return &s;
 }
 
 MapUnit* HexMap::addMapUnit(const MapEntityS* sEnt, Faction* parent)
 {
-	auto& u = units.emplace(nextUnitId, MapUnit(sEnt, parent)).first->second;
-	u.setParentMap(this);
+	auto& u = units.emplace(nextUnitId, MapUnit(sEnt, this, parent)).first->second;
 	nextUnitId++;
 	return &u;
 }

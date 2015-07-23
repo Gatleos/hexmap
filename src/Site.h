@@ -16,7 +16,7 @@ class Site : public MapEntity
 {
 public:
 	const SiteS* ss;
-	Site(const SiteS* sSite, Faction* parent);
+	Site(const SiteS* sSite, HexMap* hmSet, Faction* parent);
 	void update(const sf::Time& timeElapsed);
 };
 

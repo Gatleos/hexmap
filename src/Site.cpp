@@ -7,7 +7,7 @@ using namespace std;
 
 map<string, SiteS> SiteS::sites;
 
-Site::Site(const SiteS* sSite, Faction* parent) :MapEntity(sSite, parent){ ss = sSite; }
+Site::Site(const SiteS* sSite, HexMap* hmSet, Faction* parent) :MapEntity(sSite, hmSet, parent), ss(sSite){}
 
 void Site::update(const sf::Time& timeElapsed)
 {

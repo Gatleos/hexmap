@@ -55,10 +55,9 @@ protected:
 	HexMap* hm;
 	Faction* faction;
 public:
-	MapEntity(const MapEntityS* sEnt, Faction* parent);
+	MapEntity(const MapEntityS* sEnt, HexMap* hmSet, Faction* parent);
 	void setAnimationType(MapEntityS::anim num);
 	vector<Population> pops;
-	void setParentMap(HexMap* hmSet);
 	bool initMapPos(sf::Vector2i axialCoord);
 	bool setMapPos(sf::Vector2i axialCoord);
 	virtual void update(const sf::Time& timeElapsed) = 0;
@@ -69,11 +68,11 @@ public:
 // A map entity with added movement functions
 class MapUnit : public MapEntity
 {
-public:
 	// The unit's current movement path
 	std::deque<sf::Vector2i> path;
 	int moveTimer;
-	MapUnit(const MapEntityS* sEnt, Faction* parent);
+public:
+	MapUnit(const MapEntityS* sEnt, HexMap* hmSet, Faction* parent);
 	bool walkPath();
 	void setPath(sf::Vector2i dest);
 	void appendPath(sf::Vector2i dest);
