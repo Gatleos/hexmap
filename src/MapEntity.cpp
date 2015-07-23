@@ -1,3 +1,4 @@
+#include <iostream>
 #include "ResourceLoader.h"
 #include "Species.h"
 #include "MapEntity.h"
@@ -98,8 +99,17 @@ void MapEntityS::loadEntityJson(Json::Value& edata, string& element, string id)
 	for (int i = 0; i < ZOOM_LEVELS; i++) {
 		element = config::rectNames[i];
 		auto anims = edata.get(element, Json::Value::null);
+		if (anims.begin() == anims.end()) {
+			// Silently skip undefined animation, using default
+			animData_[i] = &AnimationData::defaultAnim;
+			continue;
+		}
 		element = "animFile";
 		animData_[i] = RESOURCE.anim(anims.get("animFile", Json::Value::null).asString());
+		if (animData_[i] == nullptr) {
+			std::cerr << "\t(requested by \""<< element << "\" in \"" << id_ << "\")\n";
+			continue;
+		}
 		for (int s = 0; s < ANIM_NUM; s++) {
 			element = animTypes[s];
 			const string* animName = &animTypes[s];

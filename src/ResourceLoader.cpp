@@ -84,25 +84,25 @@ const AnimationData* ResourceLoader::anim(string name)
 		if (animXml.begin() == animXml.end()) {
 			// Couldn't open .anim file!
 			std::cerr << "ERROR: couldn't load animation \"" << path << "\"\n";
-			return nullptr;
+			return &AnimationData::defaultAnim;
 		}
 		pugi::xml_node node = animXml.child("animations");
 		string sheetName = animXml.first_child().first_attribute().as_string();
 		const SpriteSheet* sheet = sh(sheetName);
 		if (sheet == nullptr) {
 			std::cerr << "\t(requested by \"" << path << "\")\n";
-			return nullptr;
+			return &AnimationData::defaultAnim;
 		}
 		AnimationData& aData = animations[name];
 		if (!loadAnimData(aData, animXml, sheet)) {
 			animations.erase(animations.find(name));
 			std::cerr << "\t(requested by \"" << path << "\")\n";
-			return nullptr;
+			return &AnimationData::defaultAnim;
 		}
 		const sf::Texture* texture = tex(sheet->imageName);
 		if (texture == nullptr) {
 			std::cerr << "\t(requested by \"" << path << "\")\n";
-			return nullptr;
+			return &AnimationData::defaultAnim;
 		}
 		aData.tx = texture;
 		return &aData;

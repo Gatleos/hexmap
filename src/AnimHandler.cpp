@@ -18,10 +18,27 @@ const std::string& SpriteSheet::getImageName()
 	return imageName;
 }
 
+
+const AnimationData AnimationData::defaultAnim(true);
+
+AnimationData::frame::frame() :
+delay(1),
+sprites(sf::PrimitiveType::Quads)
+{
+}
+
 AnimationData::anim::anim(int frameNum) :
 frames(frameNum),
-frameChance(0, frameNum - 1)
+frameChance(0, frameNum - 1),
+loops(0)
 {
+}
+
+AnimationData::AnimationData(bool dummy)
+{
+	if (dummy) {
+		animations.emplace(make_pair("", anim(1)));
+	}
 }
 
 const char* AnimationData::darkFunctionVersion()

@@ -22,15 +22,15 @@ void SiteS::loadJson(string filename)
 		return;
 	}
 	auto elementNames = root.getMemberNames();
-	for (string e : elementNames) {
-		SiteS& site = sites.insert(make_pair(e, SiteS())).first->second;
-		Json::Value sdata = root.get(e, Json::Value::null);
+	for (string eName : elementNames) {
+		SiteS& site = sites.insert(make_pair(eName, SiteS())).first->second;
+		Json::Value sdata = root.get(eName, Json::Value::null);
 		string element;
 		try {
-			site.loadEntityJson(sdata, element, e);
+			site.loadEntityJson(sdata, element, eName);
 		}
 		catch (runtime_error e) { // report the error with the name of the object and member
-			cerr << "[" << filename << ", " << site.id_ << ", " << element << "] " << e.what() << "\n";
+			cerr << "[" << filename << ", " << eName << ", " << element << "] " << e.what() << "\n";
 		}
 	}
 }

@@ -39,7 +39,7 @@ class AnimationData
 	{
 		int delay;
 		sf::VertexArray sprites;
-		frame() :sprites(sf::PrimitiveType::Quads){}
+		frame();
 	};
 	struct anim
 	{
@@ -56,6 +56,8 @@ class AnimationData
 	// List of all animations
 	std::map<std::string, anim> animations;
 public:
+	static const AnimationData defaultAnim;
+	AnimationData(bool dummy = false);
 	// Return the name of the spritesheet
 	std::string getSheetName();
 	// Get the texture this animation draws from
