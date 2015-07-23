@@ -27,6 +27,13 @@ void ResourceLoader::getSpriteRecursive(SpriteSheet& sheet, pugi::xml_node& node
 	}
 }
 
+void ResourceLoader::releaseAll()
+{
+	textures.clear();
+	sheets.clear();
+	animations.clear();
+}
+
 const sf::Texture* ResourceLoader::tex(string name)
 {
 	auto texIt = textures.find(name);

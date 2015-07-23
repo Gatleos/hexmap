@@ -18,6 +18,8 @@ class ResourceLoader
 	bool loadAnimData(AnimationData& aData, const pugi::xml_document &ani, const SpriteSheet* sheet);
 public:
 	static ResourceLoader& instance();
+	// Release every stored resource
+	void releaseAll();
 	// Try to retrieve or load the image file at this location
 	const sf::Texture* tex(string name);
 	// Try to retrieve or load the spritesheet file at this location
