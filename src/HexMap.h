@@ -142,7 +142,8 @@ public:
 	void setTileFeature(sf::Vector2i offsetPos, const TileFeatureS& tfs, int zoom, mt19937& urng);
 	void setFeatureColor(sf::Vector2i offsetPos, const sf::Color& col);
 	void clearTileFeatures();
-	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+	void draw(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) const;
+	void drawEnts(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) const;
 	// Determine which map chunks to draw based on a view, culling the rest
 	void calculateViewArea(const sf::View& view);
 	const sf::IntRect& getViewArea() const;

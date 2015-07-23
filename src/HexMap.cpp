@@ -485,6 +485,11 @@ void HexMap::draw(sf::RenderTarget& target, sf::RenderStates states) const
 			target.draw(m, states);
 		}
 	}
+}
+
+void HexMap::drawEnts(sf::RenderTarget& target, sf::RenderStates states) const
+{
+	states.transform *= getTransform();
 	for (int h = drawingBounds.top; h <= drawingBounds.height; h++) {
 		for (int w = drawingBounds.left; w <= drawingBounds.width; w++) {
 			auto& hex = hexes_(w, h);
