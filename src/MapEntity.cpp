@@ -83,11 +83,6 @@ bool MapEntity::setMapPos(sf::Vector2i axialCoord)
 	return true;
 }
 
-bool MapEntity::isOnscreen(const sf::View& mapView)
-{
-	return true;
-}
-
 MapEntityS::MapEntityS()
 {
 }

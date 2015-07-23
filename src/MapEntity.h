@@ -61,7 +61,6 @@ public:
 	bool initMapPos(sf::Vector2i axialCoord);
 	bool setMapPos(sf::Vector2i axialCoord);
 	virtual void update(const sf::Time& timeElapsed) = 0;
-	bool isOnscreen(const sf::View& mapView);
 	friend HexMap;
 };
 
