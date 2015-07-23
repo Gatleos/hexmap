@@ -33,6 +33,8 @@ sf::Vector2f camPos;
 char camDeltaX = 0, camDeltaY = 0;
 int mtMilli = 0;
 bool timeDisplay = false;
+const char* resourceRoot = "data/sprites/";
+float cloudSpeed = 100.0f;
 
 void EngineState::init()
 {
@@ -86,7 +88,7 @@ void EngineState::init()
 	uiView = mapView;
 	// Resources
 	config::load();
-	RESOURCE.setRoot("data/sprites/");
+	RESOURCE.setRoot(resourceRoot);
 	config::loadAllJson();
 	// Set up map
 	hg.init(MAPX, MAPY);
@@ -100,6 +102,14 @@ void EngineState::init()
 	//	s->initMapPos(HexMap::offsetToAxial(pos));
 	//	s->setAnimationType(MapEntityS::anim::IDLE);
 	//}
+	// Shader
+	shader.loadFromFile("data/simplex.glsl", sf::Shader::Type::Fragment);
+	shader.setParameter("offset", mapView.getCenter());
+	shader.setParameter("texture", sf::Shader::CurrentTexture);
+	shader.setParameter("scale", 0.001f);
+	shader.setParameter("contrast", 0.25f);
+	shader.setParameter("brightness", 0.9f);
+	shader.setParameter("layer", 0.0f);
 }
 void EngineState::end()
 {
@@ -114,8 +124,13 @@ void EngineState::update()
 		mapView.move({ (float)camDeltaX * 20 * move, (float)camDeltaY * 20 * move });
 		hg.constrainView(mapView);
 		hg.calculateViewArea(mapView);
+		shader.setParameter("offset", mapView.getCenter());
 	}
 	hg.update(engine->getLastTick());
+	sf::Vector2f timeOffset = mapView.getCenter();
+	timeOffset.x += hg.getLifetime().asSeconds() * cloudSpeed;
+	timeOffset.y += hg.getLifetime().asSeconds() * cloudSpeed;
+	shader.setParameter("offset", timeOffset);
 }
 void EngineState::render(sf::RenderWindow &window)
 {
@@ -133,7 +148,8 @@ void EngineState::render(sf::RenderWindow &window)
 	}
 	window.setView(mapView);
 	for (int a = 0; a < 1; a++) {
-		window.draw(hg);
+		window.draw(hg, &shader);
+		hg.drawEnts(window, &shader);
 	}
 	window.setView(uiView);
 	sf::Vector2i mouse = sf::Mouse::getPosition(*engine->window);
@@ -158,6 +174,7 @@ void EngineState::input(sf::Event &e)
 			mapView.move({ roundf(mousePos.x - e.mouseMove.x), roundf(mousePos.y - e.mouseMove.y) });
 			hg.constrainView(mapView);
 			hg.calculateViewArea(mapView);
+			shader.setParameter("offset", mapView.getCenter());
 		}
 		mousePos = { (float)e.mouseMove.x, (float)e.mouseMove.y };
 		const sf::Vector2f& size = mapView.getSize();
@@ -172,18 +189,21 @@ void EngineState::input(sf::Event &e)
 		}
 	}
 	else if (e.type == sf::Event::MouseWheelMoved) {
-		int zoom = hg.getZoomLevel();
-		if (isInRange(zoom + e.mouseWheel.delta, 0, 2)) {
+		int zoom = hg.getZoomLevel() + e.mouseWheel.delta;
+		if (isInRange(zoom, 0, 2)) {
 			sf::Vector2f mouse = (sf::Vector2f)sf::Mouse::getPosition(*engine->window);
 			const sf::Vector2f& size = mapView.getSize();
 			const sf::Vector2f& center = mapView.getCenter();
 			mouse.x = mouse.x - size.x / 2.0f + center.x, mouse.y = mouse.y - size.y / 2.0f + center.y;
 			sf::Vector2f hex = hg.pixelToHex(mouse);
-			hg.setZoomLevel(zoom + e.mouseWheel.delta);
+			hg.setZoomLevel(zoom);
 			sf::Vector2f pixel = hg.hexToPixel(hex);
 			mapView.move({ pixel.x - mouse.x, pixel.y - mouse.y });
 			hg.constrainView(mapView);
 			hg.calculateViewArea(mapView);
+			shader.setParameter("offset", mapView.getCenter());
+			shader.setParameter("scale", (1 << zoom) / 1000.0f);
+			cloudSpeed = 100 >> zoom;
 		}
 	}
 	else if (e.type == sf::Event::MouseButtonPressed) {
@@ -258,6 +278,7 @@ void EngineState::generate()
 	for (int a = 0; a < config::gen::mountNum; a++) {
 		hg.generateMountainRange(customSeed);
 	}
+	hg.placeSites(customSeed);
 	sf::Time mtTime = mtClock.getElapsedTime();
 	mtMilli = mtTime.asMilliseconds();
 	stringstream ss;
@@ -265,10 +286,13 @@ void EngineState::generate()
 	seedBox->SetText(ss.str());
 }
 
+// Clear and reload all resource files, then generate the map
+// with the same seed so we can see the changes
 void EngineState::loadResourcesInPlace()
 {
 	config::load();
-	RESOURCE.setRoot("data/");
+	RESOURCE.releaseAll();
+	RESOURCE.setRoot(resourceRoot);
 	config::loadAllJson();
 	string seed = (string)seedBox->GetText();
 	if (seed.empty()) {
@@ -281,9 +305,18 @@ void EngineState::loadResourcesInPlace()
 	for (int a = 0; a < config::gen::mountNum; a++) {
 		hg.generateMountainRange(customSeed);
 	}
+	hg.placeSites(customSeed);
 	sf::Time mtTime = mtClock.getElapsedTime();
 	mtMilli = mtTime.asMilliseconds();
 	stringstream ss;
 	ss << std::hex << hexSeed;
 	seedBox->SetText(ss.str());
+	// Shader
+	shader.loadFromFile("data/simplex.glsl", sf::Shader::Type::Fragment);
+	shader.setParameter("offset", mapView.getCenter());
+	shader.setParameter("texture", sf::Shader::CurrentTexture);
+	shader.setParameter("scale", 0.001f);
+	shader.setParameter("contrast", 0.25f);
+	shader.setParameter("brightness", 0.9f);
+	shader.setParameter("layer", 0.0f);
 }
