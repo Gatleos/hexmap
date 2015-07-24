@@ -21,7 +21,7 @@ array<unique_ptr<HexTileS>, HexTileS::TERRAIN_NUM> HexTileS::terrain = { {
 	} };
 const sf::Texture* HexTileS::tex = nullptr;
 
-HexTileS::HexTileS(string idSet) :id(idSet), moveCost(1.0f)
+HexTileS::HexTileS(string idSet) :id(idSet), moveCost(10U)
 {
 }
 
@@ -131,7 +131,7 @@ void HexTileS::loadJson(string filename)
 			}
 			// moveCost
 			element = "moveCost";
-			hex->moveCost = tdata.get(element, 1.0f).asFloat();
+			hex->moveCost = tdata.get(element, 10U).asUInt();
 		}
 		catch (runtime_error e) { // report the error with the name of the object and member
 			// make sure we have placeholder drawing rects!

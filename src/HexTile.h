@@ -34,7 +34,7 @@ public:
 	std::array<const TileFeatureS*, 3> features;
 	std::vector<sf::Color> colors;
 	bool walkable;
-	float moveCost;
+	unsigned int moveCost;
 	bitset<FLAG_MAX> FLAGS;
 	HexTileS(std::string idSet);
 };
