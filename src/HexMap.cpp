@@ -64,7 +64,7 @@ int HexMap::heuristic(sf::Vector2i& a, sf::Vector2i& b)
 
 int HexMap::moveCost(sf::Vector2i& current, sf::Vector2i& next)
 {
-	return getAxial(current.x, current.y).hts->moveCost;
+	return getAxial(next.x, next.y).hts->moveCost;
 }
 
 std::deque<sf::Vector2i>& HexMap::getPath(std::deque<sf::Vector2i>& path, sf::Vector2i startAxial, sf::Vector2i goalAxial)
