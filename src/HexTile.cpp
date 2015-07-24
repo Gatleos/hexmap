@@ -21,7 +21,7 @@ array<unique_ptr<HexTileS>, HexTileS::TERRAIN_NUM> HexTileS::terrain = { {
 	} };
 const sf::Texture* HexTileS::tex = nullptr;
 
-HexTileS::HexTileS(string idSet) :id(idSet), townChance(1.0f)
+HexTileS::HexTileS(string idSet) :id(idSet), moveCost(1.0f)
 {
 }
 
@@ -129,9 +129,9 @@ void HexTileS::loadJson(string filename)
 				}
 				lerpColorRange(hex->colors, keyColors, keyIndices);
 			}
-			// townChance
-			element = "townChance";
-			hex->townChance = tdata.get("townChance", Json::Value::null).asFloat();
+			// moveCost
+			element = "moveCost";
+			hex->moveCost = tdata.get(element, 1.0f).asFloat();
 		}
 		catch (runtime_error e) { // report the error with the name of the object and member
 			// make sure we have placeholder drawing rects!
