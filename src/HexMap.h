@@ -61,9 +61,6 @@ class HexMap : public sf::Drawable, public sf::Transformable
 	Array2D<sf::VertexArray>* activeBgVertices_;
 	std::deque<sf::Vector2f> land;
 	// Pathfinding
-	unordered_map<sf::Vector2i, sf::Vector2i, Vector2iHash> cameFrom;
-	unordered_map<sf::Vector2i, int, Vector2iHash> costSoFar;
-	multimap<int, sf::Vector2i> frontier;
 	bool walkable(sf::Vector2i& c);
 	int heuristic(sf::Vector2i& a, sf::Vector2i& b);
 	int moveCost(sf::Vector2i& current, sf::Vector2i& next);

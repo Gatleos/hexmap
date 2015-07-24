@@ -218,6 +218,8 @@ void HexMap::generateMountainRange(mt19937& urng)
 // Detect contiguous terrain tiles and store them in the regions list
 void HexMap::findRegions()
 {
+	// new tiles to query
+	multimap<int, sf::Vector2i> frontier;
 	int i = (int)(mapSize_.x*mapSize_.y);
 	HexTile* h = nullptr;
 	sf::Vector2i p;

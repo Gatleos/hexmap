@@ -72,11 +72,14 @@ std::deque<sf::Vector2i>& HexMap::getPath(std::deque<sf::Vector2i>& path, sf::Ve
 	if (!isAxialInBounds(startAxial) || !getAxial(startAxial.x, startAxial.y).hts->walkable || !isAxialInBounds(goalAxial) || !getAxial(goalAxial.x, goalAxial.y).hts->walkable) {
 		return path;
 	}
+	// traceback
+	unordered_map<sf::Vector2i, sf::Vector2i, Vector2iHash> cameFrom;
+	// combined cost of tiles leading to this one
+	unordered_map<sf::Vector2i, int, Vector2iHash> costSoFar;
+	// new tiles to query
+	multimap<int, sf::Vector2i> frontier;
 	sf::Vector2i start = startAxial;
 	sf::Vector2i goal = goalAxial;
-	cameFrom.clear();
-	costSoFar.clear();
-	frontier.clear();
 	std::deque<sf::Vector2i> n;
 	frontier.insert(std::pair<int, sf::Vector2i>(0, start));
 	cameFrom[start] = start;
