@@ -27,6 +27,7 @@ public:
 	sf::Text text;
 	sf::Texture hex;
 	sf::Sprite hexspr;
+	sf::Shader shader;
 	void init();
 	void end();
 	void update();
