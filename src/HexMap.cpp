@@ -581,6 +581,25 @@ MapUnit* HexMap::addMapUnit(const MapEntityS* sEnt, Faction* parent)
 	return &u;
 }
 
+void HexMap::clearSites()
+{
+	for (auto& s : sites) {
+		sf::Vector2i& pos = s.second.pos;
+		getAxial(pos.x, pos.y).ent = nullptr;
+		setFeatureColor(axialToOffset(pos), sf::Color::White);
+	}
+	sites.clear();
+}
+void HexMap::clearMapUnits()
+{
+	for (auto& u : units) {
+		sf::Vector2i& pos = u.second.pos;
+		getAxial(pos.x, pos.y).ent = nullptr;
+		setFeatureColor(axialToOffset(pos), sf::Color::White);
+	}
+	units.clear();
+}
+
 void HexMap::update(const sf::Time& timeElapsed)
 {
 	lifetime += timeElapsed;

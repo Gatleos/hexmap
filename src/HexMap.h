@@ -59,6 +59,7 @@ class HexMap : public sf::Drawable, public sf::Transformable
 	Array2D<HexTile> hexes_;
 	array<Array2D<sf::VertexArray>, ZOOM_LEVELS> bgVertices_;
 	Array2D<sf::VertexArray>* activeBgVertices_;
+	std::deque<sf::Vector2f> land;
 	// Pathfinding
 	unordered_map<sf::Vector2i, sf::Vector2i, Vector2iHash> cameFrom;
 	unordered_map<sf::Vector2i, int, Vector2iHash> costSoFar;
@@ -155,11 +156,14 @@ public:
 	Faction* addFaction();
 	Site* addSite(const SiteS* sSite, Faction* parent);
 	MapUnit* addMapUnit(const MapEntityS* sEnt, Faction* parent);
+	void clearSites();
+	void clearMapUnits();
 	void update(const sf::Time& timeElapsed);
 	// MapGen
 	void generateBiomes(mt19937& urng);
 	void generateMountainRange(mt19937& urng);
 	void findRegions();
+	void placeSites(mt19937& urng);
 };
 
 float distHex(sf::Vector2f& a, sf::Vector2f& b);

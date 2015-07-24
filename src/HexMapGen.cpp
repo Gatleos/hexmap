@@ -10,6 +10,7 @@
 
 void HexMap::generateBiomes(mt19937& urng)
 {
+	land.clear();
 	static uniform_real_distribution<float> offset(-10000000.0f, 10000000.0f);
 	int townChance = 16384 / 24;
 	const HexTileS* type = &HexTileS::get(HexTileS::NONE);
@@ -51,6 +52,7 @@ void HexMap::generateBiomes(mt19937& urng)
 				colorIndex = (int)heightVal;
 			}
 			else {
+				land.push_back(p);
 				colorIndex = (int)heightVal - SEA_LEVEL;
 				if (tempVal < config::gen::cold) {
 					if (moistVal >= config::gen::forest[0]) {
@@ -262,5 +264,17 @@ void HexMap::findRegions()
 				neighbors.clear();
 			}
 		}
+	}
+}
+
+void HexMap::placeSites(mt19937& urng)
+{
+	clearSites();
+	clearMapUnits();
+	auto* f = addFaction();
+	std::uniform_int_distribution<int> landChance(0, land.size() - 1);
+	for (int a = 0; a < 20; a++) {
+		auto* s = addSite(SiteS::get("si_castle"), f);
+		s->initMapPos((sf::Vector2i)offsetToAxial(land[landChance(urng)]));
 	}
 }
