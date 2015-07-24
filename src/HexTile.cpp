@@ -131,7 +131,7 @@ void HexTileS::loadJson(string filename)
 			}
 			// moveCost
 			element = "moveCost";
-			hex->moveCost = tdata.get(element, 10U).asUInt();
+			hex->moveCost = max(1U, tdata.get(element, 10U).asUInt());
 		}
 		catch (runtime_error e) { // report the error with the name of the object and member
 			// make sure we have placeholder drawing rects!
