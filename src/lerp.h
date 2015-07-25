@@ -3,5 +3,15 @@
 
 using namespace std;
 
-void lerpColors(vector<sf::Color>& output, const sf::Color& a, const sf::Color& b, int numColors);
-void lerpColorRange(vector<sf::Color>& output, const vector<sf::Color>& keyColors, const vector<int> keyIndices);
+namespace lerp {
+	void colors(vector<sf::Color>& output, const sf::Color& a, const sf::Color& b, int numColors);
+	void colorRange(vector<sf::Color>& output, const vector<sf::Color>& keyColors, const vector<int> keyIndices);
+	extern const sf::Color orange;
+	extern const sf::Color purple;
+	extern const sf::Color magenta;
+	extern const sf::Color cyan;
+	extern const sf::Color turquoise;
+	extern const sf::Color brown;
+	extern const sf::Color limeGreen;
+}
+

@@ -127,7 +127,7 @@ void HexTileS::loadJson(string filename)
 					}
 					keyColors.push_back(sf::Color(e[0].asInt(), e[1].asInt(), e[2].asInt()));
 				}
-				lerpColorRange(hex->colors, keyColors, keyIndices);
+				lerp::colorRange(hex->colors, keyColors, keyIndices);
 			}
 			// moveCost
 			element = "moveCost";
@@ -155,6 +155,9 @@ const sf::Texture& HexTileS::getTexture()
 	return *tex;
 }
 
-HexTile::HexTile() :ent(nullptr)
+HexTile::HexTile() :
+ent(nullptr),
+hts(nullptr),
+tfs(nullptr)
 {
 }
