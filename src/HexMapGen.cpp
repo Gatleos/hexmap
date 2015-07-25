@@ -150,10 +150,10 @@ void HexMap::generateBiomes(mt19937& urng)
 			getOffset(hexPos.x, hexPos.y).FLAGS = 0;
 			setTile(hexPos, *type, urng);
 			if (type->FLAGS[HexTileS::GRADIENT]) {
-				setTileColor(hexPos, type->colors[colorIndex]);
+				pushTileColor(hexPos, type->colors[colorIndex]);
 			}
 			else {
-				setTileColor(hexPos, sf::Color::White);
+				pushTileColor(hexPos, sf::Color::White);
 			}
 		}
 	}
@@ -212,7 +212,7 @@ void HexMap::generateMountainRange(mt19937& urng)
 		if (!isOffsetInBounds((sf::Vector2i)l) || !cTile->hts->FLAGS[HexTileS::WALKABLE]) {
 			continue;
 		}
-		//setTileColor((sf::Vector2i)l, sf::Color::White);
+		//pushTileColor((sf::Vector2i)l, sf::Color::White);
 		setTileFeature((sf::Vector2i)l, TileFeatureS::get(TileFeatureS::MOUNTAIN), urng);
 		cTile->FLAGS[HexTile::MOUNTAINS] = true;
 	}
@@ -295,7 +295,7 @@ void HexMap::placeSites(mt19937& urng)
 	for (auto& f : fill) {
 		for (auto& h : f) {
 			sf::Vector2i oPos = axialToOffset(h);
-			setTileColor(oPos, tColors[index%tColors.size()]);
+			pushTileColor(oPos, tColors[index%tColors.size()]);
 			setTile(oPos, HexTileS::get(HexTileS::TUNDRA_SNOW), urng);
 		}
 		index++;

@@ -200,7 +200,8 @@ public:
 	void setZoomLevel(int zoom);
 	void setTile(sf::Vector2i offsetPos, const HexTileS& hts, mt19937& urng);
 	void setAllTiles(const HexTileS& hts, mt19937& urng);
-	void setTileColor(sf::Vector2i offsetPos, sf::Color col);
+	void pushTileColor(sf::Vector2i offsetPos, sf::Color col);
+	void popTileColor(sf::Vector2i offsetPos);
 	void setTileFeature(sf::Vector2i offsetPos, const TileFeatureS& tfs, mt19937& urng);
 	void setTileFeature(sf::Vector2i offsetPos, const TileFeatureS& tfs, int zoom, mt19937& urng);
 	void setFeatureColor(sf::Vector2i offsetPos, const sf::Color& col);

@@ -577,8 +577,9 @@ void HexMap::setTile(sf::Vector2i offsetPos, const HexTileS& hts, mt19937& urng)
 		chunk[index + 3].texCoords = { rect.left, rect.top + rect.height };
 	}
 }
-void HexMap::setTileColor(sf::Vector2i offsetPos, sf::Color col)
+void HexMap::pushTileColor(sf::Vector2i offsetPos, sf::Color col)
 {
+	hexes_(offsetPos.x, offsetPos.y).color.push(col);
 	sf::Vector2i chunkPos = { (offsetPos.x / CHUNK_SIZE), (offsetPos.y / CHUNK_SIZE) };
 	int index = ((offsetPos.y % CHUNK_SIZE) * CHUNK_SIZE + (offsetPos.x % CHUNK_SIZE)) * 4;
 	for (int a = 0; a < 3; a++) {
@@ -587,6 +588,27 @@ void HexMap::setTileColor(sf::Vector2i offsetPos, sf::Color col)
 		chunk[index + 1].color = col;
 		chunk[index + 2].color = col;
 		chunk[index + 3].color = col;
+	}
+}
+void HexMap::popTileColor(sf::Vector2i offsetPos)
+{
+	auto& hex = hexes_(offsetPos.x, offsetPos.y);
+	hex.color.pop();
+	const sf::Color* col = nullptr;
+	if (hex.color.empty()) {
+		col = &sf::Color::White;
+	}
+	else {
+		col = &hex.color.top();
+	}
+	sf::Vector2i chunkPos = { (offsetPos.x / CHUNK_SIZE), (offsetPos.y / CHUNK_SIZE) };
+	int index = ((offsetPos.y % CHUNK_SIZE) * CHUNK_SIZE + (offsetPos.x % CHUNK_SIZE)) * 4;
+	for (int a = 0; a < 3; a++) {
+		sf::VertexArray& chunk = bgVertices_[a](chunkPos.x, chunkPos.y);
+		chunk[index].color = *col;
+		chunk[index + 1].color = *col;
+		chunk[index + 2].color = *col;
+		chunk[index + 3].color = *col;
 	}
 }
 void HexMap::setTileFeature(sf::Vector2i offsetPos, const TileFeatureS& tfs, mt19937& urng)

@@ -52,6 +52,7 @@ public:
 	bitset<6> roads;
 	bitset<FLAG_MAX> FLAGS;
 	sf::Sprite spr[3];
+	stack<sf::Color> color;
 	HexTile();
 };
 
