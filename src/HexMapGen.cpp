@@ -175,7 +175,7 @@ void HexMap::generateMountainRange(mt19937& urng)
 	sf::Vector2f offset = { (float)rng::getInt(2, 85, urng), (float)rng::getInt(2, 85, urng) };
 	for (int a = 0; a < 100; a++) {
 		w[0] = { (float)xRange(urng), (float)yRange(urng) };
-		if (isAxialInBounds((sf::Vector2i)w[0]) && getAxial((int)w[0].x, (int)w[0].y).hts->walkable) {
+		if (isAxialInBounds((sf::Vector2i)w[0]) && getAxial((int)w[0].x, (int)w[0].y).hts->FLAGS[HexTileS::WALKABLE]) {
 			break;
 		}
 	}
@@ -197,7 +197,7 @@ void HexMap::generateMountainRange(mt19937& urng)
 	sf::Vector2f p;
 	for (float f = 0.0f; f < 1.0f; f += advance) {
 		Bezier::curveCubic(p, f, w);
-		if (!isAxialInBounds((sf::Vector2i)p) || !getAxial((int)p.x, (int)p.y).hts->walkable) {
+		if (!isAxialInBounds((sf::Vector2i)p) || !getAxial((int)p.x, (int)p.y).hts->FLAGS[HexTileS::WALKABLE]) {
 			break;
 		}
 		VectorSet& s = splat[rng::getInt(0, splat.size() - 1, urng)];
@@ -207,7 +207,7 @@ void HexMap::generateMountainRange(mt19937& urng)
 		p = { 0.0f, 0.0f };
 	}
 	for (auto& l : h) {
-		if (!isOffsetInBounds((sf::Vector2i)l) || !getOffset(l.x, l.y).hts->walkable) {
+		if (!isOffsetInBounds((sf::Vector2i)l) || !getOffset(l.x, l.y).hts->FLAGS[HexTileS::WALKABLE]) {
 			continue;
 		}
 		//setTileColor((sf::Vector2i)l, sf::Color::White);
@@ -241,13 +241,13 @@ void HexMap::findRegions()
 			currentRegion = &regions.back();
 			h = &getAxial(qoff, r);
 			frontier.insert(make_pair(0, sf::Vector2i(qoff, r)));
-			std::deque<sf::Vector2i> neighbors;
+			VectorSet adj;
 			while (!frontier.empty()) {
 				for (auto f : frontier) {
-					neighborsBounded(f.second, neighbors);
+					clipToBounds(neighbors(f.second, adj));
 				}
 				frontier.clear();
-				for (auto n : neighbors) {
+				for (auto n : adj) {
 					p = axialToOffset(n);
 					i = p.x + p.y * mapSize_.x;
 					if (seen.get()[i]) {
@@ -263,7 +263,7 @@ void HexMap::findRegions()
 						(*currentRegion).size++;
 					}
 				}
-				neighbors.clear();
+				adj.clear();
 			}
 		}
 	}
@@ -271,12 +271,30 @@ void HexMap::findRegions()
 
 void HexMap::placeSites(mt19937& urng)
 {
+	array<sf::Color, 13> tColors = { sf::Color::Blue, sf::Color::Cyan, sf::Color::Black, sf::Color::Green, sf::Color::Magenta,
+	sf::Color::Red, sf::Color::White, sf::Color::Yellow, lerp::brown, lerp::limeGreen, lerp::orange, lerp::purple, lerp::turquoise};
+	static function<bool(HexTile&)> condition = [](HexTile& hex){ return hex.hts->FLAGS[HexTileS::WALKABLE]; };
 	clearSites();
 	clearMapUnits();
 	auto* f = addFaction();
 	std::uniform_int_distribution<int> landChance(0, land.size() - 1);
-	for (int a = 0; a < 20; a++) {
-		auto* s = addSite(SiteS::get("si_castle"), f);
-		s->initMapPos((sf::Vector2i)offsetToAxial(land[landChance(urng)]));
+	std::vector<sf::Vector2i> territories;
+	for (int a = 0; a < 40; a++) {
+		//auto* s = addSite(SiteS::get("si_castle"), f);
+		sf::Vector2i aPos = (sf::Vector2i)offsetToAxial(land[landChance(urng)]);
+		territories.push_back(aPos);
+		//s->initMapPos(aPos);
+	}
+	std::vector<VectorSet> fill;
+	fill.resize(territories.size());
+	floodSelectParallel(fill, territories, 126, condition);
+	int index = 0;
+	for (auto& f : fill) {
+		for (auto& h : f) {
+			sf::Vector2i oPos = axialToOffset(h);
+			setTileColor(oPos, tColors[index%tColors.size()]);
+			setTile(oPos, HexTileS::get(HexTileS::TUNDRA_SNOW), urng);
+		}
+		index++;
 	}
 }
