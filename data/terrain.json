@@ -12,7 +12,7 @@
 		"quarter": [
 			[1, "/tiles/quarter/tundra", 0, 0]
 		],
-		"moveCost": 3,
+		"moveCost": 3
 	},
 	"t_tundra_snow": {
 		"name": "Tundra",
@@ -25,7 +25,7 @@
 		"quarter": [
 			[1, "/tiles/quarter/tundraSnow", 0, 0]
 		],
-		"moveCost": 6,
+		"moveCost": 6
 	},
 	"t_ocean": {
 		"name": "Ocean",
@@ -43,7 +43,7 @@
 			"0.3": [0, 42, 179],
 			"1.0": [58, 146, 255]
 		},
-		"moveCost": 30,
+		"moveCost": 30
 	},
 	"t_taiga_s": {
 		"name": "Taiga",
@@ -57,7 +57,7 @@
 			[1, "/tiles/quarter/taiga", 0, 0]
 		],
 		"feature": "f_taiga_s",
-		"moveCost": 4,
+		"moveCost": 4
 	},
 	"t_taiga_m": {
 		"name": "Taiga",
@@ -71,7 +71,7 @@
 			[1, "/tiles/quarter/taiga", 0, 0]
 		],
 		"feature": "f_taiga_m",
-		"moveCost": 4,
+		"moveCost": 4
 	},
 	"t_taiga_l": {
 		"name": "Taiga",
@@ -85,7 +85,7 @@
 			[1, "/tiles/quarter/taiga", 0, 0]
 		],
 		"feature": "f_taiga_l",
-		"moveCost": 5,
+		"moveCost": 5
 	},
 	"t_taiga_snow_s": {
 		"name": "Taiga",
@@ -99,7 +99,7 @@
 			[1, "/tiles/quarter/taigaSnow", 0, 0]
 		],
 		"feature": "f_taiga_s",
-		"moveCost": 8,
+		"moveCost": 8
 	},
 	"t_taiga_snow_m": {
 		"name": "Taiga",
@@ -113,7 +113,7 @@
 			[1, "/tiles/quarter/taigaSnow", 0, 0]
 		],
 		"feature": "f_taiga_m",
-		"moveCost": 9,
+		"moveCost": 9
 	},
 	"t_taiga_snow_l": {
 		"name": "Taiga",
@@ -127,7 +127,7 @@
 			[1, "/tiles/quarter/taigaSnow", 0, 0]
 		],
 		"feature": "f_taiga_l",
-		"moveCost": 10,
+		"moveCost": 10
 	},
 	"t_forest_s": {
 		"name": "Forest",
@@ -141,7 +141,7 @@
 			[1, "/tiles/quarter/forest", 0, 0]
 		],
 		"feature": "f_forest_s",
-		"moveCost": 4,
+		"moveCost": 4
 	},
 	"t_forest_m": {
 		"name": "Forest",
@@ -155,7 +155,7 @@
 			[1, "/tiles/quarter/forest", 0, 0]
 		],
 		"feature": "f_forest_m",
-		"moveCost": 4,
+		"moveCost": 4
 	},
 	"t_forest_l": {
 		"name": "Forest",
@@ -169,7 +169,7 @@
 			[1, "/tiles/quarter/forest", 0, 0]
 		],
 		"feature": "f_forest_l",
-		"moveCost": 5,
+		"moveCost": 5
 	},
 	"t_grassland": {
 		"name": "Grassland",
@@ -182,7 +182,7 @@
 		"quarter": [
 			[1, "/tiles/quarter/grassland", 0, 0]
 		],
-		"moveCost": 2,
+		"moveCost": 2
 	},
 	"t_semiarid": {
 		"name": "Semiarid Desert",
@@ -195,7 +195,7 @@
 		"quarter": [
 			[1, "/tiles/quarter/semiarid", 0, 0]
 		],
-		"moveCost": 3,
+		"moveCost": 3
 	},
 	"t_jungle_s": {
 		"name": "Jungle",
@@ -208,7 +208,7 @@
 		"quarter": [
 			[1, "/tiles/quarter/jungle", 0, 0]
 		],
-		"moveCost": 6,
+		"moveCost": 6
 	},
 	"t_jungle_m": {
 		"name": "Jungle",
@@ -221,7 +221,7 @@
 		"quarter": [
 			[1, "/tiles/quarter/jungle", 0, 0]
 		],
-		"moveCost": 7,
+		"moveCost": 7
 	},
 	"t_jungle_l": {
 		"name": "Jungle",
@@ -234,7 +234,7 @@
 		"quarter": [
 			[1, "/tiles/quarter/jungle", 0, 0]
 		],
-		"moveCost": 8,
+		"moveCost": 8
 	},
 	"t_savanna": {
 		"name": "Savanna",
@@ -248,7 +248,7 @@
 		"quarter": [
 			[1, "/tiles/quarter/savanna", 0, 0]
 		],
-		"moveCost": 2,
+		"moveCost": 2
 	},
 	"t_desert": {
 		"name": "Sand Desert",
@@ -261,7 +261,7 @@
 		"quarter": [
 			[1, "/tiles/quarter/desert", 0, 0]
 		],
-		"moveCost": 3,
+		"moveCost": 3
 	},
 	"t_swamp": {
 		"name": "Swamp",
@@ -275,6 +275,6 @@
 		"quarter": [
 			[1, "/tiles/quarter/swamp", 0, 0]
 		],
-		"moveCost": 7,
+		"moveCost": 7
 	}
 }
