@@ -2,8 +2,6 @@
 
 const sf::Color lerp::orange(255, 128, 0);
 const sf::Color lerp::purple(128, 0, 255);
-const sf::Color lerp::magenta(255, 0, 255);
-const sf::Color lerp::cyan(0, 255, 255);
 const sf::Color lerp::turquoise(0, 255, 128);
 const sf::Color lerp::brown(128, 64, 0);
 const sf::Color lerp::limeGreen(128, 255, 0);

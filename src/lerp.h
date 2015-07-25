@@ -8,8 +8,6 @@ namespace lerp {
 	void colorRange(vector<sf::Color>& output, const vector<sf::Color>& keyColors, const vector<int> keyIndices);
 	extern const sf::Color orange;
 	extern const sf::Color purple;
-	extern const sf::Color magenta;
-	extern const sf::Color cyan;
 	extern const sf::Color turquoise;
 	extern const sf::Color brown;
 	extern const sf::Color limeGreen;
