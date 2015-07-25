@@ -147,7 +147,7 @@ void HexMap::generateBiomes(mt19937& urng)
 					}
 				}
 			}
-			getOffset(hexPos.x, hexPos.y).height = (unsigned int)heightVal;
+			getOffset(hexPos.x, hexPos.y).FLAGS = 0;
 			setTile(hexPos, *type, urng);
 			if (type->FLAGS[HexTileS::GRADIENT]) {
 				setTileColor(hexPos, type->colors[colorIndex]);
@@ -206,12 +206,15 @@ void HexMap::generateMountainRange(mt19937& urng)
 		}
 		p = { 0.0f, 0.0f };
 	}
+	HexTile* cTile = nullptr;
 	for (auto& l : h) {
-		if (!isOffsetInBounds((sf::Vector2i)l) || !getOffset(l.x, l.y).hts->FLAGS[HexTileS::WALKABLE]) {
+		cTile = &getOffset(l.x, l.y);
+		if (!isOffsetInBounds((sf::Vector2i)l) || !cTile->hts->FLAGS[HexTileS::WALKABLE]) {
 			continue;
 		}
 		//setTileColor((sf::Vector2i)l, sf::Color::White);
 		setTileFeature((sf::Vector2i)l, TileFeatureS::get(TileFeatureS::MOUNTAIN), urng);
+		cTile->FLAGS[HexTile::MOUNTAINS] = true;
 	}
 }
 
