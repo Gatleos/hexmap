@@ -52,11 +52,11 @@ void HexTileS::loadJson(string filename)
 			continue;
 		}
 		string element;
-		if (hex->id == "t_ocean" || hex->id == "t_mountain") {
-			hex->walkable = false;
+		if (hex->id == "t_ocean") {
+			hex->FLAGS[HexTileS::WALKABLE] = false;
 		}
 		else {
-			hex->walkable = true;
+			hex->FLAGS[HexTileS::WALKABLE] = true;
 		}
 		try {
 			//name

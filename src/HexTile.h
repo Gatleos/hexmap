@@ -23,7 +23,7 @@ private:
 	static std::array<unique_ptr<HexTileS>, TERRAIN_NUM> terrain;
 public:
 	enum {
-		GRADIENT, FLAG_MAX
+		GRADIENT, WALKABLE, FLAG_MAX
 	};
 	static void loadJson(string filename);
 	static const HexTileS& get(int t);
@@ -33,7 +33,6 @@ public:
 	std::array<RandomRect, 3> tiles;
 	std::array<const TileFeatureS*, 3> features;
 	std::vector<sf::Color> colors;
-	bool walkable;
 	unsigned int moveCost;
 	bitset<FLAG_MAX> FLAGS;
 	HexTileS(std::string idSet);
