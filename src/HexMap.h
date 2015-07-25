@@ -3,6 +3,7 @@
 
 #include <deque>
 #include <set>
+#include <functional>
 #include "Compare.h"
 #include "Site.h"
 #include "Faction.h"
@@ -11,8 +12,6 @@
 
 typedef set<sf::Vector2i, Vector2iCompare> VectorSet;
 
-enum { DIR_EAST, DIR_NORTHEAST, DIR_NORTHWEST, DIR_WEST, DIR_SOUTHWEST, DIR_SOUTHEAST };
-static const sf::Vector2i directions[] = { { 1, 0 }, { 1, -1 }, { 0, -1 }, { -1, 0 }, { -1, 1 }, { 0, 1 } };
 
 enum { SIMPLEX_HEIGHT, SIMPLEX_TEMP };
 
@@ -30,6 +29,10 @@ public:
 
 class HexMap : public sf::Drawable, public sf::Transformable
 {
+public:
+	enum dir{ NORTHEAST, NORTHWEST, WEST, SOUTHWEST, SOUTHEAST, EAST, SIZE };
+	static const sf::Vector2i directions[dir::SIZE];
+private:
 	struct cubepoint
 	{
 		float x;
@@ -40,13 +43,40 @@ class HexMap : public sf::Drawable, public sf::Transformable
 		cubepoint operator+= (cubepoint& cp){ x += cp.x; y += cp.y; z += cp.z; return *this; }
 		cubepoint operator+ (cubepoint& cp){ return cubepoint(*this) += cp; }
 	};
+	class FloodFill
+	{
+		sf::Vector2i start_;
+		int totalSize_;
+		// set to fill
+		VectorSet* container_;
+		int sizeLimit_;
+		// stores neighboring tiles
+		VectorSet adj_;
+		// new tiles to query
+		vector<sf::Vector2i> frontier_;
+		// temporary frontier to populate and swap with the old
+		vector<sf::Vector2i> newFrontier_;
+		// which tiles have we already checked?
+		VectorSet* seen_;
+		// parent map
+		HexMap* hm_;
+		std::function<bool(HexTile&)>* condition_;
+	public:
+		FloodFill(int sizeLimit, VectorSet* seen, HexMap* hm, std::function<bool(HexTile&)>& condition);
+		bool iterate();
+		void run();
+		void clear();
+		int getSize();
+		void initFill(sf::Vector2i start);
+		void setOutputContainer(VectorSet* container);
+	};
+
 	static const int CHUNK_SIZE;
 	static const int CHUNK_SQUARED;
 	static int hexRad_[3];
 	static sf::Vector2i hexSize_[3];
 	static sf::Vector2f hexAdvance_[3];
 	static sf::Vector2f mapOrigin_[3];
-	// Properties
 	sf::Vector2i mapSize_;
 	sf::Vector2i mapSizeChunks_;
 	sf::Vector2f hexExtent_[3];
@@ -54,30 +84,54 @@ class HexMap : public sf::Drawable, public sf::Transformable
 	sf::IntRect chunkDrawingBounds;
 	// 0-2, 0 is the closest
 	int zoomLevel;
+	// How long has the map been updating?
 	sf::Time lifetime;
-	// Contents
+	// HexTile data
 	Array2D<HexTile> hexes_;
+	// Drawing vertices for tiles
 	array<Array2D<sf::VertexArray>, ZOOM_LEVELS> bgVertices_;
+	// Currently used vertices
 	Array2D<sf::VertexArray>* activeBgVertices_;
 	std::deque<sf::Vector2f> land;
-	// Pathfinding
-	bool walkable(sf::Vector2i& c);
-	int heuristic(sf::Vector2i& a, sf::Vector2i& b);
-	int moveCost(sf::Vector2i& current, sf::Vector2i& next);
-	// MapEntities
 	vector<Faction> factions;
 	unsigned int nextSiteId;
 	map<int, Site> sites;
 	unsigned int nextUnitId;
 	map<int, MapUnit> units;
-	// MapGen
+	// Distribution for rng along map's x coordinate
 	uniform_int_distribution<int> xRange;
+	// Distribution for rng along map's y coordinate
 	uniform_int_distribution<int> yRange;
 public:
-	// Return a list of hex tile neighbors (axial)
-	static deque<sf::Vector2i>& neighbors(sf::Vector2i h, deque<sf::Vector2i>& n);
-	// Return a list of hex tiles contained in a given radius (axial)
-	static VectorSet& area(sf::Vector2i h, int radius, VectorSet& n);
+	HexMap();
+	// Create hex tiles and vertices (for drawing), and initialize size values
+	void init(int width, int height);
+	const sf::Vector2i& getMapSize() const;
+	const sf::Time& getLifetime();
+
+	/////////////////
+	// Pathfinding //
+	/////////////////
+
+private:
+	int heuristic(sf::Vector2i& a, sf::Vector2i& b);
+	int moveCost(sf::Vector2i& current, sf::Vector2i& next);
+public:
+	deque<sf::Vector2i>& getPath(deque<sf::Vector2i>& path, sf::Vector2i startAxial, sf::Vector2i goalAxial);
+	int getPathCost(sf::Vector2i startAxial, sf::Vector2i goalAxial);
+
+	/////////////////
+	// Measurement //
+	/////////////////
+
+	// Get exact distance between axial coordinates; the returned value
+	// should be passed to roundHex to get a usable coordinate
+	static float distAxial(sf::Vector2f& a, sf::Vector2f& b);
+	// Get exact distance between axial coordinates; the returned value
+	// should be passed to roundHex to get a usable coordinate
+	static float distAxial(sf::Vector2i& a, sf::Vector2i& b);
+	// Round a floating point axial coordinate to the nearest hex
+	static sf::Vector2f roundHex(sf::Vector2f hex);
 	// odd-r offset -> axial coordinate
 	static sf::Vector2f offsetToAxial(sf::Vector2f v);
 	// axial coordinate -> odd-r offset
@@ -86,23 +140,6 @@ public:
 	static sf::Vector2i offsetToAxial(sf::Vector2i v);
 	// axial coordinate -> odd-r offset
 	static sf::Vector2i axialToOffset(sf::Vector2i v);
-	//
-	HexMap();
-	// Create hex tiles and vertices (for drawing), and initialize size values
-	void init(int width, int height);
-	const sf::Vector2i& getMapSize() const;
-	deque<sf::Vector2i>& getPath(deque<sf::Vector2i>& path, sf::Vector2i startAxial, sf::Vector2i goalAxial);
-	static const int& getHexRadius(int zoom);
-	static const sf::Vector2i& getHexSize(int zoom);
-	static const sf::Vector2f& getHexAdvance(int zoom);
-	static const sf::Vector2f& getMapOrigin(int zoom);
-	deque<sf::Vector2i>& neighborsBounded(sf::Vector2i posAxial, deque<sf::Vector2i>& n);
-	const sf::Time& getLifetime();
-	/////////////////
-	// Measurement //
-	/////////////////
-	// Round a floating point axial coordinate to the nearest hex
-	static sf::Vector2f roundHex(sf::Vector2f hex);
 	// Convert axial hex coordinate to local pixel coordinate
 	sf::Vector2f hexToPixel(sf::Vector2f hex) const;
 	// Convert axial hex coordinate to local pixel coordinate
@@ -114,25 +151,53 @@ public:
 	// Convert local pixel coordinate to axial hex coordinate
 	sf::Vector2f pixelToHex(sf::Vector2f pixel) const;
 	// Check if axial coordinate is within map bounds
-	bool isAxialInBounds(sf::Vector2i posAxial);
+	bool isAxialInBounds(sf::Vector2i posAxial) const;
 	// Check if offset coordinate is within map bounds
-	bool isOffsetInBounds(sf::Vector2i posOffset);
-	// Access
+	bool isOffsetInBounds(sf::Vector2i posOffset) const;
+	// Return the tile coordinate in the given direction (use HexMap::dir and HexMap::directions)
+	static sf::Vector2i neighbor(sf::Vector2i centerAxial, int dir);
+	// Return a list of hex tile neighbors (axial)
+	static VectorSet& neighbors(sf::Vector2i centerAxial, VectorSet& neighbors);
+	// Return a list of hex tiles contained in a given radius (axial)
+	static VectorSet& area(sf::Vector2i centerAxial, int radius, VectorSet& n);
+	// Return a list of hex tiles with the given distance (radius) from center (axial)
+	static VectorSet& ring(sf::Vector2i centerAxial, int radius, VectorSet& n);
+	// Remove all coordinates which fall outside the map
+	VectorSet& clipToBounds(VectorSet& boundedAxial);
+	// Remove all coordinates whose hexes do not meet condition()
+	VectorSet& clip(VectorSet& listAxial, std::function<bool(HexTile&)>& condition);
+
+	////////////
+	// Access //
+	////////////
+
 	// Retrieve hex based on coordinate (axial)
 	HexTile& getAxial(int x, int y);
 	// Retrieve hex based on coordinate (offset)
 	HexTile& getOffset(int x, int y);
-	void floodSelect(VectorSet& fill, int minHeight, int maxHeight);
+	// Flood select, stopping at tiles which do not meet condition()
+	VectorSet& floodSelect(VectorSet& fill, sf::Vector2i start, int sizeLimit, std::function<bool(HexTile&)>& condition);
+	// Create a vector of non-intersecting flood select regions simultaneously,
+	// stopping at tiles which do not meet condition()
+	std::vector<VectorSet>& floodSelectParallel(std::vector<VectorSet>& fill, std::vector<sf::Vector2i>& start, int sizeLimit, std::function<bool(HexTile&)>& condition);
+	// Return size of the flood region, stopping at tiles which do not meet condition()
+	int floodSelectSize(sf::Vector2i start, std::function<bool(HexTile&)>& condition);
+
 	/////////////
 	// Drawing //
 	/////////////
+
+	static const int& getHexRadius(int zoom);
+	static const sf::Vector2i& getHexSize(int zoom);
+	// The amount in pixels that a hex tile's center is offset from the previous one;
+	// use this one to measure screen space in hexes, not hexSize!
+	static const sf::Vector2f& getHexAdvance(int zoom);
+	// The origin (drawing offset) for the whole map
+	static const sf::Vector2f& getMapOrigin(int zoom);
 	// 0-2, 0 is the closest
 	int getZoomLevel();
 	// 0-2, 0 is the closest
 	void setZoomLevel(int zoom);
-	// The amount that a hex tile's center is offset from the previous one;
-	// use this one to measure screen space in hexes, not hexSize!
-	const sf::Vector2f getHexAdvance();
 	void setTile(sf::Vector2i offsetPos, const HexTileS& hts, mt19937& urng);
 	void setAllTiles(const HexTileS& hts, mt19937& urng);
 	void setTileColor(sf::Vector2i offsetPos, sf::Color col);
@@ -149,22 +214,28 @@ public:
 	const sf::IntRect& getChunkViewArea() const;
 	// Keep a view from moving too far outside the map boundaries
 	void constrainView(sf::View& view);
-	// MapEntities
+
+	/////////////////
+	// MapEntities //
+	/////////////////
+
 	Faction* addFaction();
 	Site* addSite(const SiteS* sSite, Faction* parent);
 	MapUnit* addMapUnit(const MapEntityS* sEnt, Faction* parent);
 	void clearSites();
 	void clearMapUnits();
 	void update(const sf::Time& timeElapsed);
-	// MapGen
+
+	////////////
+	// MapGen //
+	////////////
+
 	void generateBiomes(mt19937& urng);
 	void generateMountainRange(mt19937& urng);
 	void findRegions();
 	void placeSites(mt19937& urng);
 };
 
-float distHex(sf::Vector2f& a, sf::Vector2f& b);
-float distHex(sf::Vector2i& a, sf::Vector2i& b);
 void polarToCartesian(sf::Vector2f& p);
 sf::Vector2f roundvf(sf::Vector2f p);
 

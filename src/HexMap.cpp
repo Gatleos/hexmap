@@ -9,6 +9,8 @@
 #include "MapEntity.h"
 
 
+const sf::Vector2i HexMap::directions[dir::SIZE] = { { 1, -1 }, { 0, -1 }, { -1, 0 }, { -1, 1 }, { 0, 1 }, { 1, 0 } };
+
 const int HexMap::CHUNK_SIZE = 16;
 const int HexMap::CHUNK_SQUARED = CHUNK_SIZE * CHUNK_SIZE;
 
@@ -23,14 +25,6 @@ sf::Vector2f HexMap::mapOrigin_[ZOOM_LEVELS] = { { 32, 37 }, { 16, 18 }, { 10, 1
 array<Road, 6> roadSprites;
 std::vector<sf::FloatRect> mountainSprites;
 
-float distHex(sf::Vector2f& a, sf::Vector2f& b)
-{
-	return (abs(a.x - b.x) + abs(a.x + a.y - b.x - b.y) + abs(a.y - b.y)) / 2;
-}
-float distHex(sf::Vector2i& a, sf::Vector2i& b)
-{
-	return (float)((abs(a.x - b.x) + abs(a.x + a.y - b.x - b.y) + abs(a.y - b.y)) / 2);
-}
 void polarToCartesian(sf::Vector2f& p)
 {
 	float tx = p.y * cos(p.x);
@@ -44,16 +38,69 @@ sf::Vector2f roundvf(sf::Vector2f p)
 	return p;
 }
 
+HexMap::FloodFill::FloodFill(int sizeLimit, VectorSet* seen, HexMap* hm, std::function<bool(HexTile&)>& condition) :
+totalSize_(0), container_(nullptr), sizeLimit_(sizeLimit),
+seen_(seen), hm_(hm), condition_(&condition)
+{
+}
+bool HexMap::FloodFill::iterate()
+{
+	for (auto& f : frontier_) {
+		hm_->clipToBounds(neighbors(f, adj_));
+		for (auto it = adj_.begin(); it != adj_.end(); it++) {
+			if (seen_->find(*it) != seen_->end()) {
+				continue;
+			}
+			seen_->insert(*it);
+			sf::Vector2i off = axialToOffset(*it);
+			if (!(*condition_)(hm_->hexes_(off.x, off.y))) {
+				continue;
+			}
+			if (container_ != nullptr) {
+				container_->insert(*it);
+			}
+			newFrontier_.push_back(*it);
+			totalSize_++;
+			if (totalSize_ >= sizeLimit_) {
+				return false;
+			}
+		}
+	}
+	if (newFrontier_.empty()) {
+		return false;
+	}
+	frontier_.clear();
+	std::swap(frontier_, newFrontier_);
+	return true;
+}
+void HexMap::FloodFill::run()
+{
+	while (iterate()) {}
+}
+int HexMap::FloodFill::getSize()
+{
+	return totalSize_;
+}
+void HexMap::FloodFill::initFill(sf::Vector2i start)
+{
+	start_ = start;
+	totalSize_ = 0;
+	frontier_.clear();
+	newFrontier_.clear();
+	container_->insert(start);
+	frontier_.push_back(start);
+	seen_->insert(start);
+}
+void HexMap::FloodFill::setOutputContainer(VectorSet* container)
+{
+	container_ = container;
+}
+
 HexMap::HexMap() :
 activeBgVertices_(&bgVertices_[0]),
 nextUnitId(0),
 nextSiteId(0)
 {
-}
-
-bool HexMap::walkable(sf::Vector2i& c)
-{
-	return true;
 }
 
 int HexMap::heuristic(sf::Vector2i& a, sf::Vector2i& b)
@@ -64,12 +111,13 @@ int HexMap::heuristic(sf::Vector2i& a, sf::Vector2i& b)
 
 int HexMap::moveCost(sf::Vector2i& current, sf::Vector2i& next)
 {
-	return getAxial(next.x, next.y).hts->moveCost;
+	auto& h = getAxial(next.x, next.y);
+	return h.hts->moveCost + (h.tfs == nullptr ? 0 : h.tfs->moveCost);
 }
 
 std::deque<sf::Vector2i>& HexMap::getPath(std::deque<sf::Vector2i>& path, sf::Vector2i startAxial, sf::Vector2i goalAxial)
 {
-	if (!isAxialInBounds(startAxial) || !getAxial(startAxial.x, startAxial.y).hts->walkable || !isAxialInBounds(goalAxial) || !getAxial(goalAxial.x, goalAxial.y).hts->walkable) {
+	if (!isAxialInBounds(startAxial) || !getAxial(startAxial.x, startAxial.y).hts->FLAGS[HexTileS::WALKABLE] || !isAxialInBounds(goalAxial) || !getAxial(goalAxial.x, goalAxial.y).hts->FLAGS[HexTileS::WALKABLE]) {
 		return path;
 	}
 	// traceback
@@ -80,7 +128,7 @@ std::deque<sf::Vector2i>& HexMap::getPath(std::deque<sf::Vector2i>& path, sf::Ve
 	multimap<int, sf::Vector2i> frontier;
 	sf::Vector2i start = startAxial;
 	sf::Vector2i goal = goalAxial;
-	std::deque<sf::Vector2i> n;
+	VectorSet n;
 	frontier.insert(std::pair<int, sf::Vector2i>(0, start));
 	cameFrom[start] = start;
 	costSoFar[start] = 0;
@@ -92,7 +140,7 @@ std::deque<sf::Vector2i>& HexMap::getPath(std::deque<sf::Vector2i>& path, sf::Ve
 		}
 		n.clear();
 		for (auto next : neighbors(current, n)) {
-			if (!isAxialInBounds(next) || !getAxial(next.x, next.y).hts->walkable) {
+			if (!isAxialInBounds(next) || !getAxial(next.x, next.y).hts->FLAGS[HexTileS::WALKABLE]) {
 				continue;
 			}
 			int newCost = costSoFar[current] + moveCost(current, next);
@@ -113,6 +161,48 @@ std::deque<sf::Vector2i>& HexMap::getPath(std::deque<sf::Vector2i>& path, sf::Ve
 	}
 	return path;
 }
+
+int HexMap::getPathCost(sf::Vector2i startAxial, sf::Vector2i goalAxial)
+{
+	if (!isAxialInBounds(startAxial) || !getAxial(startAxial.x, startAxial.y).hts->FLAGS[HexTileS::WALKABLE] || !isAxialInBounds(goalAxial) || !getAxial(goalAxial.x, goalAxial.y).hts->FLAGS[HexTileS::WALKABLE]) {
+		return 9001;
+	}
+	// combined cost of tiles leading to this one
+	unordered_map<sf::Vector2i, int, Vector2iHash> costSoFar;
+	// new tiles to query
+	multimap<int, sf::Vector2i> frontier;
+	sf::Vector2i start = startAxial;
+	sf::Vector2i goal = goalAxial;
+	VectorSet n;
+	frontier.insert(std::pair<int, sf::Vector2i>(0, start));
+	costSoFar[start] = 0;
+	while (!frontier.empty()) {
+		auto current = frontier.begin()->second;
+		frontier.erase(frontier.begin());
+		if (current == goal) {
+			break;
+		}
+		n.clear();
+		for (auto next : neighbors(current, n)) {
+			if (!isAxialInBounds(next) || !getAxial(next.x, next.y).hts->FLAGS[HexTileS::WALKABLE]) {
+				continue;
+			}
+			int newCost = costSoFar[current] + moveCost(current, next);
+			if (!costSoFar.count(next) || newCost < costSoFar[next]) {
+				costSoFar[next] = newCost;
+				int priority = newCost + heuristic(next, goal);
+				frontier.insert(std::pair<int, sf::Vector2i>(priority, next));
+			}
+		}
+	}
+	auto& distance = costSoFar.find(goal);
+	if (distance == costSoFar.end()) {
+		// A path was not found
+		return 9001;
+	}
+	return distance->second;
+}
+
 const int& HexMap::getHexRadius(int zoom)
 {
 	return hexRad_[zoom];
@@ -131,18 +221,6 @@ const sf::Vector2f& HexMap::getHexAdvance(int zoom)
 const sf::Vector2f& HexMap::getMapOrigin(int zoom)
 {
 	return mapOrigin_[zoom];
-}
-
-std::deque<sf::Vector2i>& HexMap::neighborsBounded(sf::Vector2i posAxial, std::deque<sf::Vector2i>& n)
-{
-	static sf::Vector2i v;
-	for (int x = 0; x < 6; x++) {
-		v = { posAxial.x + directions[x].x, posAxial.y + directions[x].y };
-		if (isAxialInBounds(v)) {
-			n.push_back({ v.x, v.y });
-		}
-	}
-	return n;
 }
 
 const sf::Time& HexMap::getLifetime()
@@ -207,6 +285,14 @@ void HexMap::init(int width, int height)
 	setZoomLevel(0);
 }
 
+float HexMap::distAxial(sf::Vector2f& a, sf::Vector2f& b)
+{
+	return (abs(a.x - b.x) + abs(a.x + a.y - b.x - b.y) + abs(a.y - b.y)) / 2;
+}
+float HexMap::distAxial(sf::Vector2i& a, sf::Vector2i& b)
+{
+	return (float)((abs(a.x - b.x) + abs(a.x + a.y - b.x - b.y) + abs(a.y - b.y)) / 2);
+}
 sf::Vector2f HexMap::roundHex(sf::Vector2f hex)
 {
 	cubepoint c;
@@ -257,7 +343,7 @@ sf::Vector2f HexMap::pixelToHex(sf::Vector2f pixel) const
 	return roundHex(pixel);
 }
 
-bool HexMap::isAxialInBounds(sf::Vector2i posAxial)
+bool HexMap::isAxialInBounds(sf::Vector2i posAxial) const
 {
 	posAxial.x -= -floorf(posAxial.y / 2.0);
 	if (posAxial.x < 0 || posAxial.x >= mapSize_.x || posAxial.y < 0 || posAxial.y >= mapSize_.y) {
@@ -266,7 +352,7 @@ bool HexMap::isAxialInBounds(sf::Vector2i posAxial)
 	return true;
 }
 
-bool HexMap::isOffsetInBounds(sf::Vector2i posOffset)
+bool HexMap::isOffsetInBounds(sf::Vector2i posOffset) const
 {
 	if (posOffset.x < 0 || posOffset.x >= mapSize_.x || posOffset.y < 0 || posOffset.y >= mapSize_.y) {
 		return false;
@@ -274,25 +360,47 @@ bool HexMap::isOffsetInBounds(sf::Vector2i posOffset)
 	return true;
 }
 
-std::deque<sf::Vector2i>& HexMap::neighbors(sf::Vector2i i, std::deque<sf::Vector2i>& n)
+sf::Vector2i HexMap::neighbor(sf::Vector2i centerAxial, int dir)
+{
+	return sf::Vector2i(centerAxial.x + directions[dir].x, centerAxial.y + directions[dir].y);
+}
+VectorSet& HexMap::neighbors(sf::Vector2i centerAxial, VectorSet& n)
 {
 	for (int x = 0; x < 6; x++) {
-		n.push_back(sf::Vector2i(i.x + directions[x].x, i.y + directions[x].y));
+		n.insert(sf::Vector2i(centerAxial.x + directions[x].x, centerAxial.y + directions[x].y));
 	}
 	return n;
 }
-VectorSet& HexMap::area(sf::Vector2i h, int radius, VectorSet& n)
+VectorSet& HexMap::area(sf::Vector2i centerAxial, int radius, VectorSet& n)
 {
-	cubepoint cp(h.x, 0, h.y);
-	cp.y = -cp.x - cp.z;
+	//var results = []
+	//for each - N ≤ dx ≤ N :
+	//	for each max(-N, -dx - N) ≤ dy ≤ min(N, -dx + N) :
+	//		var dz = -dx - dy
+	//		results.append(cube_add(center, Cube(dx, dy, dz)))
+	cubepoint cp((float)centerAxial.x, (float)radius, (float)centerAxial.y);
 	cubepoint d;
 	cubepoint np;
-	np.y = (float)radius;
-	for (d.x = -np.y; d.x <= np.y; d.x++) {
-		for (d.y = std::max(-np.y, -d.x - np.y); d.y <= std::min(np.y, -d.x + np.y); d.y++) {
+	for (d.x = -cp.y; d.x <= cp.y; d.x++) {
+		for (d.y = std::max(-cp.y, -d.x - cp.y); d.y <= std::min(cp.y, -d.x + cp.y); d.y++) {
 			d.z = -d.x - d.y;
 			np = d + cp;
 			n.insert({ (int)np.x, (int)np.z });
+		}
+	}
+	return n;
+}
+VectorSet& HexMap::ring(sf::Vector2i centerAxial, int radius, VectorSet& n)
+{
+	if (radius == 0) {
+		n.insert(centerAxial);
+		return n;
+	}
+	centerAxial.y += radius;
+	for (int d = 0; d < 6; d++) {
+		for (int r = 0; r < radius; r++) {
+			n.insert(centerAxial);
+			centerAxial = neighbor(centerAxial, d);
 		}
 	}
 	return n;
@@ -320,6 +428,28 @@ sf::Vector2i HexMap::axialToOffset(sf::Vector2i v)
 	v.x += (v.y - (v.y & 1)) / 2;
 	return v;
 }
+VectorSet& HexMap::clipToBounds(VectorSet& boundedAxial)
+{
+	for (auto it = boundedAxial.begin(); it != boundedAxial.end();) {
+		if (!isAxialInBounds(*it)) {
+			it = boundedAxial.erase(it);
+			continue;
+		}
+		it++;
+	}
+	return boundedAxial;
+}
+VectorSet& HexMap::clip(VectorSet& listAxial, std::function<bool(HexTile&)>& condition)
+{
+	for (auto it = listAxial.begin(); it != listAxial.end();) {
+		if (!condition(getAxial(it->x, it->y))) {
+			it = listAxial.erase(it);
+			continue;
+		}
+		it++;
+	}
+	return listAxial;
+}
 
 HexTile& HexMap::getAxial(int x, int y)
 {
@@ -331,26 +461,46 @@ HexTile& HexMap::getOffset(int x, int y)
 {
 	return hexes_(x, y);
 }
-void HexMap::floodSelect(VectorSet& fill, int minHeight, int maxHeight)
-{ // UNFINISHED
-	return;
-	std::deque<sf::Vector2i> neighbors;
-	VectorSet frontier = fill;
-	while (!frontier.empty()) {
-		for (auto f : frontier) {
-			neighborsBounded(f, neighbors);
-		}
-		frontier.clear();
-		for (auto n : neighbors) {
-			HexTile& t = getAxial(n.x, n.y);
-			if (fill.find(n) == fill.end() && frontier.find(n) == frontier.end() && t.height >= minHeight && t.height < maxHeight) {
-				frontier.insert(n);
-			}
-		}
-		fill.insert(frontier.begin(), frontier.end());
-		neighbors.clear();
+VectorSet& HexMap::floodSelect(VectorSet& fill, sf::Vector2i start, int sizeLimit, std::function<bool(HexTile&)>& condition)
+{
+	VectorSet seen;
+	FloodFill f(sizeLimit, &seen, this, condition);
+	f.setOutputContainer(&fill);
+	f.initFill(start);
+	f.run();
+	return fill;
+}
+std::vector<VectorSet>& HexMap::floodSelectParallel(std::vector<VectorSet>& fill, std::vector<sf::Vector2i>& start, int sizeLimit, std::function<bool(HexTile&)>& condition)
+{
+	VectorSet seen;
+	// pointers to the VectorSets, so we can remove them
+	// as they finish filling
+	std::vector<FloodFill> fillPtr;
+	int index = 0;
+	for (auto& f : fill) {
+		fillPtr.emplace_back(sizeLimit, &seen, this, condition);
+		fillPtr.back().setOutputContainer(&f);
+		fillPtr.back().initFill(start[index]);
+		index++;
 	}
-	frontier.clear();
+	while (!fillPtr.empty()) {
+		for (auto it = fillPtr.begin(); it != fillPtr.end();) {
+			if (!it->iterate()) { // the FloodFill has either reached capacity or run out of tiles
+				it = fillPtr.erase(it);
+				continue;
+			}
+			it++;
+		}
+	}
+	return fill;
+}
+int HexMap::floodSelectSize(sf::Vector2i start, std::function<bool(HexTile&)>& condition)
+{
+	VectorSet seen;
+	FloodFill f(std::numeric_limits<int>::max(), &seen, this, condition);
+	f.initFill(start);
+	f.run();
+	return f.getSize();
 }
 
 
@@ -363,10 +513,6 @@ void HexMap::setZoomLevel(int zoom)
 	zoomLevel = clamp(zoom, 0, 2);
 	activeBgVertices_ = &bgVertices_[zoomLevel];
 	setOrigin(mapOrigin_[zoomLevel]);
-}
-const sf::Vector2f HexMap::getHexAdvance()
-{
-	return hexAdvance_[zoomLevel];
 }
 void HexMap::setAllTiles(const HexTileS& hts, mt19937& urng)
 {
@@ -400,6 +546,7 @@ void HexMap::setAllTiles(const HexTileS& hts, mt19937& urng)
 			int index = 0;
 			int rNum = 0;
 			for (auto* h : hexes_) {
+				h->tfs = hts.features[0];
 				h->spr[s].setTexture(TileFeatureS::getTexture());
 				rNum = feat.randomize(urng);
 				h->spr[s].setTextureRect((sf::IntRect)feat.getRect(rNum));
@@ -444,24 +591,26 @@ void HexMap::setTileColor(sf::Vector2i offsetPos, sf::Color col)
 }
 void HexMap::setTileFeature(sf::Vector2i offsetPos, const TileFeatureS& tfs, mt19937& urng)
 {
-	auto& spr = hexes_(offsetPos.x, offsetPos.y).spr;
+	auto& hex = hexes_(offsetPos.x, offsetPos.y);
 	int rNum = 0;
+	hex.tfs = &tfs;
 	for (int s = 0; s < 3; s++) {
 		sf::Vector2f pix = hexToPixel((sf::Vector2f)offsetToAxial(offsetPos), s);
-		spr[s].setTexture(TileFeatureS::getTexture());
+		hex.spr[s].setTexture(TileFeatureS::getTexture());
 		rNum = tfs.rects_[s].randomize(urng);
-		spr[s].setTextureRect((sf::IntRect)tfs.rects_[s].getRect(rNum));
-		spr[s].setPosition(pix + tfs.rects_[s].getPos(rNum));
+		hex.spr[s].setTextureRect((sf::IntRect)tfs.rects_[s].getRect(rNum));
+		hex.spr[s].setPosition(pix + tfs.rects_[s].getPos(rNum));
 	}
 }
 void HexMap::setTileFeature(sf::Vector2i offsetPos, const TileFeatureS& tfs, int zoom, mt19937& urng)
 {
-	auto& spr = hexes_(offsetPos.x, offsetPos.y).spr;
+	auto& hex = hexes_(offsetPos.x, offsetPos.y);
+	hex.tfs = &tfs;
 	sf::Vector2f pix = hexToPixel((sf::Vector2f)offsetToAxial(offsetPos), zoom);
-	spr[zoom].setTexture(TileFeatureS::getTexture());
+	hex.spr[zoom].setTexture(TileFeatureS::getTexture());
 	int rNum = tfs.rects_[zoom].randomize(urng);
-	spr[zoom].setTextureRect((sf::IntRect)tfs.rects_[zoom].getRect(rNum));
-	spr[zoom].setPosition(pix + tfs.rects_[zoom].getPos(rNum));
+	hex.spr[zoom].setTextureRect((sf::IntRect)tfs.rects_[zoom].getRect(rNum));
+	hex.spr[zoom].setPosition(pix + tfs.rects_[zoom].getPos(rNum));
 }
 void HexMap::setFeatureColor(sf::Vector2i offsetPos, const sf::Color& col)
 {
