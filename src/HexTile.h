@@ -41,12 +41,16 @@ public:
 class HexTile
 {
 public:
+	enum {
+		MOUNTAINS, FLAG_MAX
+	};
 	const HexTileS* hts;
 	const TileFeatureS* tfs;
+	MapEntity* ent;
 	unsigned char height;
 	char riverType;
 	bitset<6> roads;
-	MapEntity* ent;
+	bitset<FLAG_MAX> FLAGS;
 	sf::Sprite spr[3];
 	HexTile();
 };
