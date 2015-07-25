@@ -130,7 +130,8 @@ const TileFeatureS& TileFeatureS::get(string t)
 
 TileFeatureS::TileFeatureS(string id) :
 vert_(sf::PrimitiveType::Quads, 4U),
-id_(id)
+id_(id),
+moveCost(0)
 {
 }
 
@@ -171,6 +172,9 @@ void TileFeatureS::loadJson(string filename)
 				Json::Value rData = fdata.get(element, Json::Value::null);
 				feat->rects_[i].loadJson(rData, sheet, HexMap::getHexSize(i));
 			}
+			// moveCost
+			element = "moveCost";
+			feat->moveCost = fdata.get(element, 0).asInt();
 		}
 		catch (runtime_error e) { // report the error with the name of the object and member
 			// make sure we have placeholder drawing rects!

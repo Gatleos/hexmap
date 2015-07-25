@@ -50,6 +50,7 @@ public:
 	std::string id_;
 	std::string name_;
 	std::array<RandomRect, 3> rects_;
+	int moveCost;
 };
 
 #endif
