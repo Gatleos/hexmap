@@ -9,9 +9,11 @@ using namespace std;
 
 class Faction
 {
-	vector<int> sites;
-	vector<int> leaders;
-	vector<int> units;
+public:
+	int capitol;
+	set<int> sites;
+	set<int> leaders;
+	set<int> units;
 };
 
 #endif
