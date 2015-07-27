@@ -4,6 +4,44 @@
 		"full": {
 			"animFile": "castle.anim",
 			"idle": "full"
+		},
+		"half": {
+			"animFile": "monsters.anim",
+			"idle": "Demon"
+		},
+		"quarter": {
+			"animFile": "monsters.anim",
+			"idle": "Demon"
+		}
+	},
+	"si_town": {
+		"name": "Town",
+		"full": {
+			"animFile": "castle.anim",
+			"idle": "full"
+		},
+		"half": {
+			"animFile": "monsters.anim",
+			"idle": "Bowser"
+		},
+		"quarter": {
+			"animFile": "monsters.anim",
+			"idle": "Bowser"
+		}
+	},
+	"si_village": {
+		"name": "Village",
+		"full": {
+			"animFile": "castle.anim",
+			"idle": "full"
+		},
+		"half": {
+			"animFile": "monsters.anim",
+			"idle": "Eye"
+		},
+		"quarter": {
+			"animFile": "monsters.anim",
+			"idle": "Eye"
 		}
 	}
 }
