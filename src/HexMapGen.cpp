@@ -276,28 +276,45 @@ void HexMap::placeSites(mt19937& urng)
 {
 	array<sf::Color, 13> tColors = { sf::Color::Blue, sf::Color::Cyan, sf::Color::Black, sf::Color::Green, sf::Color::Magenta,
 	sf::Color::Red, sf::Color::White, sf::Color::Yellow, lerp::brown, lerp::limeGreen, lerp::orange, lerp::purple, lerp::turquoise};
-	static function<bool(HexTile&)> condition = [](HexTile& hex){ return hex.hts->FLAGS[HexTileS::WALKABLE]; };
+	static function<bool(HexTile&)> condition = [](HexTile& hex){ return hex.hts->FLAGS[HexTileS::WALKABLE] && !hex.FLAGS[HexTile::MOUNTAINS]; };
 	clearSites();
 	clearMapUnits();
-	auto* f = addFaction();
+	auto* fac = addFaction();
 	std::uniform_int_distribution<int> landChance(0, land.size() - 1);
 	std::vector<sf::Vector2i> territories;
 	for (int a = 0; a < 40; a++) {
-		//auto* s = addSite(SiteS::get("si_castle"), f);
 		sf::Vector2i aPos = (sf::Vector2i)offsetToAxial(land[landChance(urng)]);
 		territories.push_back(aPos);
-		//s->initMapPos(aPos);
 	}
 	std::vector<VectorSet> fill;
 	fill.resize(territories.size());
 	floodSelectParallel(fill, territories, 126, condition);
 	int index = 0;
+	std::vector<sf::Vector2i> output;
 	for (auto& f : fill) {
 		for (auto& h : f) {
 			sf::Vector2i oPos = axialToOffset(h);
 			pushTileColor(oPos, tColors[index%tColors.size()]);
 			setTile(oPos, HexTileS::get(HexTileS::TUNDRA_SNOW), urng);
 		}
+		f.erase(f.find(territories[index]));
+		int size = (int)(0.1 * f.size());
+		for (int a = 0; a < size; a++) {
+			std::uniform_int_distribution<int> range(0, f.size() - 1);
+			auto it = f.begin();
+			std::advance(it, range(urng));
+			output.push_back(*it);
+			f.erase(it);
+		}
+		auto* c = addSite(SiteS::get("si_castle"), fac);
+		c->setAnimationType(MapEntityS::anim::IDLE);
+		c->initMapPos(territories[index]);
+		for (auto& o : output) {
+			auto* s = addSite(SiteS::get(rng::boolean(urng)?"si_town":"si_village"), fac);
+			s->setAnimationType(MapEntityS::anim::IDLE);
+			s->initMapPos(o);
+		}
+		output.clear();
 		index++;
 	}
 }
