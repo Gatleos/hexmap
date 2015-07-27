@@ -277,8 +277,7 @@ void HexMap::placeSites(mt19937& urng)
 	array<sf::Color, 13> tColors = { sf::Color::Blue, sf::Color::Cyan, sf::Color::Black, sf::Color::Green, sf::Color::Magenta,
 	sf::Color::Red, sf::Color::White, sf::Color::Yellow, lerp::brown, lerp::limeGreen, lerp::orange, lerp::purple, lerp::turquoise};
 	static function<bool(HexTile&)> condition = [](HexTile& hex){ return hex.hts->FLAGS[HexTileS::WALKABLE] && !hex.FLAGS[HexTile::MOUNTAINS]; };
-	clearSites();
-	clearMapUnits();
+	clearEntities();
 	auto* fac = addFaction();
 	std::uniform_int_distribution<int> landChance(0, land.size() - 1);
 	std::vector<sf::Vector2i> territories;

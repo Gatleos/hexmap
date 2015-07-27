@@ -223,8 +223,7 @@ public:
 	Faction* addFaction();
 	Site* addSite(const SiteS* sSite, Faction* parent);
 	MapUnit* addMapUnit(const MapEntityS* sEnt, Faction* parent);
-	void clearSites();
-	void clearMapUnits();
+	void clearEntities();
 	void update(const sf::Time& timeElapsed);
 
 	////////////
