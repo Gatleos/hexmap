@@ -12,7 +12,6 @@
     <ClInclude Include="..\src\simplexnoise.h">
       <Filter>random</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\BezierCurve.h" />
     <ClInclude Include="..\src\Compare.h" />
     <ClInclude Include="..\src\AnimHandler.h">
       <Filter>animation</Filter>
@@ -54,6 +53,9 @@
     </ClInclude>
     <ClInclude Include="..\src\config.h">
       <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\BezierCurve.h">
+      <Filter>utility</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
