@@ -55,6 +55,7 @@ protected:
 	HexMap* hm;
 	Faction* faction;
 public:
+	int id;
 	MapEntity(const MapEntityS* sEnt, HexMap* hmSet, Faction* parent);
 	void setAnimationType(MapEntityS::anim num);
 	vector<Population> pops;
