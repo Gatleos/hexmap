@@ -281,21 +281,21 @@ void HexMap::placeSites(mt19937& urng)
 	auto* fac = addFaction();
 	std::uniform_int_distribution<int> landChance(0, land.size() - 1);
 	std::vector<sf::Vector2i> territories;
-	for (int a = 0; a < 40; a++) {
+	for (int a = 0; a < 20; a++) {
 		sf::Vector2i aPos = (sf::Vector2i)offsetToAxial(land[landChance(urng)]);
 		territories.push_back(aPos);
 	}
 	std::vector<VectorSet> fill;
 	fill.resize(territories.size());
-	floodSelectParallel(fill, territories, 126, condition);
+	floodSelectParallel(fill, territories, 91, condition);
 	int index = 0;
 	std::vector<sf::Vector2i> output;
 	for (auto& f : fill) {
-		for (auto& h : f) {
-			sf::Vector2i oPos = axialToOffset(h);
-			pushTileColor(oPos, tColors[index%tColors.size()]);
-			setTile(oPos, HexTileS::get(HexTileS::TUNDRA_SNOW), urng);
-		}
+		//for (auto& h : f) {
+		//	sf::Vector2i oPos = axialToOffset(h);
+		//	pushTileColor(oPos, tColors[index%tColors.size()]);
+		//	setTile(oPos, HexTileS::get(HexTileS::TUNDRA_SNOW), urng);
+		//}
 		f.erase(f.find(territories[index]));
 		int size = (int)(0.1 * f.size());
 		for (int a = 0; a < size; a++) {
