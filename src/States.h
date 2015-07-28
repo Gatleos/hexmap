@@ -5,15 +5,12 @@
 #include "HexMap.h"
 #include "pugixml.hpp"
 #include "AnimHandler.h"
-#include "UI.h"
+#include "UIdef.h"
 
 class EngineState: public GameState
 {
 public:
-	shared_ptr<UILayout> mapGenDebug;
-	array<shared_ptr<sfg::Label>, 6U> debugInfo;
-	shared_ptr<sfg::Entry> seedBox;
-	shared_ptr<sfg::CheckButton> randomSeed;
+	shared_ptr<UIdef::MapGenDebug> mapGenDebug;
 	//
 	pugi::xml_document ani;
 	pugi::xml_document spr;

@@ -16,10 +16,8 @@ struct UIAlign
 
 class UILayout
 {
-	UILayout();
 public:
 	vector<pair<shared_ptr<sfg::Window>, UIAlign>> windows;
-	static shared_ptr<UILayout> create();
 	void show(bool show = true);
 	void addWindow(shared_ptr<sfg::Window> newWin, UIAlign a);
 };

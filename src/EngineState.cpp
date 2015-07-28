@@ -40,43 +40,11 @@ void EngineState::init()
 {
 	// SFML init
 	engine->clearColor = { 0, 43, 77, 255 };
-	engine->window->setFramerateLimit(60);
+	engine->window->setFramerateLimit(600);
 	// GUI construction
-	mapGenDebug = UILayout::create();
-	auto window1 = sfg::Window::Create(sfg::Window::Style::BACKGROUND);
-	auto table1 = sfg::Table::Create();
-	array<const char*, 6U> s = { "Camera:", "Mouse:", "Hex:", "Terrain:", "Gen (ms):", "Chunks:" };
-	array<shared_ptr<sfg::Label>, 6U> label2;
-	for (int a = 0; a < (int)debugInfo.size(); a++) {
-		label2[a] = sfg::Label::Create(s[a]);
-		label2[a]->SetAlignment({ 0.0f, 0.0f });
-		table1->Attach(label2[a], { 0U, (sf::Uint32)a, 1U, 1U });
-	}
-	for (int a = 0; a < (int)debugInfo.size(); a++) {
-		debugInfo[a] = sfg::Label::Create("");
-		debugInfo[a]->SetAlignment({ 0.0f, 0.0f });
-		table1->Attach(debugInfo[a], { 1U, (sf::Uint32)a, 1U, 1U });
-	}
-	seedBox = sfg::Entry::Create();
-	seedBox->SetAllocation({ 0.0f, 0.0f, 75.0f, 5.0f });
-	seedBox->SetRequisition({ 75.0f, 5.0f });
-	seedBox->SetMaximumLength(8);
-	randomSeed = sfg::CheckButton::Create("Random seed");
-	randomSeed->SetActive(true);
-	auto box1 = sfg::Box::Create(sfg::Box::Orientation::VERTICAL, 10.0f);
-	auto box2 = sfg::Box::Create(sfg::Box::Orientation::HORIZONTAL, 5.0f);
-	auto gen = sfg::Button::Create("Generate");
-	auto reload = sfg::Button::Create("Reload Files");
-	gen->GetSignal(sfg::Button::OnMouseLeftPress).Connect(std::bind(&EngineState::generate, this));
-	reload->GetSignal(sfg::Button::OnMouseLeftPress).Connect(std::bind(&EngineState::loadResourcesInPlace, this));
-	box1->Pack(table1);
-	box1->Pack(box2);
-	box1->Pack(gen);
-	box1->Pack(reload);
-	box2->Pack(randomSeed);
-	box2->Pack(seedBox);
-	window1->Add(box1);
-	mapGenDebug->addWindow(window1, UIAlign({ 1.0f, 0.0f, 210.0f, 120.0f }, UI::ALIGN_RIGHT | UI::ALIGN_FRAC_POSX));
+	mapGenDebug = shared_ptr<UIdef::MapGenDebug>(new UIdef::MapGenDebug);
+	mapGenDebug->gen->GetSignal(sfg::Button::OnMouseLeftPress).Connect(std::bind(&EngineState::generate, this));
+	mapGenDebug->reload->GetSignal(sfg::Button::OnMouseLeftPress).Connect(std::bind(&EngineState::loadResourcesInPlace, this));
 	UI::addNewLayout(mapGenDebug);
 	UI::pushLayout(mapGenDebug);
 	// Initialize views
@@ -156,16 +124,16 @@ void EngineState::render(sf::RenderWindow &window)
 	const sf::Vector2f& size = mapView.getSize();
 	const sf::Vector2f& center = mapView.getCenter();
 	snprintf(str, 50, "%d,%d", (int)camPos.x, (int)camPos.y);
-	debugInfo[0]->SetText(str);
+	mapGenDebug->debugInfo[0]->SetText(str);
 	snprintf(str, 50, "%d,%d", (int)mouseMapPos.x, (int)mouseMapPos.y);
-	debugInfo[1]->SetText(str);
+	mapGenDebug->debugInfo[1]->SetText(str);
 	snprintf(str, 50, "%d,%d", (int)tilePos.x, (int)tilePos.y);
-	debugInfo[2]->SetText(str);
+	mapGenDebug->debugInfo[2]->SetText(str);
 	snprintf(str, 50, "%d", mtMilli);
-	debugInfo[4]->SetText(str);
+	mapGenDebug->debugInfo[4]->SetText(str);
 	const sf::IntRect& ir = hg.getChunkViewArea();
 	snprintf(str, 50, "(%d,%d / %d,%d)", ir.left, ir.top, ir.width, ir.height);
-	debugInfo[5]->SetText(str);
+	mapGenDebug->debugInfo[5]->SetText(str);
 }
 void EngineState::input(sf::Event &e)
 {
@@ -182,10 +150,10 @@ void EngineState::input(sf::Event &e)
 		mouseMapPos = { e.mouseMove.x - size.x / 2.0f + center.x, e.mouseMove.y - size.y / 2.0f + center.y };
 		tilePos = hg.pixelToHex(mouseMapPos);
 		if (hg.isAxialInBounds((sf::Vector2i)tilePos)) {
-			debugInfo[3]->SetText(hg.getAxial((int)tilePos.x, (int)tilePos.y).hts->name);
+			mapGenDebug->debugInfo[3]->SetText(hg.getAxial((int)tilePos.x, (int)tilePos.y).hts->name);
 		}
 		else {
-			debugInfo[3]->SetText("");
+			mapGenDebug->debugInfo[3]->SetText("");
 		}
 	}
 	else if (e.type == sf::Event::MouseWheelMoved) {
@@ -262,11 +230,11 @@ void EngineState::generate()
 {
 	hg.clearTileFeatures();
 	unsigned long hexSeed = 0;
-	if (randomSeed->IsActive()) {
+	if (mapGenDebug->randomSeed->IsActive()) {
 		hexSeed = rng::r();
 	}
 	else {
-		string seed = (string)seedBox->GetText();
+		string seed = (string)mapGenDebug->seedBox->GetText();
 		if (seed.empty()) {
 			seed = "0";
 		}
@@ -283,7 +251,7 @@ void EngineState::generate()
 	mtMilli = mtTime.asMilliseconds();
 	stringstream ss;
 	ss << std::hex << hexSeed;
-	seedBox->SetText(ss.str());
+	mapGenDebug->seedBox->SetText(ss.str());
 }
 
 // Clear and reload all resource files, then generate the map
@@ -294,7 +262,7 @@ void EngineState::loadResourcesInPlace()
 	RESOURCE.releaseAll();
 	RESOURCE.setRoot(resourceRoot);
 	config::loadAllJson();
-	string seed = (string)seedBox->GetText();
+	string seed = (string)mapGenDebug->seedBox->GetText();
 	if (seed.empty()) {
 		seed = "0";
 	}
@@ -310,7 +278,7 @@ void EngineState::loadResourcesInPlace()
 	mtMilli = mtTime.asMilliseconds();
 	stringstream ss;
 	ss << std::hex << hexSeed;
-	seedBox->SetText(ss.str());
+	mapGenDebug->seedBox->SetText(ss.str());
 	// Shader
 	shader.loadFromFile("data/simplex.glsl", sf::Shader::Type::Fragment);
 	shader.setParameter("offset", mapView.getCenter());

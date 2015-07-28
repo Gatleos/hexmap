@@ -40,6 +40,7 @@
     <ClInclude Include="..\src\Compare.h" />
     <ClInclude Include="..\src\TileFeature.h" />
     <ClInclude Include="..\src\UI.h" />
+    <ClInclude Include="..\src\UIdef.h" />
     <ClInclude Include="..\src\VERSION.h" />
   </ItemGroup>
   <ItemGroup>
@@ -64,6 +65,7 @@
     <ClCompile Include="..\src\Species.cpp" />
     <ClCompile Include="..\src\TileFeature.cpp" />
     <ClCompile Include="..\src\UI.cpp" />
+    <ClCompile Include="..\src\UIdef.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{FD5AA415-17FB-45E6-9043-9CF28993D822}</ProjectGuid>

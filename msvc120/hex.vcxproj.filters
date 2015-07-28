@@ -57,6 +57,9 @@
     <ClInclude Include="..\src\BezierCurve.h">
       <Filter>utility</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\UIdef.h">
+      <Filter>UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\main.cpp" />
@@ -109,6 +112,9 @@
     </ClCompile>
     <ClCompile Include="..\src\KeyBindings.cpp">
       <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\UIdef.cpp">
+      <Filter>UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

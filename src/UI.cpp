@@ -47,13 +47,6 @@ void UIAlign::resize()
 // UILayout /////
 /////////////////
 
-UILayout::UILayout(){}
-
-shared_ptr<UILayout> UILayout::create()
-{
-	return shared_ptr<UILayout>(new UILayout);
-}
-
 void UILayout::show(bool show)
 {
 	if (show) {
