@@ -40,7 +40,7 @@ void EngineState::init()
 {
 	// SFML init
 	engine->clearColor = { 0, 43, 77, 255 };
-	engine->window->setFramerateLimit(600);
+	engine->window->setFramerateLimit(60);
 	// GUI construction
 	mapGenDebug = shared_ptr<UIdef::MapGenDebug>(new UIdef::MapGenDebug);
 	mapGenDebug->gen->GetSignal(sfg::Button::OnMouseLeftPress).Connect(std::bind(&EngineState::generate, this));
