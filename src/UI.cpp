@@ -1,9 +1,10 @@
 #include <stack>
 #include "UI.h"
 
-sfg::Desktop* UI_desktop;
-vector<pair<shared_ptr<UILayout>, bool>> UI_layoutStack;
-sf::Vector2f UI_appSize;
+static sfg::Desktop* UI_desktop;
+static vector<pair<shared_ptr<UILayout>, bool>> UI_layoutStack;
+static sf::Vector2f UI_appSize;
+static bool UI_gotInput = false;
 
 /////////////////
 // UIAlign //////
@@ -63,7 +64,7 @@ void UILayout::show(bool show)
 	}
 }
 
-void UILayout::addWindow(shared_ptr<sfg::Window> newWin, UIAlign a)
+void UILayout::addWindow(shared_ptr<sfg::Widget> newWin, UIAlign a)
 {
 	newWin->Show(false);
 	windows.push_back(make_pair(newWin, a));
@@ -89,6 +90,16 @@ void UI::setAppSize(sf::Vector2f size)
 	}
 }
 
+void UI::resetInputFlag()
+{
+	UI_gotInput = false;
+}
+
+bool UI::gotInput()
+{
+	return UI_gotInput;
+}
+
 void UI::init(sfg::Desktop* d)
 {
 	UI_desktop = d;
@@ -107,10 +118,19 @@ void UI::addWindow(shared_ptr<sfg::Window> newWin, UIAlign a)
 	newWin->SetAllocation(a.alloc_);
 }
 
+void setInputFlag()
+{
+	UI_gotInput = true;
+}
+
 void UI::addNewLayout(shared_ptr<UILayout> layout)
 {
 	for (auto& w : layout->windows) {
 		UI_desktop->Add(w.first);
+		w.first->GetSignal(sfg::Window::OnMouseLeftPress).Connect(setInputFlag);
+		w.first->GetSignal(sfg::Window::OnMouseLeftRelease).Connect(setInputFlag);
+		w.first->GetSignal(sfg::Window::OnMouseRightPress).Connect(setInputFlag);
+		w.first->GetSignal(sfg::Window::OnMouseRightRelease).Connect(setInputFlag);
 	}
 }
 

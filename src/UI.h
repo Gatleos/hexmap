@@ -17,9 +17,9 @@ struct UIAlign
 class UILayout
 {
 public:
-	vector<pair<shared_ptr<sfg::Window>, UIAlign>> windows;
+	vector<pair<shared_ptr<sfg::Widget>, UIAlign>> windows;
 	void show(bool show = true);
-	void addWindow(shared_ptr<sfg::Window> newWin, UIAlign a);
+	void addWindow(shared_ptr<sfg::Widget> newWin, UIAlign a);
 };
 
 namespace UI
@@ -37,6 +37,9 @@ namespace UI
 	void addNewLayout(shared_ptr<UILayout> layout);
 	// Update the size of the overall app window
 	void setAppSize(sf::Vector2f size);
+	void resetInputFlag();
+	// Did the UI process the last input?
+	bool gotInput();
 };
 
 #endif
