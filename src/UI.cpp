@@ -116,7 +116,7 @@ void UI::addNewLayout(shared_ptr<UILayout> layout)
 
 void UI::pushLayout(shared_ptr<UILayout> layout, bool replacePrevious)
 {
-	if (!UI_layoutStack.empty() && !replacePrevious) {
+	if (!UI_layoutStack.empty() && replacePrevious) {
 		UI_layoutStack.back().first->show(false);
 	}
 	UI_layoutStack.push_back(make_pair(layout, replacePrevious));
