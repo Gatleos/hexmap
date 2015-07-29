@@ -4,7 +4,7 @@
 static sfg::Desktop* UI_desktop;
 static vector<pair<shared_ptr<UILayout>, bool>> UI_layoutStack;
 static sf::Vector2f UI_appSize;
-static bool UI_gotInput = false;
+static bool UI_gotMouseInput = false;
 
 /////////////////
 // UIAlign //////
@@ -90,14 +90,14 @@ void UI::setAppSize(sf::Vector2f size)
 	}
 }
 
-void UI::resetInputFlag()
+void UI::resetInputFlags()
 {
-	UI_gotInput = false;
+	UI_gotMouseInput = false;
 }
 
-bool UI::gotInput()
+bool UI::gotMouseInput()
 {
-	return UI_gotInput;
+	return UI_gotMouseInput;
 }
 
 void UI::init(sfg::Desktop* d)
@@ -118,19 +118,15 @@ void UI::addWindow(shared_ptr<sfg::Window> newWin, UIAlign a)
 	newWin->SetAllocation(a.alloc_);
 }
 
-void setInputFlag()
-{
-	UI_gotInput = true;
-}
-
 void UI::addNewLayout(shared_ptr<UILayout> layout)
 {
+	static function<void()> setMouseFlag = [](){UI_gotMouseInput = true; };
 	for (auto& w : layout->windows) {
 		UI_desktop->Add(w.first);
-		w.first->GetSignal(sfg::Window::OnMouseLeftPress).Connect(setInputFlag);
-		w.first->GetSignal(sfg::Window::OnMouseLeftRelease).Connect(setInputFlag);
-		w.first->GetSignal(sfg::Window::OnMouseRightPress).Connect(setInputFlag);
-		w.first->GetSignal(sfg::Window::OnMouseRightRelease).Connect(setInputFlag);
+		w.first->GetSignal(sfg::Window::OnMouseLeftPress).Connect(setMouseFlag);
+		w.first->GetSignal(sfg::Window::OnMouseLeftRelease).Connect(setMouseFlag);
+		w.first->GetSignal(sfg::Window::OnMouseRightPress).Connect(setMouseFlag);
+		w.first->GetSignal(sfg::Window::OnMouseRightRelease).Connect(setMouseFlag);
 	}
 }
 

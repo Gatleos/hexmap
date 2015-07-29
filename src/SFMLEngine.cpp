@@ -32,7 +32,7 @@ void SFMLEngine::start() {
 					//return;
 				}
 				else { states.top()->input(event); }
-				UI::resetInputFlag();
+				UI::resetInputFlags();
 			}
 			//
 			lastFrame = fr.restart();

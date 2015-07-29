@@ -37,9 +37,9 @@ namespace UI
 	void addNewLayout(shared_ptr<UILayout> layout);
 	// Update the size of the overall app window
 	void setAppSize(sf::Vector2f size);
-	void resetInputFlag();
+	void resetInputFlags();
 	// Did the UI process the last input?
-	bool gotInput();
+	bool gotMouseInput();
 };
 
 #endif
