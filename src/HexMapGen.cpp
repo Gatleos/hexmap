@@ -291,12 +291,21 @@ void HexMap::placeSites(mt19937& urng)
 	int index = 0;
 	std::vector<sf::Vector2i> output;
 	for (auto& f : fill) {
+		if (f.empty()) {
+			index++;
+			continue;
+		}
 		//for (auto& h : f) {
 		//	sf::Vector2i oPos = axialToOffset(h);
 		//	pushTileColor(oPos, tColors[index%tColors.size()]);
 		//	setTile(oPos, HexTileS::get(HexTileS::TUNDRA_SNOW), urng);
 		//}
-		f.erase(f.find(territories[index]));
+		auto t = f.find(territories[index]);
+		if (t == f.end()) {
+			index++;
+			continue;
+		}
+		f.erase(t);
 		int size = (int)(0.1 * f.size());
 		for (int a = 0; a < size; a++) {
 			std::uniform_int_distribution<int> range(0, f.size() - 1);

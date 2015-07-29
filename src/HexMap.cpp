@@ -83,8 +83,11 @@ int HexMap::FloodFill::getSize()
 }
 void HexMap::FloodFill::initFill(sf::Vector2i start)
 {
+	if (!(*condition_)(hm_->getAxial(start.x, start.y))) {
+		return;
+	}
 	start_ = start;
-	totalSize_ = 0;
+	totalSize_ = 1;
 	frontier_.clear();
 	newFrontier_.clear();
 	container_->insert(start);
