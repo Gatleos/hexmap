@@ -1,6 +1,8 @@
 #include <iostream>
 #include "ResourceLoader.h"
 
+#define USE_TRANSPARENCY
+
 ResourceLoader::ResourceLoader(){}
 
 ResourceLoader& ResourceLoader::instance()
@@ -39,6 +41,7 @@ const sf::Texture* ResourceLoader::tex(string name)
 	auto texIt = textures.find(name);
 	if (texIt == textures.end()) {
 		string path = root + name;
+#ifdef USE_TRANSPARENCY
 		sf::Texture* tex = &textures[name];
 		if (!tex->loadFromFile(path)) {
 			// Couldn't open image!
@@ -46,6 +49,18 @@ const sf::Texture* ResourceLoader::tex(string name)
 			std::cerr << "ERROR: couldn't load texture \"" << path << "\"\n";
 			return nullptr;
 		}
+#else
+		sf::Image image;
+		sf::Texture* tex = &textures[name];
+		if (!image.loadFromFile(path)) {
+			// Couldn't open image!
+			textures.erase(textures.find(name));
+			std::cerr << "ERROR: couldn't load texture \"" << path << "\"\n";
+			return nullptr;
+		}
+		image.createMaskFromColor({ 255, 127, 39 });
+		tex->loadFromImage(image);
+#endif
 		return tex;
 	}
 	return &texIt->second;
