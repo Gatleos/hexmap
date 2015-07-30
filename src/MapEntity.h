@@ -13,11 +13,12 @@ class HexMap;
 class Population
 {
 public:
-	enum{ IDLE, GUARD, FARM, WOOD, MINE, PRISONER, ACTIVITY_NUM };
+	enum{ IDLE, GUARD, FARM, WOOD, MINE, ACTIVITY_NUM };
 private:
 	int size;
 	array<int, ACTIVITY_NUM> activities;
 public:
+	static const char* activityNames[ACTIVITY_NUM];
 	static const int POP_LIMIT;
 	const Species& species;
 	Population(const Species& s);

@@ -62,12 +62,12 @@ void EngineState::init()
 	mapGenDebug->reload->GetSignal(sfg::Button::OnMouseLeftPress).Connect(std::bind(&EngineState::loadResourcesInPlace, this));
 	UI::addNewLayout(mapGenDebug);
 	UI::pushLayout(mapGenDebug);
-	//auto* f = hg.addFaction();
-	//Site site(SiteS::get("si_castle"), &hg, f);
-	//siteMenu = make_shared<UIdef::SiteMenu>(UIdef::SiteMenu());
-	//siteMenu->setSite(site);
-	//UI::addNewLayout(siteMenu);
-	//UI::pushLayout(siteMenu);
+	auto* f = hg.addFaction();
+	Site site(SiteS::get("si_castle"), &hg, f);
+	siteMenu = make_shared<UIdef::SiteMenu>(UIdef::SiteMenu());
+	siteMenu->setSite(site);
+	UI::addNewLayout(siteMenu);
+	UI::pushLayout(siteMenu);
 	// Entities
 	//auto* f = hg.addFaction();
 	//for (int x = 0; x < 16384; x++) {

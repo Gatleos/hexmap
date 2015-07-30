@@ -9,6 +9,9 @@
 const array<string, MapEntityS::ANIM_NUM> MapEntityS::animTypes = { {
 		"idle"
 	} };
+const char* Population::activityNames[ACTIVITY_NUM] = {
+	"Idle", "Guard", "Farm", "Wood", "Mine"
+};
 const int Population::POP_LIMIT = 100000;
 
 Population::Population(const Species& s) :species(s), size(0)
