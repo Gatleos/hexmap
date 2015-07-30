@@ -9,7 +9,8 @@
 
 array<unique_ptr<TileFeatureS>, TileFeatureS::FEATURE_NUM> TileFeatureS::feature = { {
 		ftrptr("f_null"), ftrptr("f_mountain"), ftrptr("f_forest_s"), ftrptr("f_forest_m"), ftrptr("f_forest_l"),
-		ftrptr("f_taiga_s"), ftrptr("f_taiga_m"), ftrptr("f_taiga_l")
+		ftrptr("f_taiga_s"), ftrptr("f_taiga_m"), ftrptr("f_taiga_l"), ftrptr("f_taiga_snow_s"), ftrptr("f_taiga_snow_m"),
+		ftrptr("f_taiga_snow_l")
 	} };
 
 RandomRect::RandomRect() :rectChance(new std::discrete_distribution <int>{ 1 })
