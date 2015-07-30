@@ -41,12 +41,6 @@ void EngineState::init()
 	// SFML init
 	engine->clearColor = { 0, 43, 77, 255 };
 	engine->window->setFramerateLimit(60);
-	// GUI construction
-	mapGenDebug = shared_ptr<UIdef::MapGenDebug>(new UIdef::MapGenDebug);
-	mapGenDebug->gen->GetSignal(sfg::Button::OnMouseLeftPress).Connect(std::bind(&EngineState::generate, this));
-	mapGenDebug->reload->GetSignal(sfg::Button::OnMouseLeftPress).Connect(std::bind(&EngineState::loadResourcesInPlace, this));
-	UI::addNewLayout(mapGenDebug);
-	UI::pushLayout(mapGenDebug);
 	// Initialize views
 	sf::Vector2u winSize = engine->window->getSize();
 	mapView.setSize((sf::Vector2f)winSize);
@@ -62,6 +56,18 @@ void EngineState::init()
 	hg.init(MAPX, MAPY);
 	hg.setAllTiles(HexTileS::get(HexTileS::OCEAN), rng::r);
 	hg.calculateViewArea(mapView);
+	// GUI construction
+	mapGenDebug = shared_ptr<UIdef::MapGenDebug>(new UIdef::MapGenDebug);
+	mapGenDebug->gen->GetSignal(sfg::Button::OnMouseLeftPress).Connect(std::bind(&EngineState::generate, this));
+	mapGenDebug->reload->GetSignal(sfg::Button::OnMouseLeftPress).Connect(std::bind(&EngineState::loadResourcesInPlace, this));
+	UI::addNewLayout(mapGenDebug);
+	UI::pushLayout(mapGenDebug);
+	//auto* f = hg.addFaction();
+	//Site site(SiteS::get("si_castle"), &hg, f);
+	//siteMenu = make_shared<UIdef::SiteMenu>(UIdef::SiteMenu());
+	//siteMenu->setSite(site);
+	//UI::addNewLayout(siteMenu);
+	//UI::pushLayout(siteMenu);
 	// Entities
 	//auto* f = hg.addFaction();
 	//for (int x = 0; x < 16384; x++) {
@@ -77,7 +83,6 @@ void EngineState::init()
 	shader.setParameter("scale", 0.001f);
 	shader.setParameter("contrast", 0.25f);
 	shader.setParameter("brightness", 0.9f);
-	shader.setParameter("layer", 0.0f);
 }
 void EngineState::end()
 {
@@ -175,6 +180,12 @@ void EngineState::input(sf::Event &e)
 		}
 	}
 	else if (e.type == sf::Event::MouseButtonPressed) {
+		if (UI::gotMouseInput()) {
+			return;
+		}
+		//else {
+		//	UI::dropFocus();
+		//}
 		if (e.mouseButton.button <= 1) {
 			mButtonPressed = true;
 		}
@@ -246,7 +257,7 @@ void EngineState::generate()
 	for (int a = 0; a < config::gen::mountNum; a++) {
 		hg.generateMountainRange(customSeed);
 	}
-	hg.placeSites(customSeed);
+	//hg.placeSites(customSeed);
 	sf::Time mtTime = mtClock.getElapsedTime();
 	mtMilli = mtTime.asMilliseconds();
 	stringstream ss;
@@ -273,7 +284,7 @@ void EngineState::loadResourcesInPlace()
 	for (int a = 0; a < config::gen::mountNum; a++) {
 		hg.generateMountainRange(customSeed);
 	}
-	hg.placeSites(customSeed);
+	//hg.placeSites(customSeed);
 	sf::Time mtTime = mtClock.getElapsedTime();
 	mtMilli = mtTime.asMilliseconds();
 	stringstream ss;
@@ -286,5 +297,4 @@ void EngineState::loadResourcesInPlace()
 	shader.setParameter("scale", 0.001f);
 	shader.setParameter("contrast", 0.25f);
 	shader.setParameter("brightness", 0.9f);
-	shader.setParameter("layer", 0.0f);
 }

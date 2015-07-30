@@ -1,4 +1,5 @@
 #include "UIdef.h"
+#include "HexTile.h"
 
 namespace UIdef {
 	MapGenDebug::MapGenDebug() {
@@ -34,5 +35,36 @@ namespace UIdef {
 		box2->Pack(seedBox);
 		window1->Add(box1);
 		addWindow(window1, UIAlign({ 1.0f, 0.0f, 210.0f, 120.0f }, UI::ALIGN_RIGHT | UI::ALIGN_FRAC_POSX));
+	}
+
+	SiteMenu::SiteMenu() {
+		window = sfg::Window::Create(sfg::Window::Style::BACKGROUND | sfg::Window::Style::TITLEBAR);
+		addWindow(window, UIAlign({ 1.0f, 1.0f, 350.0f, 120.0f }, UI::ALIGN_RIGHT | UI::ALIGN_FRAC_POSX | UI::ALIGN_BOTTOM | UI::ALIGN_FRAC_POSY));
+	}
+	void SiteMenu::setSite(const Site& site) {
+		auto sWindow = sfg::ScrolledWindow::Create(sfg::Adjustment::Create(), sfg::Adjustment::Create());
+		auto table = sfg::Table::Create();
+		int index = 0;
+		for (auto& p : site.pops) {
+			auto label = sfg::Label::Create(p.species.name);
+			label->SetAlignment({ 0.0f, 0.0f });
+			table->Attach(label, { 0U, (sf::Uint32)index, 1U, 1U });
+			for (int a = 1; a <= Population::ACTIVITY_NUM; a++) {
+				auto spinButton = sfg::SpinButton::Create(0.0f, 100.0f, 1.0f);
+				spinButton->SetDigits(0U);
+				spinButton->SetRequisition({ 50.0f, 20.0f });
+				table->Attach(spinButton, { (sf::Uint32)a, (sf::Uint32)index, 1U, 1U });
+			}
+			index++;
+		}
+		//window->GetSignal(sfg::Window::OnLeftClick).Connect(UI::dropFocus);
+		//auto image = sfg::Image::Create(HexTileS::getTexture().copyToImage());
+		//table->Attach(image, { 1U, 0U, 1U, 1U });
+		auto box = sfg::Box::Create();
+		box->Pack(table);
+		sWindow->AddWithViewport(box);
+		//sWindow->SetRequisition(sf::Vector2f(100.f, 100.f));
+		sWindow->SetScrollbarPolicy(sfg::ScrolledWindow::ScrollbarPolicy::HORIZONTAL_NEVER | sfg::ScrolledWindow::ScrollbarPolicy::VERTICAL_ALWAYS);
+		window->Add(sWindow);
 	}
 }

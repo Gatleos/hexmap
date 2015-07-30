@@ -11,6 +11,7 @@ class EngineState: public GameState
 {
 public:
 	shared_ptr<UIdef::MapGenDebug> mapGenDebug;
+	shared_ptr<UIdef::SiteMenu> siteMenu;
 	//
 	pugi::xml_document ani;
 	pugi::xml_document spr;
