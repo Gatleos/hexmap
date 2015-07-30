@@ -31,7 +31,7 @@ class TileFeatureS
 {
 public:
 	enum {
-		NONE, MOUNTAIN, FOREST_S, FOREST_M, FOREST_L, TAIGA_S, TAIGA_M, TAIGA_L, FEATURE_NUM
+		NONE, MOUNTAIN, FOREST_S, FOREST_M, FOREST_L, TAIGA_S, TAIGA_M, TAIGA_L, TAIGA_SNOW_S, TAIGA_SNOW_M, TAIGA_SNOW_L, FEATURE_NUM
 	};
 private:
 	static const sf::Texture* tex;

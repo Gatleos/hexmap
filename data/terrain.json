@@ -90,7 +90,7 @@
 	"t_taiga_snow_s": {
 		"name": "Taiga",
 		"full": [
-			[1, "/tiles/full/taigaSnow", 0, 0]
+			[1, "/tiles/full/tundraSnow", 0, 0]
 		],
 		"half": [
 			[1, "/tiles/half/taigaSnow", 0, 0]
@@ -98,13 +98,13 @@
 		"quarter": [
 			[1, "/tiles/quarter/taigaSnow", 0, 0]
 		],
-		"feature": "f_taiga_s",
+		"feature": "f_taiga_snow_s",
 		"moveCost": 8
 	},
 	"t_taiga_snow_m": {
 		"name": "Taiga",
 		"full": [
-			[1, "/tiles/full/taigaSnow", 0, 0]
+			[1, "/tiles/full/tundraSnow", 0, 0]
 		],
 		"half": [
 			[1, "/tiles/half/taigaSnow", 0, 0]
@@ -112,13 +112,13 @@
 		"quarter": [
 			[1, "/tiles/quarter/taigaSnow", 0, 0]
 		],
-		"feature": "f_taiga_m",
+		"feature": "f_taiga_snow_m",
 		"moveCost": 9
 	},
 	"t_taiga_snow_l": {
 		"name": "Taiga",
 		"full": [
-			[1, "/tiles/full/taigaSnow", 0, 0]
+			[1, "/tiles/full/tundraSnow", 0, 0]
 		],
 		"half": [
 			[1, "/tiles/half/taigaSnow", 0, 0]
@@ -126,7 +126,7 @@
 		"quarter": [
 			[1, "/tiles/quarter/taigaSnow", 0, 0]
 		],
-		"feature": "f_taiga_l",
+		"feature": "f_taiga_snow_l",
 		"moveCost": 10
 	},
 	"t_forest_s": {

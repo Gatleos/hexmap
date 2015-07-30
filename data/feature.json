@@ -11,8 +11,7 @@
 		],
 		"quarter": [
 			[1, "/mountains/quarter/mountain1", 1, -2]
-		],
-		"moveCost": 5
+		]
 	},
 	"f_forest_s": {
 		"name": "Forest S",
@@ -48,6 +47,24 @@
 		"name": "Taiga L",
 		"full": [
 			[1, "/plants/pine3", "center"]
+		]
+	},
+	"f_taiga_snow_s": {
+		"name": "Taiga S",
+		"full": [
+			[1, "/plants/pineSnow1", "center"]
+		]
+	},
+	"f_taiga_snow_m": {
+		"name": "Taiga M",
+		"full": [
+			[1, "/plants/pineSnow2", "center"]
+		]
+	},
+	"f_taiga_snow_l": {
+		"name": "Taiga L",
+		"full": [
+			[1, "/plants/pineSnow3", "center"]
 		]
 	}
 }
