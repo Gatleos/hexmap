@@ -19,12 +19,12 @@ OUTD := hexmap-d
 OUTR := hexmap
 CXXFLAGS += -std=c++11
 ifneq ("$(or $(RELEASE),$(R))","")
-	CXXFLAGS += -O3
+	CXXFLAGS += -O3 -D NDEBUG
 	OBJDIR := obj/release/
 	OUT := $(OUTR)
 	LIB := -lsfml-graphics -lsfml-window -lsfml-system
 else
-	CXXFLAGS += -D_DEBUG -g
+	CXXFLAGS += -D _DEBUG -g
 	OBJDIR := obj/debug/
 	OUT := $(OUTD)
 	LIB := -lsfml-graphics-d -lsfml-window-d -lsfml-system-d
