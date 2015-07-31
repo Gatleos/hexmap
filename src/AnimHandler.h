@@ -44,7 +44,6 @@ class AnimationData
 	struct anim
 	{
 		anim(int frameNum);
-		const std::uniform_int_distribution<int> frameChance;
 		std::string name;
 		unsigned int loops;
 		std::vector<frame> frames;

@@ -198,7 +198,7 @@ int HexMap::getPathCost(sf::Vector2i startAxial, sf::Vector2i goalAxial)
 			}
 		}
 	}
-	auto& distance = costSoFar.find(goal);
+	auto distance = costSoFar.find(goal);
 	if (distance == costSoFar.end()) {
 		// A path was not found
 		return 9001;

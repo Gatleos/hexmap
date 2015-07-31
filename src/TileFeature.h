@@ -18,7 +18,7 @@ class RandomRect
 	bool active;
 public:
 	RandomRect();
-	int RandomRect::randomize(std::mt19937& urng) const;
+	int randomize(std::mt19937& urng) const;
 	const sf::FloatRect& getRect(int index) const;
 	const sf::Vector2f& getPos(int index) const;
 	bool operator!();
