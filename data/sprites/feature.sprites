@@ -4,9 +4,9 @@
   <definitions>
     <dir name="/">
       <dir name="plants">
-        <spr name="forest1" x="14" y="31" w="20" h="28"/>
-        <spr name="forest2" x="68" y="25" w="43" h="37"/>
-        <spr name="forest3" x="127" y="25" w="55" h="43"/>
+        <spr name="forest1" x="13" y="29" w="23" h="30"/>
+        <spr name="forest2" x="67" y="24" w="45" h="38"/>
+        <spr name="forest3" x="126" y="24" w="58" h="45"/>
         <spr name="pine1" x="13" y="79" w="22" h="27"/>
         <spr name="pine2" x="68" y="74" w="43" h="36"/>
         <spr name="pine3" x="130" y="77" w="50" h="35"/>
