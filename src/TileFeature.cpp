@@ -126,7 +126,7 @@ const TileFeatureS& TileFeatureS::get(string t)
 		}
 	}
 	cerr << "Warning: couldn't find feature \"" << t << "\"\n";
-	return *feature[0];
+	return *feature[TileFeatureS::NONE];
 }
 
 TileFeatureS::TileFeatureS(string id) :

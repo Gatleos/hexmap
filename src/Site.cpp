@@ -5,13 +5,22 @@
 
 using namespace std;
 
-map<string, SiteS> SiteS::sites;
+#define siteptr(x) unique_ptr<SiteS>(new SiteS(x))
+
+array<unique_ptr<SiteS>, SiteS::SITE_NUM> SiteS::site = { {
+		siteptr("si_city"), siteptr("si_town"), siteptr("si_village")
+	} };
 
 Site::Site(const SiteS* sSite, HexMap* hmSet, Faction* parent) :MapEntity(sSite, hmSet, parent), ss(sSite){}
 
 void Site::update(const sf::Time& timeElapsed)
 {
 
+}
+
+SiteS::SiteS(string id) :
+MapEntityS(id)
+{
 }
 
 void SiteS::loadJson(string filename)
@@ -21,25 +30,21 @@ void SiteS::loadJson(string filename)
 		cerr << "ERROR: couldn't open file \"" << filename << "\"\n";
 		return;
 	}
-	auto elementNames = root.getMemberNames();
-	for (string eName : elementNames) {
-		SiteS& site = sites.insert(make_pair(eName, SiteS())).first->second;
-		Json::Value sdata = root.get(eName, Json::Value::null);
+	// Cycle through defined site types; make sure to skip si_null!
+	for (int a = 1; a < SITE_NUM; a++) {
+		auto& si = site[a];
+		Json::Value sdata = root.get(si->id_, Json::Value::null);
 		string element;
 		try {
-			site.loadEntityJson(sdata, element, eName);
+			si->loadEntityJson(sdata, element, si->id_);
 		}
 		catch (runtime_error e) { // report the error with the name of the object and member
-			cerr << "[" << filename << ", " << eName << ", " << element << "] " << e.what() << "\n";
+			cerr << "[" << filename << ", " << si->id_ << ", " << element << "] " << e.what() << "\n";
 		}
 	}
 }
 
-const SiteS* SiteS::get(string id)
+const SiteS& SiteS::get(int id)
 {
-	auto s = sites.find(id);
-	if (s == sites.end()) {
-		return nullptr;
-	}
-	return &s->second;
+	return *site[id];
 }

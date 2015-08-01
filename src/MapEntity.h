@@ -36,7 +36,7 @@ public:
 	static const array<string, ANIM_NUM> animTypes;
 public:
 	void loadEntityJson(Json::Value& edata, string& element, string id);
-	MapEntityS();
+	MapEntityS(string id);
 	string id_;
 	string name_;
 	array<array<string, ANIM_NUM>, ZOOM_LEVELS> animNames_;

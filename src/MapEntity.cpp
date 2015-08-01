@@ -81,7 +81,8 @@ bool MapEntity::setMapPos(sf::Vector2i axialCoord)
 	return true;
 }
 
-MapEntityS::MapEntityS()
+MapEntityS::MapEntityS(string id) :
+id_(id)
 {
 }
 

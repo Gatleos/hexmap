@@ -6,10 +6,16 @@
 
 class SiteS : public MapEntityS
 {
-	static map<string, SiteS> sites;
+public:
+	enum {
+		CITY, TOWN, VILLAGE, SITE_NUM
+	};
+private:
+	SiteS(string id);
+	static std::array<std::unique_ptr<SiteS>, SITE_NUM> site;
 public:
 	static void loadJson(string filename);
-	static const SiteS* get(string id);
+	static const SiteS& get(int id);
 };
 
 class Site : public MapEntity
