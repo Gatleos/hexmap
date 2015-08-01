@@ -61,8 +61,7 @@ bool MapEntity::initMapPos(sf::Vector2i axialCoord)
 	}
 	pos = axialCoord;
 	sf::Vector2i offset = HexMap::axialToOffset(pos);
-	hm->getAxial(pos.x, pos.y).ent = this;
-	hm->setFeatureColor(offset, TileFeatureS::fade);
+	hm->setEntity(offset, this);
 	for (int a = 0; a < 3; a++) {
 		handlers_[a].setPosition((sf::Vector2f)hm->hexToPixel(pos, a) + HexMap::getMapOrigin(a));
 	}
@@ -75,19 +74,18 @@ bool MapEntity::setMapPos(sf::Vector2i axialCoord)
 		return false;
 	}
 	sf::Vector2i offset = HexMap::axialToOffset(pos);
-	hm->getAxial(pos.x, pos.y).ent = nullptr;
-	hm->setFeatureColor(offset, sf::Color::White);
+	hm->setEntity(offset, nullptr);
 	pos = axialCoord;
 	offset = HexMap::axialToOffset(pos);
-	hm->getAxial(pos.x, pos.y).ent = this;
-	hm->setFeatureColor(offset, TileFeatureS::fade);
+	hm->setEntity(offset, this);
 	for (int a = 0; a < 3; a++) {
 		handlers_[a].setPosition((sf::Vector2f)hm->hexToPixel(pos, a) + HexMap::getMapOrigin(a));
 	}
 	return true;
 }
 
-MapEntityS::MapEntityS()
+MapEntityS::MapEntityS(string id) :
+id_(id)
 {
 }
 

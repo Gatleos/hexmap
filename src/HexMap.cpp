@@ -198,7 +198,7 @@ int HexMap::getPathCost(sf::Vector2i startAxial, sf::Vector2i goalAxial)
 			}
 		}
 	}
-	auto& distance = costSoFar.find(goal);
+	auto distance = costSoFar.find(goal);
 	if (distance == costSoFar.end()) {
 		// A path was not found
 		return 9001;
@@ -235,6 +235,7 @@ const sf::Vector2i& HexMap::getMapSize() const
 {
 	return mapSize_;
 }
+
 void HexMap::init(int width, int height)
 {
 	int currentVertices = 0;
@@ -286,6 +287,30 @@ void HexMap::init(int width, int height)
 		currentVertices++;
 	}
 	setZoomLevel(0);
+}
+
+void HexMap::updateCursorPos(sf::Vector2i cursorPos)
+{
+	if (cursorPos_ == cursorPos) {
+		return;
+	}
+	VectorSet n;
+	if (isAxialInBounds(cursorPos_)) {
+		n.emplace(cursorPos_);
+	}
+	clipToBounds(neighbors(cursorPos_, n));
+	for (auto& h : n) {
+		setFeatureFade(axialToOffset(h), false);
+	}
+	cursorPos_ = cursorPos;
+	n.clear();
+	if (isAxialInBounds(cursorPos_)) {
+		n.emplace(cursorPos_);
+	}
+	clipToBounds(neighbors(cursorPos_, n));
+	for (auto& h : n) {
+		setFeatureFade(axialToOffset(h), true);
+	}
 }
 
 float HexMap::distAxial(sf::Vector2f& a, sf::Vector2f& b)
@@ -346,18 +371,18 @@ sf::Vector2f HexMap::pixelToHex(sf::Vector2f pixel) const
 	return roundHex(pixel);
 }
 
-bool HexMap::isAxialInBounds(sf::Vector2i posAxial) const
+bool HexMap::isAxialInBounds(sf::Vector2i axialPos) const
 {
-	posAxial.x -= -floorf(posAxial.y / 2.0);
-	if (posAxial.x < 0 || posAxial.x >= mapSize_.x || posAxial.y < 0 || posAxial.y >= mapSize_.y) {
+	axialPos.x -= -floorf(axialPos.y / 2.0);
+	if (axialPos.x < 0 || axialPos.x >= mapSize_.x || axialPos.y < 0 || axialPos.y >= mapSize_.y) {
 		return false;
 	}
 	return true;
 }
 
-bool HexMap::isOffsetInBounds(sf::Vector2i posOffset) const
+bool HexMap::isOffsetInBounds(sf::Vector2i offsetPos) const
 {
-	if (posOffset.x < 0 || posOffset.x >= mapSize_.x || posOffset.y < 0 || posOffset.y >= mapSize_.y) {
+	if (offsetPos.x < 0 || offsetPos.x >= mapSize_.x || offsetPos.y < 0 || offsetPos.y >= mapSize_.y) {
 		return false;
 	}
 	return true;
@@ -644,6 +669,18 @@ void HexMap::setFeatureColor(sf::Vector2i offsetPos, const sf::Color& col)
 		spr[s].setColor(col);
 	}
 }
+void HexMap::setFeatureFade(sf::Vector2i offsetPos, bool fade)
+{
+	auto& hex = hexes_(offsetPos.x, offsetPos.y);
+	if (hex.ent != nullptr) {
+		fade = true;
+	}
+	for (int s = 0; s < 3; s++) {
+		sf::Color f = hex.spr[s].getColor();
+		f.a = fade ? TileFeatureS::fade : 255;
+		hex.spr[s].setColor(f);
+	}
+}
 void HexMap::clearTileFeatures()
 {
 	for (int s = 0; s < 3; s++) {
@@ -777,6 +814,13 @@ void HexMap::clearEntities()
 		setFeatureColor(axialToOffset(pos), sf::Color::White);
 	}
 	units.clear();
+}
+
+void HexMap::setEntity(sf::Vector2i offsetPos, MapEntity* ent)
+{
+	getOffset(offsetPos.x, offsetPos.y).ent = ent;
+	// We use false here because entity presence will override it
+	setFeatureFade(offsetPos, false);
 }
 
 void HexMap::update(const sf::Time& timeElapsed)

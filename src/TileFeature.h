@@ -18,7 +18,7 @@ class RandomRect
 	bool active;
 public:
 	RandomRect();
-	int RandomRect::randomize(std::mt19937& urng) const;
+	int randomize(std::mt19937& urng) const;
 	const sf::FloatRect& getRect(int index) const;
 	const sf::Vector2f& getPos(int index) const;
 	bool operator!();
@@ -38,7 +38,7 @@ private:
 	static std::array<std::unique_ptr<TileFeatureS>, FEATURE_NUM> feature;
 	TileFeatureS(std::string id);
 public:
-	const static sf::Color fade;
+	const static unsigned char fade;
 	static void loadJson(std::string filename);
 	static const TileFeatureS& get(int t);
 	static const sf::Texture& getTexture();

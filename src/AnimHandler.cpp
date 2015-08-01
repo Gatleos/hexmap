@@ -29,7 +29,6 @@ sprites(sf::PrimitiveType::Quads)
 
 AnimationData::anim::anim(int frameNum) :
 frames(frameNum),
-frameChance(0, frameNum - 1),
 loops(0)
 {
 }
@@ -107,7 +106,7 @@ void AnimHandler::setFrame(int num)
 
 void AnimHandler::randomFrame(std::mt19937& urng)
 {
-	int num = currentAnim->frameChance(urng);
+	int num = rng::getInt(currentAnim->frames.size() - 1, urng);
 	currentFrame = &currentAnim->frames[num];
 	cframe = num;
 	ctime = rng::getInt(currentFrame->delay, urng);

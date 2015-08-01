@@ -314,11 +314,11 @@ void HexMap::placeSites(mt19937& urng)
 			output.push_back(*it);
 			f.erase(it);
 		}
-		auto* c = addSite(SiteS::get("si_castle"), fac);
+		auto* c = addSite(&SiteS::get(SiteS::CITY), fac);
 		c->setAnimationType(MapEntityS::anim::IDLE);
 		c->initMapPos(territories[index]);
 		for (auto& o : output) {
-			auto* s = addSite(SiteS::get(rng::boolean(urng)?"si_town":"si_village"), fac);
+			auto* s = addSite(&SiteS::get(rng::boolean(urng) ? SiteS::TOWN : SiteS::TOWN), fac);
 			s->setAnimationType(MapEntityS::anim::IDLE);
 			s->initMapPos(o);
 		}

@@ -14,7 +14,7 @@ void config::loadKeyJson(std::string file)
 		return;
 	}
 	for (auto& b : bindingNames) {
-		auto& k = root.get(b, Json::Value::null);
+		auto k = root.get(b, Json::Value::null);
 		if (k.isNull()) {
 			cerr << "ERROR: couldn't find key binding for \"" << b << "\"\n";
 			continue;
@@ -29,7 +29,7 @@ void config::loadKeyJson(std::string file)
 			int index = 0;
 			for (auto& key : cBinding.keys) {
 				if (k[index].asString() == "Key") {
-					auto& keyIt = keyNames.find(k[index + 1].asString());
+					auto keyIt = keyNames.find(k[index + 1].asString());
 					if (keyIt == keyNames.end()) {
 						throw runtime_error("key does not exist!");
 					}
@@ -38,7 +38,7 @@ void config::loadKeyJson(std::string file)
 					key = keyIt->second;
 				}
 				else if (k[index].asString() == "Mouse") {
-					auto& keyIt = keyNames.find(k[index + 1].asCString());
+					auto keyIt = keyNames.find(k[index + 1].asCString());
 					if (keyIt == keyNames.end()) {
 						throw runtime_error("key does not exist!");
 					}
