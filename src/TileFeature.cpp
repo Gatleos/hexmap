@@ -105,7 +105,7 @@ bool RandomRect::empty()
 }
 
 
-const sf::Color TileFeatureS::fade = { 255, 255, 255, 100 };
+const unsigned char TileFeatureS::fade = static_cast<unsigned char>(100);
 const sf::Texture* TileFeatureS::tex = nullptr;
 
 const TileFeatureS& TileFeatureS::get(int t)

@@ -80,6 +80,7 @@ private:
 	sf::Vector2i mapSize_;
 	sf::Vector2i mapSizeChunks_;
 	sf::Vector2f hexExtent_[3];
+	sf::Vector2i cursorPos_;
 	sf::IntRect drawingBounds;
 	sf::IntRect chunkDrawingBounds;
 	// 0-2, 0 is the closest
@@ -108,6 +109,7 @@ public:
 	void init(int width, int height);
 	const sf::Vector2i& getMapSize() const;
 	const sf::Time& getLifetime();
+	void updateCursorPos(sf::Vector2i cursorPos);
 
 	/////////////////
 	// Pathfinding //
@@ -151,9 +153,9 @@ public:
 	// Convert local pixel coordinate to axial hex coordinate
 	sf::Vector2f pixelToHex(sf::Vector2f pixel) const;
 	// Check if axial coordinate is within map bounds
-	bool isAxialInBounds(sf::Vector2i posAxial) const;
+	bool isAxialInBounds(sf::Vector2i axialPos) const;
 	// Check if offset coordinate is within map bounds
-	bool isOffsetInBounds(sf::Vector2i posOffset) const;
+	bool isOffsetInBounds(sf::Vector2i offsetPos) const;
 	// Return the tile coordinate in the given direction (use HexMap::dir and HexMap::directions)
 	static sf::Vector2i neighbor(sf::Vector2i centerAxial, int dir);
 	// Return a list of hex tile neighbors (axial)
@@ -205,6 +207,9 @@ public:
 	void setTileFeature(sf::Vector2i offsetPos, const TileFeatureS& tfs, mt19937& urng);
 	void setTileFeature(sf::Vector2i offsetPos, const TileFeatureS& tfs, int zoom, mt19937& urng);
 	void setFeatureColor(sf::Vector2i offsetPos, const sf::Color& col);
+	// Fade out the feature on this tile? Overridden to true automatically
+	// if there is an entity on the tile
+	void setFeatureFade(sf::Vector2i offsetPos, bool fade);
 	void clearTileFeatures();
 	void draw(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) const;
 	void drawEnts(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) const;
@@ -224,6 +229,7 @@ public:
 	Site* addSite(const SiteS* sSite, Faction* parent);
 	MapUnit* addMapUnit(const MapEntityS* sEnt, Faction* parent);
 	void clearEntities();
+	void setEntity(sf::Vector2i offsetPos, MapEntity* ent);
 	void update(const sf::Time& timeElapsed);
 
 	////////////

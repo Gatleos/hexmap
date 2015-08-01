@@ -151,9 +151,11 @@ void EngineState::input(sf::Event &e)
 		tilePos = hg.pixelToHex(mouseMapPos);
 		if (hg.isAxialInBounds((sf::Vector2i)tilePos)) {
 			mapGenDebug->debugInfo[3]->SetText(hg.getAxial((int)tilePos.x, (int)tilePos.y).hts->name);
+			hg.updateCursorPos((sf::Vector2i)tilePos);
 		}
 		else {
 			mapGenDebug->debugInfo[3]->SetText("");
+			hg.updateCursorPos({ -10, -10 });
 		}
 	}
 	else if (e.type == sf::Event::MouseWheelMoved) {
