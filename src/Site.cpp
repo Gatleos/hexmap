@@ -8,7 +8,7 @@ using namespace std;
 #define siteptr(x) unique_ptr<SiteS>(new SiteS(x))
 
 array<unique_ptr<SiteS>, SiteS::SITE_NUM> SiteS::site = { {
-		siteptr("si_city"), siteptr("si_town"), siteptr("si_village")
+		siteptr("si_null"), siteptr("si_city"), siteptr("si_town"), siteptr("si_village")
 	} };
 
 Site::Site(const SiteS* sSite, HexMap* hmSet, Faction* parent) :MapEntity(sSite, hmSet, parent), ss(sSite){}

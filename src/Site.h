@@ -8,7 +8,7 @@ class SiteS : public MapEntityS
 {
 public:
 	enum {
-		CITY, TOWN, VILLAGE, SITE_NUM
+		NONE, CITY, TOWN, VILLAGE, SITE_NUM
 	};
 private:
 	SiteS(string id);
