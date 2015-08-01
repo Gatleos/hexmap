@@ -318,7 +318,7 @@ void HexMap::placeSites(mt19937& urng)
 		c->setAnimationType(MapEntityS::anim::IDLE);
 		c->initMapPos(territories[index]);
 		for (auto& o : output) {
-			auto* s = addSite(&SiteS::get(rng::boolean(urng) ? SiteS::TOWN : SiteS::TOWN), fac);
+			auto* s = addSite(&SiteS::get(rng::boolean(urng) ? SiteS::TOWN : SiteS::VILLAGE), fac);
 			s->setAnimationType(MapEntityS::anim::IDLE);
 			s->initMapPos(o);
 		}
