@@ -77,7 +77,6 @@ void EngineState::init()
 	shader.setParameter("scale", 0.001f);
 	shader.setParameter("contrast", 0.25f);
 	shader.setParameter("brightness", 0.9f);
-	shader.setParameter("layer", 0.0f);
 }
 void EngineState::end()
 {
@@ -288,5 +287,4 @@ void EngineState::loadResourcesInPlace()
 	shader.setParameter("scale", 0.001f);
 	shader.setParameter("contrast", 0.25f);
 	shader.setParameter("brightness", 0.9f);
-	shader.setParameter("layer", 0.0f);
 }
