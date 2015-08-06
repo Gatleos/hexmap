@@ -19,9 +19,14 @@ namespace UIdef {
 		shared_ptr<sfg::CheckButton> randomSeed;
 	};
 	class SiteMenu : public UILayout {
+		vector<vector<shared_ptr<sfg::Adjustment>>> sliders;
+		vector<shared_ptr<sfg::Label>> idlePercent;
+		vector<shared_ptr<sfg::Label>> population;
+		void adjust(int group, int act);
+		Site* site_;
 	public:
 		SiteMenu();
-		void setSite(const Site& site);
+		void setSite(Site& site);
 		shared_ptr<sfg::Window> window;
 	};
 }

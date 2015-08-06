@@ -9,49 +9,80 @@
 const array<string, MapEntityS::ANIM_NUM> MapEntityS::animTypes = { {
 		"idle"
 	} };
-const char* Population::activityNames[ACTIVITY_NUM] = {
-	"Idle", "Guard", "Farm", "Wood", "Mine"
-};
-const int Population::POP_LIMIT = 100000;
+array<vector<const char*>, Population::GROUP_NUM> Population::activityNames = { {
+	{ "Idle", "Farm", "Wood", "Mine", "Enlist" },
+	{ "Idle", "Guard" },
+	{ "Idle", "Farm", "Wood", "Mine" }
+	} };
+array<const char*, Population::GROUP_NUM> Population::groupNames = { {
+		"Civilian", "Military", "Prisoner"
+	} };
+const unsigned int Population::POP_LIMIT = 100000;
 
-Population::Population(const Species& s) :species(s), size(0)
+Population::Population() :size_(0)
 {
-	for (auto& a : activities) {
-		a = 0;
+	for (auto& s : sizes_) {
+		s = 0;
+	}
+	array<vector<float>*, GROUP_NUM> groups = { 
+		&activities_[GROUP_CIV], &activities_[GROUP_MIL], &activities_[GROUP_PR]
+	};
+	activities_[GROUP_CIV].resize(CIV_ACTIVITY_NUM);
+	activities_[GROUP_MIL].resize(MIL_ACTIVITY_NUM);
+	activities_[GROUP_PR].resize(PR_ACTIVITY_NUM);
+	for (auto g : groups) {
+		for (int a = 1; a < g->size(); a++) {
+			(*g)[a] = 0.0f;
+		}
+		(*g)[IDLE] = 100.0f;
 	}
 }
 
-void Population::add(int activity, int amount)
+float Population::set(unsigned int group, unsigned int activity, float amount)
 {
-	if (!isInRange(activity, 0, ACTIVITY_NUM - 1)) {
-		return;
+	if (!isInRange(group, 0u, (unsigned int)GROUP_NUM) ||
+		!isInRange(activity, 0u, (unsigned int)activities_[group].size() - 1)) {
+		return -1.0f;
 	}
-	if (amount < 0) {
-		amount = max(amount, -activities[activity]);
-	}
-	size += amount;
-	activities[activity] += amount;
+	amount = clamp(amount, 0.0f, activities_[group][activity] + activities_[group][IDLE]);
+	activities_[group][IDLE] -= amount - activities_[group][activity];
+	activities_[group][activity] = amount;
+	return amount;
 }
 
-void Population::addPop(const Population& p)
+void Population::setSize(unsigned int group, unsigned int size)
 {
-	if (species.id != p.species.id) {
-		return;
-	}
-	for (int a = 0; a < ACTIVITY_NUM; a++) {
-		add(a, p.activities[a]);
-	}
+	size_ += size - sizes_[group];
+	sizes_[group] = size;
 }
 
-void Population::takePop(Population& p)
+void Population::clear()
 {
-	if (species.id != p.species.id) {
-		return;
+	array<vector<float>*, GROUP_NUM> groups = {
+		&activities_[GROUP_CIV], &activities_[GROUP_MIL], &activities_[GROUP_PR]
+	};
+	for (auto g : groups) {
+		for (int a = 1; a < g->size(); a++) {
+			(*g)[a] = 0.0f;
+		}
+		(*g)[IDLE] = 100.0f;
 	}
-	for (int a = 0; a < ACTIVITY_NUM; a++) {
-		add(a, p.activities[a]);
-		p.activities[a] = 0;
-	}
+	size_ = 0;
+}
+
+const array<vector<float>, Population::GROUP_NUM>& Population::activities() const
+{
+	return activities_;
+}
+
+unsigned int Population::size() const
+{
+	return size_;
+}
+
+unsigned int Population::size(unsigned int group) const
+{
+	return sizes_[group];
 }
 
 bool MapEntity::initMapPos(sf::Vector2i axialCoord)
@@ -127,11 +158,6 @@ MapEntity::MapEntity(const MapEntityS* sEnt, HexMap* hmSet, Faction* parent)
 	// Get animation data from associated MapEntityS
 	for (int i = 0; i < ZOOM_LEVELS; i++) {
 		handlers_[i].setAnimationData(*mes->animData_[i]);
-	}
-	// Create space for creature populations
-	pops.reserve(Species::map.size());
-	for (auto& s : Species::map) {
-		pops.emplace_back(s.second);
 	}
 }
 

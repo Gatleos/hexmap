@@ -13,21 +13,29 @@ class HexMap;
 class Population
 {
 public:
-	enum{ IDLE, GUARD, FARM, WOOD, MINE, ACTIVITY_NUM };
+	enum {
+		GROUP_CIV, GROUP_MIL, GROUP_PR, GROUP_NUM,
+		IDLE = 0, CIV_FARM, CIV_WOOD, CIV_MINE, CIV_ENLIST, CIV_ACTIVITY_NUM,
+		MIL_GUARD = 1, MIL_ACTIVITY_NUM,
+		PR_FARM = 1, PR_WOOD, PR_MINE, PR_ACTIVITY_NUM
+	};
 private:
-	int size;
-	array<int, ACTIVITY_NUM> activities;
+	unsigned int size_;
+	array<unsigned int, GROUP_NUM> sizes_;
+	array<vector<float>, GROUP_NUM> activities_;
 public:
-	static const char* activityNames[ACTIVITY_NUM];
-	static const int POP_LIMIT;
-	const Species& species;
-	Population(const Species& s);
-	// Add an amount to a specific activity group
-	void add(int activity, int amount);
-	// Add another population to this one, keeping it the same; must have same species
-	void addPop(const Population& p);
-	// Empty other population into this one; must have same species
-	void takePop(Population& p);
+	static array<vector<const char*>, GROUP_NUM> activityNames;
+	static array<const char*, GROUP_NUM> groupNames;
+	static const unsigned int POP_LIMIT;
+	Population();
+	// Set the amount for a specific activity group, drawing from idle amount; returns
+	// actual amount after adjustment
+	float set(unsigned int group, unsigned int activity, float amount);
+	void setSize(unsigned int group, unsigned int size);
+	void clear();
+	const array<vector<float>, GROUP_NUM>& activities() const;
+	unsigned int size() const;
+	unsigned int size(unsigned int group) const;
 };
 
 class MapEntityS
@@ -59,7 +67,7 @@ public:
 	int id;
 	MapEntity(const MapEntityS* sEnt, HexMap* hmSet, Faction* parent);
 	void setAnimationType(MapEntityS::anim num);
-	vector<Population> pops;
+	Population pop;
 	bool initMapPos(sf::Vector2i axialCoord);
 	bool setMapPos(sf::Vector2i axialCoord);
 	virtual void update(const sf::Time& timeElapsed) = 0;
