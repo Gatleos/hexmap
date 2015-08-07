@@ -9,7 +9,7 @@ class Array2D
 	unsigned int width_;
 	unsigned int height_;
 	unsigned int size_;
-	std::unique_ptr<T> data_;
+	std::unique_ptr<T[]> data_;
 public:
 	class iterator
 	{
@@ -123,7 +123,7 @@ public:
 		if (data_) {
 			data_.reset();
 		}
-		data_ = std::unique_ptr<T>(new T[size_]);
+		data_ = std::unique_ptr<T[]>(new T[size_]);
 	}
 	void reset()
 	{
