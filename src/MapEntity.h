@@ -17,25 +17,28 @@ public:
 		GROUP_CIV, GROUP_MIL, GROUP_PR, GROUP_NUM,
 		IDLE = 0, CIV_FARM, CIV_WOOD, CIV_MINE, CIV_ENLIST, CIV_ACTIVITY_NUM,
 		MIL_GUARD = 1, MIL_ACTIVITY_NUM,
-		PR_FARM = 1, PR_WOOD, PR_MINE, PR_ACTIVITY_NUM
+		PR_FARM = 1, PR_WOOD, PR_MINE, PR_BREED, PR_ACTIVITY_NUM
 	};
 private:
-	unsigned int size_;
-	array<unsigned int, GROUP_NUM> sizes_;
+	float size_;
+	array<float, GROUP_NUM> sizes_;
 	array<vector<float>, GROUP_NUM> activities_;
 public:
-	static array<vector<const char*>, GROUP_NUM> activityNames;
-	static array<const char*, GROUP_NUM> groupNames;
+	static const array<vector<std::string>, GROUP_NUM> activityNames;
+	static const array<std::string, GROUP_NUM> groupNames;
 	static const unsigned int POP_LIMIT;
+	static const array<float, GROUP_NUM> growthRate;
+	static const float deathRate;
 	Population();
 	// Set the amount for a specific activity group, drawing from idle amount; returns
 	// actual amount after adjustment
 	float set(unsigned int group, unsigned int activity, float amount);
-	void setSize(unsigned int group, unsigned int size);
+	void setSize(unsigned int group, float size);
 	void clear();
 	const array<vector<float>, GROUP_NUM>& activities() const;
-	unsigned int size() const;
-	unsigned int size(unsigned int group) const;
+	float size() const;
+	float size(unsigned int group) const;
+	void popGrowth(int turns);
 };
 
 class MapEntityS
@@ -64,13 +67,23 @@ protected:
 	HexMap* hm;
 	Faction* faction;
 public:
+	enum {
+		FOOD, WOOD, ORE, RESOURCE_NUM
+	};
+	static const array<std::string, RESOURCE_NUM> resourceNames;
+private:
+	array<float, RESOURCE_NUM> resources_;
+public:
 	int id;
 	MapEntity(const MapEntityS* sEnt, HexMap* hmSet, Faction* parent);
 	void setAnimationType(MapEntityS::anim num);
 	Population pop;
 	bool initMapPos(sf::Vector2i axialCoord);
 	bool setMapPos(sf::Vector2i axialCoord);
+	const sf::Vector2i& getMapPos();
 	virtual void update(const sf::Time& timeElapsed) = 0;
+	// Runs once per map turn
+	virtual void advanceTurn() = 0;
 	friend HexMap;
 };
 
@@ -86,6 +99,7 @@ public:
 	void setPath(sf::Vector2i dest);
 	void appendPath(sf::Vector2i dest);
 	void update(const sf::Time& timeElapsed);
+	void advanceTurn();
 };
 
 #endif

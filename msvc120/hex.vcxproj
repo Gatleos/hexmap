@@ -58,6 +58,7 @@
     <ClCompile Include="..\src\MapEntity.cpp" />
     <ClCompile Include="..\src\rng.cpp" />
     <ClCompile Include="..\src\ResourceLoader.cpp" />
+    <ClCompile Include="..\src\SelectState.cpp" />
     <ClCompile Include="..\src\SFMLEngine.cpp" />
     <ClCompile Include="..\src\simplexnoise.cpp" />
     <ClCompile Include="..\src\Site.cpp" />

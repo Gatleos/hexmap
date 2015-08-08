@@ -116,6 +116,9 @@
     <ClCompile Include="..\src\UIdef.cpp">
       <Filter>UI</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\SelectState.cpp">
+      <Filter>States</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="utility">

@@ -3,7 +3,7 @@
 #include "UI.h"
 
 static const vector<string> bindingNames = {
-	"scroll_left", "scroll_right", "scroll_up", "scroll_down", "generate", "fps_display"
+	"scroll_left", "scroll_right", "scroll_up", "scroll_down", "generate", "fps_display", "debug"
 };
 static map<string, config::KeyBinding> bindings;
 

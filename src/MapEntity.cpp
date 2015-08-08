@@ -1,4 +1,5 @@
 #include <iostream>
+#include <math.h>
 #include "ResourceLoader.h"
 #include "Species.h"
 #include "MapEntity.h"
@@ -9,15 +10,23 @@
 const array<string, MapEntityS::ANIM_NUM> MapEntityS::animTypes = { {
 		"idle"
 	} };
-array<vector<const char*>, Population::GROUP_NUM> Population::activityNames = { {
+const array<vector<std::string>, Population::GROUP_NUM> Population::activityNames = { {
 	{ "Idle", "Farm", "Wood", "Mine", "Enlist" },
 	{ "Idle", "Guard" },
-	{ "Idle", "Farm", "Wood", "Mine" }
+	{ "Idle", "Farm", "Wood", "Mine", "Breed" }
 	} };
-array<const char*, Population::GROUP_NUM> Population::groupNames = { {
+const array<std::string, Population::GROUP_NUM> Population::groupNames = { {
 		"Civilian", "Military", "Prisoner"
 	} };
-const unsigned int Population::POP_LIMIT = 100000;
+const array<float, Population::GROUP_NUM> Population::growthRate = { {
+		0.0168f, 0.0f, 0.0336f
+	} };
+const float Population::deathRate = 0.0003f;
+const unsigned int Population::POP_LIMIT = 100000u;
+//
+const array<std::string, MapEntity::RESOURCE_NUM> MapEntity::resourceNames = { {
+		"Food", "Wood", "Ore"
+	} };
 
 Population::Population() :size_(0)
 {
@@ -50,7 +59,7 @@ float Population::set(unsigned int group, unsigned int activity, float amount)
 	return amount;
 }
 
-void Population::setSize(unsigned int group, unsigned int size)
+void Population::setSize(unsigned int group, float size)
 {
 	size_ += size - sizes_[group];
 	sizes_[group] = size;
@@ -75,14 +84,23 @@ const array<vector<float>, Population::GROUP_NUM>& Population::activities() cons
 	return activities_;
 }
 
-unsigned int Population::size() const
+float Population::size() const
 {
 	return size_;
 }
 
-unsigned int Population::size(unsigned int group) const
+float Population::size(unsigned int group) const
 {
 	return sizes_[group];
+}
+
+void Population::popGrowth(int turns)
+{
+	// P = P_0 * e ^ (r * t)
+	setSize(GROUP_CIV, sizes_[GROUP_CIV] * std::powf(2.71828f, (float)turns * growthRate[GROUP_CIV]));
+	// Prisoners will not breed unless told
+	float rate = activities_[GROUP_PR][PR_BREED] * growthRate[GROUP_PR] * 0.01f - deathRate;
+	setSize(GROUP_PR, sizes_[GROUP_PR] * std::powf(2.71828f, (float)turns * rate));
 }
 
 bool MapEntity::initMapPos(sf::Vector2i axialCoord)
@@ -113,6 +131,11 @@ bool MapEntity::setMapPos(sf::Vector2i axialCoord)
 		handlers_[a].setPosition((sf::Vector2f)hm->hexToPixel(pos, a) + HexMap::getMapOrigin(a));
 	}
 	return true;
+}
+
+const sf::Vector2i& MapEntity::getMapPos()
+{
+	return pos;
 }
 
 MapEntityS::MapEntityS(string id) :
@@ -159,6 +182,9 @@ MapEntity::MapEntity(const MapEntityS* sEnt, HexMap* hmSet, Faction* parent)
 	for (int i = 0; i < ZOOM_LEVELS; i++) {
 		handlers_[i].setAnimationData(*mes->animData_[i]);
 	}
+	for (auto& r : resources_) {
+		r = 0.0f;
+	}
 }
 
 void MapEntity::setAnimationType(MapEntityS::anim num)
@@ -200,4 +226,9 @@ void MapUnit::update(const sf::Time& timeElapsed)
 		walkPath();
 		moveTimer = moveTimer % 500;
 	}
+}
+
+void MapUnit::advanceTurn()
+{
+
 }

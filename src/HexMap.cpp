@@ -106,6 +106,15 @@ nextSiteId(0)
 {
 }
 
+HexMap& HexMap::instance()
+{
+	static HexMap map;
+	return map;
+}
+
+sf::View HexMap::view;
+sf::Vector2i HexMap::selected{ -1, -1 };
+
 int HexMap::heuristic(sf::Vector2i& a, sf::Vector2i& b)
 {
 	return (int)((abs(a.x - b.x) + abs(a.x + a.y - b.x - b.y) + abs(a.y - b.y)) / 2);
@@ -388,11 +397,11 @@ bool HexMap::isOffsetInBounds(sf::Vector2i offsetPos) const
 	return true;
 }
 
-sf::Vector2i HexMap::neighbor(sf::Vector2i centerAxial, int dir)
+sf::Vector2i HexMap::neighbor(const sf::Vector2i& centerAxial, int dir)
 {
 	return sf::Vector2i(centerAxial.x + directions[dir].x, centerAxial.y + directions[dir].y);
 }
-VectorSet& HexMap::neighbors(sf::Vector2i centerAxial, VectorSet& n)
+VectorSet& HexMap::neighbors(const sf::Vector2i& centerAxial, VectorSet& n)
 {
 	for (int x = 0; x < 6; x++) {
 		n.insert(sf::Vector2i(centerAxial.x + directions[x].x, centerAxial.y + directions[x].y));
@@ -833,5 +842,15 @@ void HexMap::update(const sf::Time& timeElapsed)
 				hex.ent->handlers_[zoomLevel].updateAnimation(timeElapsed);
 			}
 		}
+	}
+}
+
+void HexMap::advanceTurn()
+{
+	for (auto& s : sites) {
+		s.second.advanceTurn();
+	}
+	for (auto& u : units) {
+		u.second.advanceTurn();
 	}
 }

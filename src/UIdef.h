@@ -24,11 +24,24 @@ namespace UIdef {
 		vector<shared_ptr<sfg::Label>> population;
 		void adjust(int group, int act);
 		Site* site_;
-	public:
 		SiteMenu();
+	public:
+		static shared_ptr<SiteMenu> instance();
 		void setSite(Site& site);
 		shared_ptr<sfg::Window> window;
 	};
+	class DeployGroupMenu : public UILayout {
+		DeployGroupMenu();
+		Site* site_;
+		sf::Vector2i deployTo_;
+		bool closeClicked_;
+		shared_ptr<sfg::Button> selectCoordButton;
+	public:
+		static shared_ptr<DeployGroupMenu> instance();
+		void setSite(Site& site);
+		shared_ptr<sfg::Window> window;
+	};
+	void setSite(Site& site);
 }
 
 #endif

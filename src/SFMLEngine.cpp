@@ -12,10 +12,8 @@ void SFMLEngine::init(sf::RenderWindow* windowset) {
 	window = windowset;
 	window->setFramerateLimit(60);
 	clearColor = sf::Color::Black;
-	auto renderer = sfg::VertexBufferRenderer::Create(); // Fix a NonLegacyRenderer-related text bug
-	sfg::Renderer::Set(renderer);
+	UI::init(&desktop);
 	UI::setAppSize((sf::Vector2f)window->getSize());
-	UI::init(&desktop); // Construct the gui
 }
 void SFMLEngine::start() {
 	try {

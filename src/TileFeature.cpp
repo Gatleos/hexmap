@@ -43,7 +43,7 @@ void RandomRect::loadJson(Json::Value& rData, SpriteSheet* sheet, const sf::Vect
 	if (rData.isNull() || rData.empty()) {
 		return;
 	}
-	std::function<void(Json::Value&, const sf::FloatRect&)> setPos = [hexSize, this](Json::Value& r, const sf::FloatRect& rectData) {
+	auto setPos = [hexSize, this](Json::Value& r, const sf::FloatRect& rectData) {
 		if (r.size() == 3) {
 			if (r[2].asString() == "center") {
 				pos.emplace_back((hexSize.x - rectData.width) / 2.0f, (hexSize.y - rectData.height) / 2.0f);

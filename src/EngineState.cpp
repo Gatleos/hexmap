@@ -19,8 +19,6 @@
 #define MAPX 128
 #define MAPY 128
 
-sf::View mapView;
-sf::View miniMapView;
 sf::View uiView;
 
 sf::Clock frames;
@@ -33,7 +31,6 @@ sf::Vector2f camPos;
 char camDeltaX = 0, camDeltaY = 0;
 int mtMilli = 0;
 bool timeDisplay = false;
-const char* resourceRoot = "data/sprites/";
 float cloudSpeed = 100.0f;
 
 void EngineState::init()
@@ -43,42 +40,42 @@ void EngineState::init()
 	engine->window->setFramerateLimit(60);
 	// Initialize views
 	sf::Vector2u winSize = engine->window->getSize();
-	mapView.setSize((sf::Vector2f)winSize);
+	HexMap::view.setSize((sf::Vector2f)winSize);
 	winSize.x /= 2, winSize.y /= 2;
-	mapView.setCenter((sf::Vector2f)winSize);
-	mapView.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
-	uiView = mapView;
-	// Resources
-	config::load();
-	RESOURCE.setRoot(resourceRoot);
-	config::loadAllJson();
+	HexMap::view.setCenter((sf::Vector2f)winSize);
+	HexMap::view.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
+	uiView = HexMap::view;
 	// Set up map
-	hg.init(MAPX, MAPY);
-	hg.setAllTiles(HexTileS::get(HexTileS::OCEAN), rng::r);
-	hg.calculateViewArea(mapView);
+	HEXMAP.init(MAPX, MAPY);
+	HEXMAP.setAllTiles(HexTileS::get(HexTileS::OCEAN), rng::r);
+	HEXMAP.calculateViewArea(HexMap::view);
 	// GUI construction
 	mapGenDebug = shared_ptr<UIdef::MapGenDebug>(new UIdef::MapGenDebug);
 	mapGenDebug->gen->GetSignal(sfg::Button::OnMouseLeftPress).Connect(std::bind(&EngineState::generate, this));
 	mapGenDebug->reload->GetSignal(sfg::Button::OnMouseLeftPress).Connect(std::bind(&EngineState::loadResourcesInPlace, this));
 	UI::addNewLayout(mapGenDebug);
 	UI::pushLayout(mapGenDebug);
-	auto* f = hg.addFaction();
-	Site site(SiteS::get("si_castle"), &hg, f);
-	siteMenu = make_shared<UIdef::SiteMenu>(UIdef::SiteMenu());
-	siteMenu->setSite(site);
+	auto* f = HEXMAP.addFaction();
+	Site* site = HEXMAP.addSite(&SiteS::get(SiteS::CITY), f);
+	site->pop.setSize(Population::GROUP_CIV, 2000.0f);
+	site->pop.setSize(Population::GROUP_PR, 2000.0f);
+	site->initMapPos({ 0, 4 });
+	siteMenu = UIdef::SiteMenu::instance();
 	UI::addNewLayout(siteMenu);
 	UI::pushLayout(siteMenu);
+	UI::addNewLayout(UIdef::DeployGroupMenu::instance());
+	UIdef::setSite(*site);
 	// Entities
-	//auto* f = hg.addFaction();
+	//auto* f = HEXMAP.addFaction();
 	//for (int x = 0; x < 16384; x++) {
 	//	sf::Vector2i pos = { x % 128, x / 128 };
-	//	auto* s = hg.addSite(SiteS::get("si_castle"), f);
+	//	auto* s = HEXMAP.addSite(SiteS::get("si_castle"), f);
 	//	s->initMapPos(HexMap::offsetToAxial(pos));
 	//	s->setAnimationType(MapEntityS::anim::IDLE);
 	//}
 	// Shader
 	shader.loadFromFile("data/simplex.glsl", sf::Shader::Type::Fragment);
-	shader.setParameter("offset", mapView.getCenter());
+	shader.setParameter("offset", HexMap::view.getCenter());
 	shader.setParameter("texture", sf::Shader::CurrentTexture);
 	shader.setParameter("scale", 0.001f);
 	shader.setParameter("contrast", 0.25f);
@@ -90,19 +87,19 @@ void EngineState::end()
 void EngineState::update()
 {
 	float move = 60.0f / engine->getFPS();
-	const sf::Vector2f& size = mapView.getSize();
-	const sf::Vector2f& center = mapView.getCenter();
+	const sf::Vector2f& size = HexMap::view.getSize();
+	const sf::Vector2f& center = HexMap::view.getCenter();
 	camPos = { center.x, center.y };
 	if (camDeltaX != 0 || camDeltaY != 0) {
-		mapView.move({ (float)camDeltaX * 20 * move, (float)camDeltaY * 20 * move });
-		hg.constrainView(mapView);
-		hg.calculateViewArea(mapView);
-		shader.setParameter("offset", mapView.getCenter());
+		HexMap::view.move({ (float)camDeltaX * 20 * move, (float)camDeltaY * 20 * move });
+		HEXMAP.constrainView(HexMap::view);
+		HEXMAP.calculateViewArea(HexMap::view);
+		shader.setParameter("offset", HexMap::view.getCenter());
 	}
-	hg.update(engine->getLastTick());
-	sf::Vector2f timeOffset = mapView.getCenter();
-	timeOffset.x += hg.getLifetime().asSeconds() * cloudSpeed;
-	timeOffset.y += hg.getLifetime().asSeconds() * cloudSpeed;
+	HEXMAP.update(engine->getLastTick());
+	sf::Vector2f timeOffset = HexMap::view.getCenter();
+	timeOffset.x += HEXMAP.getLifetime().asSeconds() * cloudSpeed;
+	timeOffset.y += HEXMAP.getLifetime().asSeconds() * cloudSpeed;
 	shader.setParameter("offset", timeOffset);
 }
 void EngineState::render(sf::RenderWindow &window)
@@ -119,15 +116,15 @@ void EngineState::render(sf::RenderWindow &window)
 		}
 		window.setTitle(str);
 	}
-	window.setView(mapView);
+	window.setView(HexMap::view);
 	for (int a = 0; a < 1; a++) {
-		window.draw(hg, &shader);
-		hg.drawEnts(window, &shader);
+		window.draw(HEXMAP, &shader);
+		HEXMAP.drawEnts(window, &shader);
 	}
 	window.setView(uiView);
 	sf::Vector2i mouse = sf::Mouse::getPosition(*engine->window);
-	const sf::Vector2f& size = mapView.getSize();
-	const sf::Vector2f& center = mapView.getCenter();
+	const sf::Vector2f& size = HexMap::view.getSize();
+	const sf::Vector2f& center = HexMap::view.getCenter();
 	snprintf(str, 50, "%d,%d", (int)camPos.x, (int)camPos.y);
 	mapGenDebug->debugInfo[0]->SetText(str);
 	snprintf(str, 50, "%d,%d", (int)mouseMapPos.x, (int)mouseMapPos.y);
@@ -136,7 +133,7 @@ void EngineState::render(sf::RenderWindow &window)
 	mapGenDebug->debugInfo[2]->SetText(str);
 	snprintf(str, 50, "%d", mtMilli);
 	mapGenDebug->debugInfo[4]->SetText(str);
-	const sf::IntRect& ir = hg.getChunkViewArea();
+	const sf::IntRect& ir = HEXMAP.getChunkViewArea();
 	snprintf(str, 50, "(%d,%d / %d,%d)", ir.left, ir.top, ir.width, ir.height);
 	mapGenDebug->debugInfo[5]->SetText(str);
 }
@@ -144,39 +141,39 @@ void EngineState::input(sf::Event &e)
 {
 	if (e.type == sf::Event::MouseMoved) {
 		if (mButtonPressed) {
-			mapView.move({ roundf(mousePos.x - e.mouseMove.x), roundf(mousePos.y - e.mouseMove.y) });
-			hg.constrainView(mapView);
-			hg.calculateViewArea(mapView);
-			shader.setParameter("offset", mapView.getCenter());
+			HexMap::view.move({ roundf(mousePos.x - e.mouseMove.x), roundf(mousePos.y - e.mouseMove.y) });
+			HEXMAP.constrainView(HexMap::view);
+			HEXMAP.calculateViewArea(HexMap::view);
+			shader.setParameter("offset", HexMap::view.getCenter());
 		}
 		mousePos = { (float)e.mouseMove.x, (float)e.mouseMove.y };
-		const sf::Vector2f& size = mapView.getSize();
-		const sf::Vector2f& center = mapView.getCenter();
+		const sf::Vector2f& size = HexMap::view.getSize();
+		const sf::Vector2f& center = HexMap::view.getCenter();
 		mouseMapPos = { e.mouseMove.x - size.x / 2.0f + center.x, e.mouseMove.y - size.y / 2.0f + center.y };
-		tilePos = hg.pixelToHex(mouseMapPos);
-		if (hg.isAxialInBounds((sf::Vector2i)tilePos)) {
-			mapGenDebug->debugInfo[3]->SetText(hg.getAxial((int)tilePos.x, (int)tilePos.y).hts->name);
-			hg.updateCursorPos((sf::Vector2i)tilePos);
+		tilePos = HEXMAP.pixelToHex(mouseMapPos);
+		if (HEXMAP.isAxialInBounds((sf::Vector2i)tilePos)) {
+			mapGenDebug->debugInfo[3]->SetText(HEXMAP.getAxial((int)tilePos.x, (int)tilePos.y).hts->name);
+			HEXMAP.updateCursorPos((sf::Vector2i)tilePos);
 		}
 		else {
 			mapGenDebug->debugInfo[3]->SetText("");
-			hg.updateCursorPos({ -10, -10 });
+			HEXMAP.updateCursorPos({ -10, -10 });
 		}
 	}
 	else if (e.type == sf::Event::MouseWheelMoved) {
-		int zoom = hg.getZoomLevel() + e.mouseWheel.delta;
+		int zoom = HEXMAP.getZoomLevel() + e.mouseWheel.delta;
 		if (isInRange(zoom, 0, 2)) {
 			sf::Vector2f mouse = (sf::Vector2f)sf::Mouse::getPosition(*engine->window);
-			const sf::Vector2f& size = mapView.getSize();
-			const sf::Vector2f& center = mapView.getCenter();
+			const sf::Vector2f& size = HexMap::view.getSize();
+			const sf::Vector2f& center = HexMap::view.getCenter();
 			mouse.x = mouse.x - size.x / 2.0f + center.x, mouse.y = mouse.y - size.y / 2.0f + center.y;
-			sf::Vector2f hex = hg.pixelToHex(mouse);
-			hg.setZoomLevel(zoom);
-			sf::Vector2f pixel = hg.hexToPixel(hex);
-			mapView.move({ pixel.x - mouse.x, pixel.y - mouse.y });
-			hg.constrainView(mapView);
-			hg.calculateViewArea(mapView);
-			shader.setParameter("offset", mapView.getCenter());
+			sf::Vector2f hex = HEXMAP.pixelToHex(mouse);
+			HEXMAP.setZoomLevel(zoom);
+			sf::Vector2f pixel = HEXMAP.hexToPixel(hex);
+			HexMap::view.move({ pixel.x - mouse.x, pixel.y - mouse.y });
+			HEXMAP.constrainView(HexMap::view);
+			HEXMAP.calculateViewArea(HexMap::view);
+			shader.setParameter("offset", HexMap::view.getCenter());
 			shader.setParameter("scale", (1 << zoom) / 1000.0f);
 			cloudSpeed = 100 >> zoom;
 		}
@@ -202,14 +199,14 @@ void EngineState::input(sf::Event &e)
 	}
 	else if (e.type == sf::Event::Resized)
 	{
-		mapView.setSize(sf::Vector2f((float)e.size.width, (float)e.size.height));
-		mapView.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
+		HexMap::view.setSize(sf::Vector2f((float)e.size.width, (float)e.size.height));
+		HexMap::view.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
 		uiView.setSize(sf::Vector2f(roundf((float)e.size.width), roundf((float)e.size.height)));
 		uiView.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
 		uiView.setCenter(uiView.getSize() / 2.0f);
 		//
-		hg.constrainView(mapView);
-		hg.calculateViewArea(mapView);
+		HEXMAP.constrainView(HexMap::view);
+		HEXMAP.calculateViewArea(HexMap::view);
 	}
 	else {
 		if (config::pressed(e, "scroll_left")) {
@@ -236,12 +233,17 @@ void EngineState::input(sf::Event &e)
 		else if (config::pressed(e, "generate")) {
 			generate();
 		}
+		else if (config::pressed(e, "debug")) {
+			Faction* f = HEXMAP.addFaction();
+			Site* s = HEXMAP.addSite(&SiteS::get(SiteS::CITY), f);
+			s->initMapPos((sf::Vector2i)tilePos);
+		}
 	}
 }
 
 void EngineState::generate()
 {
-	hg.clearTileFeatures();
+	HEXMAP.clearTileFeatures();
 	unsigned long hexSeed = 0;
 	if (mapGenDebug->randomSeed->IsActive()) {
 		hexSeed = rng::r();
@@ -255,11 +257,11 @@ void EngineState::generate()
 	}
 	customSeed.seed(hexSeed);
 	sf::Clock mtClock;
-	hg.generateBiomes(customSeed);
+	HEXMAP.generateBiomes(customSeed);
 	for (int a = 0; a < config::gen::mountNum; a++) {
-		hg.generateMountainRange(customSeed);
+		HEXMAP.generateMountainRange(customSeed);
 	}
-	//hg.placeSites(customSeed);
+	//HEXMAP.placeSites(customSeed);
 	sf::Time mtTime = mtClock.getElapsedTime();
 	mtMilli = mtTime.asMilliseconds();
 	stringstream ss;
@@ -273,7 +275,6 @@ void EngineState::loadResourcesInPlace()
 {
 	config::load();
 	RESOURCE.releaseAll();
-	RESOURCE.setRoot(resourceRoot);
 	config::loadAllJson();
 	string seed = (string)mapGenDebug->seedBox->GetText();
 	if (seed.empty()) {
@@ -282,11 +283,11 @@ void EngineState::loadResourcesInPlace()
 	unsigned long hexSeed = stoul(seed, nullptr, 16);
 	customSeed.seed(hexSeed);
 	sf::Clock mtClock;
-	hg.generateBiomes(customSeed);
+	HEXMAP.generateBiomes(customSeed);
 	for (int a = 0; a < config::gen::mountNum; a++) {
-		hg.generateMountainRange(customSeed);
+		HEXMAP.generateMountainRange(customSeed);
 	}
-	//hg.placeSites(customSeed);
+	//HEXMAP.placeSites(customSeed);
 	sf::Time mtTime = mtClock.getElapsedTime();
 	mtMilli = mtTime.asMilliseconds();
 	stringstream ss;
@@ -294,7 +295,7 @@ void EngineState::loadResourcesInPlace()
 	mapGenDebug->seedBox->SetText(ss.str());
 	// Shader
 	shader.loadFromFile("data/simplex.glsl", sf::Shader::Type::Fragment);
-	shader.setParameter("offset", mapView.getCenter());
+	shader.setParameter("offset", HexMap::view.getCenter());
 	shader.setParameter("texture", sf::Shader::CurrentTexture);
 	shader.setParameter("scale", 0.001f);
 	shader.setParameter("contrast", 0.25f);

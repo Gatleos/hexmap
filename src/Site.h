@@ -24,6 +24,7 @@ public:
 	const SiteS* ss;
 	Site(const SiteS* sSite, HexMap* hmSet, Faction* parent);
 	void update(const sf::Time& timeElapsed);
+	void advanceTurn();
 };
 
 #endif

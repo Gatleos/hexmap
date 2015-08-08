@@ -10,17 +10,17 @@
 class EngineState: public GameState
 {
 public:
+	VectorSet vs;
 	shared_ptr<UIdef::MapGenDebug> mapGenDebug;
 	shared_ptr<UIdef::SiteMenu> siteMenu;
 	//
 	pugi::xml_document ani;
 	pugi::xml_document spr;
 	sf::Texture tex;
-	AnimHandler sh[16384];
+	//AnimHandler sh[16384];
 	sf::Sprite sprite;
 	//
 	mt19937 customSeed;
-	HexMap hg;
 	sf::Font font;
 	sf::Text text;
 	sf::Texture hex;
@@ -34,5 +34,24 @@ public:
 	void generate();
 	void loadResourcesInPlace();
 }; // EngineState
+
+class SelectState : public GameState
+{
+	shared_ptr<VectorSet> selectableCoords_;
+	sf::Vector2f tilePos_;
+	std::vector<sf::Sprite> selectable_;
+	sf::Sprite selected_;
+	bool inBounds_;
+public:
+	static const sf::Color selectCol;
+	static const sf::Color validCol;
+	static const sf::Color invalidCol;
+	SelectState(shared_ptr<VectorSet> selectable);
+	void init();
+	void end();
+	void update();
+	void render(sf::RenderWindow &window);
+	void input(sf::Event &e);
+}; // SelectState
 
 #endif

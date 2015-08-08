@@ -27,6 +27,8 @@ public:
 	Region(unsigned int sizeSet, sf::Vector2i coordSet) : size(sizeSet), coord(coordSet) {}
 };
 
+#define HEXMAP HexMap::instance()
+
 class HexMap : public sf::Drawable, public sf::Transformable
 {
 public:
@@ -103,8 +105,13 @@ private:
 	uniform_int_distribution<int> xRange;
 	// Distribution for rng along map's y coordinate
 	uniform_int_distribution<int> yRange;
-public:
+	// private constructor
 	HexMap();
+public:
+	// Get singleton instance
+	static HexMap& instance();
+	static sf::View view;
+	static sf::Vector2i selected;
 	// Create hex tiles and vertices (for drawing), and initialize size values
 	void init(int width, int height);
 	const sf::Vector2i& getMapSize() const;
@@ -157,9 +164,9 @@ public:
 	// Check if offset coordinate is within map bounds
 	bool isOffsetInBounds(sf::Vector2i offsetPos) const;
 	// Return the tile coordinate in the given direction (use HexMap::dir and HexMap::directions)
-	static sf::Vector2i neighbor(sf::Vector2i centerAxial, int dir);
+	static sf::Vector2i neighbor(const sf::Vector2i& centerAxial, int dir);
 	// Return a list of hex tile neighbors (axial)
-	static VectorSet& neighbors(sf::Vector2i centerAxial, VectorSet& neighbors);
+	static VectorSet& neighbors(const sf::Vector2i& centerAxial, VectorSet& neighbors);
 	// Return a list of hex tiles contained in a given radius (axial)
 	static VectorSet& area(sf::Vector2i centerAxial, int radius, VectorSet& n);
 	// Return a list of hex tiles with the given distance (radius) from center (axial)
@@ -231,6 +238,7 @@ public:
 	void clearEntities();
 	void setEntity(sf::Vector2i offsetPos, MapEntity* ent);
 	void update(const sf::Time& timeElapsed);
+	void advanceTurn();
 
 	////////////
 	// MapGen //

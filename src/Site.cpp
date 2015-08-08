@@ -18,6 +18,11 @@ void Site::update(const sf::Time& timeElapsed)
 
 }
 
+void Site::advanceTurn()
+{
+	pop.popGrowth(1);
+}
+
 SiteS::SiteS(string id) :
 MapEntityS(id)
 {

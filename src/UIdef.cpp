@@ -1,6 +1,7 @@
 #include "UIdef.h"
 #include "HexTile.h"
 #include "MapEntity.h"
+#include "States.h"
 
 namespace UIdef {
 	MapGenDebug::MapGenDebug() {
@@ -38,9 +39,31 @@ namespace UIdef {
 		addWindow(window1, UIAlign({ 1.0f, 0.0f, 210.0f, 120.0f }, UI::ALIGN_RIGHT | UI::ALIGN_FRAC_POSX));
 	}
 
+	shared_ptr<SiteMenu> SiteMenu::instance()
+	{
+		static auto sm = make_shared<SiteMenu>(SiteMenu());
+		return sm;
+	}
 	SiteMenu::SiteMenu() {
 		window = sfg::Window::Create(sfg::Window::Style::BACKGROUND);
 		auto sWindow = sfg::ScrolledWindow::Create(sfg::Adjustment::Create(), sfg::Adjustment::Create());
+		auto mainBox = sfg::Box::Create(sfg::Box::Orientation::VERTICAL);
+		auto deployGroupButton = sfg::Button::Create("Deploy Group");
+		deployGroupButton->GetSignal(sfg::Button::OnLeftClick).Connect([]() {
+			DeployGroupMenu::instance()->show(true);
+			DeployGroupMenu::instance()->bringToFront();
+			// Simulate a mouse button released event when the window
+			// is spawned, since that event isn't caught when the window
+			// is closed. It's SFGUI, not me, man.
+			sf::Event e;
+			e.type = sf::Event::MouseButtonReleased;
+			e.mouseButton.button = sf::Mouse::Left;
+			DeployGroupMenu::instance()->window->HandleEvent(e);
+		});
+		UI::connectMouseInputFlag(deployGroupButton);
+		mainBox->Pack(deployGroupButton);
+		// Population activities
+		////////////////////////
 		int indexTab = 0;
 		auto notebook = sfg::Notebook::Create();
 		for (const auto& t : Population::groupNames) {
@@ -80,7 +103,6 @@ namespace UIdef {
 			notebook->AppendPage(boxV, sfg::Label::Create(t));
 			indexTab++;
 		}
-		auto mainBox = sfg::Box::Create(sfg::Box::Orientation::VERTICAL);
 		//auto boxH = sfg::Box::Create();
 		//mainBox->Pack(sfg::Separator::Create());
 		mainBox->Pack(notebook);
@@ -111,5 +133,42 @@ namespace UIdef {
 		stringstream ss;
 		ss << "Idle: " << site_->pop.activities()[group][Population::IDLE] << "%";
 		idlePercent[group]->SetText(ss.str());
+	}
+
+	shared_ptr<DeployGroupMenu> DeployGroupMenu::instance()
+	{
+		static auto dgm = make_shared<DeployGroupMenu>(DeployGroupMenu());
+		return dgm;
+	}
+	DeployGroupMenu::DeployGroupMenu()
+	{
+		window = sfg::Window::Create(sfg::Window::Style::TOPLEVEL | sfg::Window::Style::CLOSE);
+		window->GetSignal(sfg::Window::OnCloseButton).Connect(bind([](shared_ptr<sfg::Window> win) {
+			win->Show(false);
+		}, window));
+		auto mainBox = sfg::Box::Create(sfg::Box::Orientation::VERTICAL);
+		selectCoordButton = sfg::Button::Create("Choose");
+		mainBox->Pack(selectCoordButton);
+		window->Add(mainBox);
+		addWindow(window, UIAlign({ 0.5f, 0.5f, 250.0f, 300.0f },
+			UI::ALIGN_CENTERX | UI::ALIGN_FRAC_POSX | UI::ALIGN_CENTERY | UI::ALIGN_FRAC_POSY, false));
+	}
+	void DeployGroupMenu::setSite(Site& site)
+	{
+		site_ = &site;
+		static auto createSelection = [](Site* site) {
+			auto vs = make_shared<VectorSet>();
+			HexMap::neighbors(site->getMapPos(), *vs);
+			SFMLEngine::instance().pushState(new SelectState(vs));
+		};
+		deployTo_ = { -1, -1 };
+		selectCoordButton->GetSignal(sfg::Button::OnLeftClick).Connect(bind(createSelection, &site));
+		UI::connectMouseInputFlag(selectCoordButton);
+	}
+
+	void setSite(Site& site)
+	{
+		SiteMenu::instance()->setSite(site);
+		DeployGroupMenu::instance()->setSite(site);
 	}
 }

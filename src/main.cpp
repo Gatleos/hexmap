@@ -14,6 +14,10 @@ int main(int argc, char* argv[])
 	else {
 		// Seed the default rng
 		rng::init();
+		// Resources
+		config::load();
+		RESOURCE.setRoot(config::resourceRoot);
+		config::loadAllJson();
 		// Create our game engine
 		auto& s = SFMLEngine::instance();
 		sf::RenderWindow window(sf::VideoMode(640, 512), "", sf::Style::Default, sf::ContextSettings());
