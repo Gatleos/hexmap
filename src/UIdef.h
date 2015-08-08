@@ -33,15 +33,17 @@ namespace UIdef {
 	class DeployGroupMenu : public UILayout {
 		DeployGroupMenu();
 		Site* site_;
+		shared_ptr<sfg::Label> coordLabel_;
+		shared_ptr<sfg::Button> selectCoordButton_;
 		sf::Vector2i deployTo_;
-		bool closeClicked_;
-		shared_ptr<sfg::Button> selectCoordButton;
 	public:
 		static shared_ptr<DeployGroupMenu> instance();
 		void setSite(Site& site);
+		void setCoord(const sf::Vector2i& coord);
 		shared_ptr<sfg::Window> window;
 	};
 	void setSite(Site& site);
+	void setSelection(const sf::Vector2i& selection);
 }
 
 #endif

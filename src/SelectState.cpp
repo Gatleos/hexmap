@@ -22,7 +22,7 @@ void SelectState::init()
 		spr.setColor(selectCol);
 		spr.setPosition(HEXMAP.hexToPixel(hexCoord) - HEXMAP.getOrigin() - sf::Vector2f(1.0f, 1.0f));
 	};
-	HexMap::selected = { -1, -1 };
+	UIdef::setSelection({ -1, -1 });
 	for (auto& v : *selectableCoords_) {
 		selectable_.push_back(sf::Sprite());
 		setupSprite(selectable_.back(), (sf::Vector2f)v);
@@ -34,6 +34,7 @@ void SelectState::end()
 }
 void SelectState::update()
 {
+	prev->update();
 }
 void SelectState::render(sf::RenderWindow &window)
 {
@@ -77,10 +78,10 @@ void SelectState::input(sf::Event &e)
 		}
 		if (e.mouseButton.button == sf::Mouse::Left) {
 			if (selectableCoords_->find((sf::Vector2i)tilePos_) == selectableCoords_->end()) {
-				HexMap::selected = { -1, -1 };
+				UIdef::setSelection({ -1, -1 });
 			}
 			else {
-				HexMap::selected = (sf::Vector2i)tilePos_;
+				UIdef::setSelection((sf::Vector2i)tilePos_);
 			}
 			engine->popState();
 		}

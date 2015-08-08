@@ -113,7 +113,6 @@ HexMap& HexMap::instance()
 }
 
 sf::View HexMap::view;
-sf::Vector2i HexMap::selected{ -1, -1 };
 
 int HexMap::heuristic(sf::Vector2i& a, sf::Vector2i& b)
 {
