@@ -19,8 +19,6 @@
 #define MAPX 128
 #define MAPY 128
 
-sf::View uiView;
-
 sf::Clock frames;
 char str[50];
 sf::Vector2f tilePos;
@@ -44,7 +42,7 @@ void EngineState::init()
 	winSize.x /= 2, winSize.y /= 2;
 	HexMap::view.setCenter((sf::Vector2f)winSize);
 	HexMap::view.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
-	uiView = HexMap::view;
+	UI::view = HexMap::view;
 	// Set up map
 	HEXMAP.init(MAPX, MAPY);
 	HEXMAP.setAllTiles(HexTileS::get(HexTileS::OCEAN), rng::r);
@@ -121,7 +119,7 @@ void EngineState::render(sf::RenderWindow &window)
 		window.draw(HEXMAP, &shader);
 		HEXMAP.drawEnts(window, &shader);
 	}
-	window.setView(uiView);
+	window.setView(UI::view);
 	sf::Vector2i mouse = sf::Mouse::getPosition(*engine->window);
 	const sf::Vector2f& size = HexMap::view.getSize();
 	const sf::Vector2f& center = HexMap::view.getCenter();
@@ -196,17 +194,6 @@ void EngineState::input(sf::Event &e)
 	}
 	else if (e.type == sf::Event::MouseLeft) {
 		mButtonPressed = false;
-	}
-	else if (e.type == sf::Event::Resized)
-	{
-		HexMap::view.setSize(sf::Vector2f((float)e.size.width, (float)e.size.height));
-		HexMap::view.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
-		uiView.setSize(sf::Vector2f(roundf((float)e.size.width), roundf((float)e.size.height)));
-		uiView.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
-		uiView.setCenter(uiView.getSize() / 2.0f);
-		//
-		HEXMAP.constrainView(HexMap::view);
-		HEXMAP.calculateViewArea(HexMap::view);
 	}
 	else {
 		if (config::pressed(e, "scroll_left")) {

@@ -32,6 +32,7 @@ namespace UI
 		ALIGN_RIGHT = 16, ALIGN_BOTTOM = 32, ALIGN_CENTERX = 64, ALIGN_CENTERY = 128
 	};
 	extern sfg::Desktop* desktop;
+	extern sf::View view;
 	void init(sfg::Desktop* d);
 	void end();
 	void pushLayout(shared_ptr<UILayout> layout, bool replacePrevious = false);

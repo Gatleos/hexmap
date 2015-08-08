@@ -3,6 +3,7 @@
 #include "UI.h"
 
 sfg::Desktop* UI::desktop = nullptr;
+sf::View UI::view;
 static vector<pair<shared_ptr<UILayout>, bool>> UI_layoutStack;
 static sf::Vector2f UI_appSize;
 static bool UI_gotMouseInput = false;

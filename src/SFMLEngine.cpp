@@ -1,6 +1,7 @@
 #include <iostream>
 #include <SFGUI/Renderers.hpp>
 #include "SFMLEngine.h"
+#include "HexMap.h"
 
 
 
@@ -23,6 +24,14 @@ void SFMLEngine::start() {
 				desktop.HandleEvent(event);
 				if (event.type == sf::Event::Resized) {
 					UI::setAppSize({ (float)event.size.width, (float)event.size.height });
+					HexMap::view.setSize(sf::Vector2f((float)event.size.width, (float)event.size.height));
+					HexMap::view.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
+					UI::view.setSize(sf::Vector2f(roundf((float)event.size.width), roundf((float)event.size.height)));
+					UI::view.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
+					UI::view.setCenter(UI::view.getSize() / 2.0f);
+					//
+					HEXMAP.constrainView(HexMap::view);
+					HEXMAP.calculateViewArea(HexMap::view);
 				}
 				if (event.type == sf::Event::Closed) {
 					window->close();
