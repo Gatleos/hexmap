@@ -1,18 +1,23 @@
 #include <stack>
+#include <SFGUI/Renderers.hpp>
 #include "UI.h"
 
-static sfg::Desktop* UI_desktop;
+sfg::Desktop* UI::desktop = nullptr;
 static vector<pair<shared_ptr<UILayout>, bool>> UI_layoutStack;
 static sf::Vector2f UI_appSize;
 static bool UI_gotMouseInput = false;
+static sf::Image UI_image;
+static const sf::Texture* UI_texture = nullptr;
+static SpriteSheet* UI_sprites = nullptr;
 
 /////////////////
 // UIAlign //////
 /////////////////
 
-UIAlign::UIAlign(sf::FloatRect alloc, unsigned char FLAGS) :
+UIAlign::UIAlign(sf::FloatRect alloc, unsigned char FLAGS, bool autoResize) :
 alloc_(alloc),
-FLAGS_(FLAGS)
+FLAGS_(FLAGS),
+autoResize_(autoResize)
 {
 }
 
@@ -70,6 +75,13 @@ void UILayout::addWindow(shared_ptr<sfg::Widget> newWin, UIAlign a)
 	windows.push_back(make_pair(newWin, a));
 }
 
+void UILayout::bringToFront()
+{
+	for (auto& w : windows) {
+		UI::desktop->BringToFront(w.first);
+	}
+}
+
 /////////////////
 // UI ///////////
 /////////////////
@@ -80,8 +92,10 @@ void UI::setAppSize(sf::Vector2f size)
 	if (!UI_layoutStack.empty()) {
 		for (auto l = UI_layoutStack.rbegin(); l != UI_layoutStack.rend(); l++) {
 			for (auto w : l->first->windows) {
-				w.second.resize();
-				w.first->SetAllocation(w.second.alloc_);
+				if (w.second.autoResize_) {
+					w.second.resize();
+					w.first->SetAllocation(w.second.alloc_);
+				}
 			}
 			if (l->second) {
 				break;
@@ -100,10 +114,37 @@ bool UI::gotMouseInput()
 	return UI_gotMouseInput;
 }
 
+void UI::connectMouseInputFlag(shared_ptr<sfg::Widget> w)
+{
+	static auto setMouseFlag = [](){UI_gotMouseInput = true; };
+	w->GetSignal(sfg::Window::OnMouseLeftPress).Connect(setMouseFlag);
+	w->GetSignal(sfg::Window::OnMouseLeftRelease).Connect(setMouseFlag);
+	w->GetSignal(sfg::Window::OnMouseRightPress).Connect(setMouseFlag);
+	w->GetSignal(sfg::Window::OnMouseRightRelease).Connect(setMouseFlag);
+}
+
+const sf::Image& UI::image()
+{
+	return UI_image;
+}
+const sf::Texture& UI::texture()
+{
+	return *UI_texture;
+}
+SpriteSheet& UI::sprites()
+{
+	return *UI_sprites;
+}
+
 void UI::init(sfg::Desktop* d)
 {
-	UI_desktop = d;
+	desktop = d;
+	auto renderer = sfg::VertexBufferRenderer::Create(); // Fix a NonLegacyRenderer-related text bug
+	sfg::Renderer::Set(renderer);
 	UI_layoutStack.reserve(100);
+	UI_sprites = RESOURCE.sh("ui.sprites");
+	UI_texture = RESOURCE.tex(UI_sprites->getImageName());
+	UI_image = UI_texture->copyToImage();
 }
 
 void UI::end()
@@ -111,22 +152,23 @@ void UI::end()
 	UI_layoutStack.clear();
 }
 
+void UI::addWindow(shared_ptr<sfg::Window> newWin)
+{
+	desktop->Add(newWin);
+}
+
 void UI::addWindow(shared_ptr<sfg::Window> newWin, UIAlign a)
 {
-	UI_desktop->Add(newWin);
+	desktop->Add(newWin);
 	a.resize();
 	newWin->SetAllocation(a.alloc_);
 }
 
 void UI::addNewLayout(shared_ptr<UILayout> layout)
 {
-	static function<void()> setMouseFlag = [](){UI_gotMouseInput = true; };
 	for (auto& w : layout->windows) {
-		UI_desktop->Add(w.first);
-		w.first->GetSignal(sfg::Window::OnMouseLeftPress).Connect(setMouseFlag);
-		w.first->GetSignal(sfg::Window::OnMouseLeftRelease).Connect(setMouseFlag);
-		w.first->GetSignal(sfg::Window::OnMouseRightPress).Connect(setMouseFlag);
-		w.first->GetSignal(sfg::Window::OnMouseRightRelease).Connect(setMouseFlag);
+		desktop->Add(w.first);
+		connectMouseInputFlag(w.first);
 	}
 }
 
