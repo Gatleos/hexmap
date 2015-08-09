@@ -22,32 +22,41 @@ autoResize_(autoResize)
 {
 }
 
-void UIAlign::resize()
+void UIAlign::resize(shared_ptr<sfg::Widget> win)
 {
+	auto alloc = alloc_;
+	const auto& req = win->GetRequisition();
+	if (alloc.width == 0.0f) {
+		alloc.width = req.x;
+	}
+	else if (FLAGS_ & UI::ALIGN_FRAC_SIZEX) {
+		alloc.width *= UI_appSize.x;
+	}
+	if (alloc.height == 0.0f) {
+		alloc.height = req.y;
+	}
+	else if (FLAGS_ & UI::ALIGN_FRAC_SIZEY) {
+		alloc.width *= UI_appSize.x;
+	}
 	if (FLAGS_ & UI::ALIGN_FRAC_POSX) {
-		alloc_.left *= UI_appSize.x;
+		alloc.left *= UI_appSize.x;
 	}
 	if (FLAGS_ & UI::ALIGN_FRAC_POSY) {
-		alloc_.top *= UI_appSize.y;
-	}
-	if (FLAGS_ & UI::ALIGN_FRAC_SIZEX) {
-		alloc_.width *= UI_appSize.x;
-	}
-	if (FLAGS_ & UI::ALIGN_FRAC_SIZEY) {
-		alloc_.height *= UI_appSize.y;
+		alloc.top *= UI_appSize.y;
 	}
 	if (FLAGS_ & UI::ALIGN_CENTERX) {
-		alloc_.left -= alloc_.width * 0.5f;
+		alloc.left -= alloc.width * 0.5f;
 	}
 	else if (FLAGS_ & UI::ALIGN_RIGHT) {
-		alloc_.left -= alloc_.width;
+		alloc.left -= alloc.width;
 	}
 	if (FLAGS_ & UI::ALIGN_CENTERY) {
-		alloc_.top -= alloc_.height * 0.5f;
+		alloc.top -= alloc.height * 0.5f;
 	}
 	else if (FLAGS_ & UI::ALIGN_BOTTOM) {
-		alloc_.top -= alloc_.height;
+		alloc.top -= alloc.height;
 	}
+	win->SetAllocation(alloc);
 }
 
 /////////////////
@@ -59,8 +68,7 @@ void UILayout::show(bool show)
 	if (show) {
 		for (auto w : windows) {
 			w.first->Show(true);
-			w.second.resize();
-			w.first->SetAllocation(w.second.alloc_);
+			w.second.resize(w.first);
 		}
 	}
 	else {
@@ -94,8 +102,7 @@ void UI::setAppSize(sf::Vector2f size)
 		for (auto l = UI_layoutStack.rbegin(); l != UI_layoutStack.rend(); l++) {
 			for (auto w : l->first->windows) {
 				if (w.second.autoResize_) {
-					w.second.resize();
-					w.first->SetAllocation(w.second.alloc_);
+					w.second.resize(w.first);
 				}
 			}
 			if (l->second) {
@@ -161,8 +168,7 @@ void UI::addWindow(shared_ptr<sfg::Window> newWin)
 void UI::addWindow(shared_ptr<sfg::Window> newWin, UIAlign a)
 {
 	desktop->Add(newWin);
-	a.resize();
-	newWin->SetAllocation(a.alloc_);
+	a.resize(newWin);
 }
 
 void UI::addNewLayout(shared_ptr<UILayout> layout)

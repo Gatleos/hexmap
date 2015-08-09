@@ -13,7 +13,7 @@ struct UIAlign
 	unsigned char FLAGS_;
 	bool autoResize_;
 	UIAlign(sf::FloatRect alloc, unsigned char FLAGS = 0, bool autoResize = true);
-	void resize();
+	void resize(shared_ptr<sfg::Widget> win);
 };
 
 class UILayout
