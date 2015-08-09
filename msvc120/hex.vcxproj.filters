@@ -119,6 +119,9 @@
     <ClCompile Include="..\src\SelectState.cpp">
       <Filter>States</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\MapControlState.cpp">
+      <Filter>States</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="utility">

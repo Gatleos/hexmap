@@ -4,6 +4,11 @@
 #include "States.h"
 
 namespace UIdef {
+	MapGenDebug& MapGenDebug::instance()
+	{
+		static MapGenDebug mgd;
+		return mgd;
+	}
 	MapGenDebug::MapGenDebug() {
 		auto window1 = sfg::Window::Create(sfg::Window::Style::BACKGROUND);
 		auto table1 = sfg::Table::Create();
@@ -41,6 +46,26 @@ namespace UIdef {
 		box2->Pack(seedBox);
 		window1->Add(box1);
 		addWindow(window1, UIAlign({ 1.0f, 0.0f, 210.0f, 120.0f }, UI::ALIGN_RIGHT | UI::ALIGN_FRAC_POSX));
+	}
+	void MapGenDebug::updateDebugInfo(sf::Vector2i& mousePos, sf::Vector2i& tilePos, sf::Vector2i& camPos)
+	{
+		stringstream ss;
+		// camPos
+		ss << camPos.x << "," << camPos.y;
+		debugInfo[0]->SetText(ss.str());
+		ss.str(std::string());
+		// mousePos
+		ss << mousePos.x << "," << mousePos.y;
+		debugInfo[1]->SetText(ss.str());
+		ss.str(std::string());
+		// tilePos
+		ss << tilePos.x << "," << tilePos.y;
+		debugInfo[2]->SetText(ss.str());
+		ss.str(std::string());
+		// chunks
+		const sf::IntRect& ir = HEXMAP.getChunkViewArea();
+		ss << "(" << ir.left << ", " << ir.top << " / " << ir.width << ", " << ir.height << ")";
+		debugInfo[5]->SetText(ss.str());
 	}
 
 	shared_ptr<SiteMenu> SiteMenu::instance()

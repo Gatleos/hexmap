@@ -11,7 +11,6 @@ class EngineState: public GameState
 {
 public:
 	VectorSet vs;
-	shared_ptr<UIdef::MapGenDebug> mapGenDebug;
 	shared_ptr<UIdef::SiteMenu> siteMenu;
 	//
 	pugi::xml_document ani;
@@ -34,6 +33,17 @@ public:
 	void generate();
 	void loadResourcesInPlace();
 }; // EngineState
+
+class MapControlState : public GameState
+{
+	sf::Vector2i camDelta_;
+public:
+	void init();
+	void end();
+	void update();
+	void render(sf::RenderWindow &window);
+	void input(sf::Event &e);
+}; // MapControlState
 
 class SelectState : public GameState
 {

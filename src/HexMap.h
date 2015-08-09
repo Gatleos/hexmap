@@ -110,7 +110,10 @@ private:
 public:
 	// Get singleton instance
 	static HexMap& instance();
-	static sf::View view;
+	static float cloudSpeed;
+	sf::View view;
+	bool isGrabbed;
+	sf::Shader cloudShader;
 	// Create hex tiles and vertices (for drawing), and initialize size values
 	void init(int width, int height);
 	const sf::Vector2i& getMapSize() const;

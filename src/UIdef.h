@@ -6,17 +6,16 @@
 #include "Site.h"
 
 namespace UIdef {
-	//class site : public UILayout {
-	//public:
-	//};
 	class MapGenDebug : public UILayout {
-	public:
 		MapGenDebug();
+	public:
+		static MapGenDebug& instance();
 		shared_ptr<sfg::Button> gen;
 		shared_ptr<sfg::Button> reload;
 		array<shared_ptr<sfg::Label>, 6U> debugInfo;
 		shared_ptr<sfg::Entry> seedBox;
 		shared_ptr<sfg::CheckButton> randomSeed;
+		void updateDebugInfo(sf::Vector2i& mousePos, sf::Vector2i& tilePos, sf::Vector2i& camPos);
 	};
 	class SiteMenu : public UILayout {
 		vector<vector<shared_ptr<sfg::Adjustment>>> sliders;

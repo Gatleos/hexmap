@@ -56,6 +56,7 @@
     <ClCompile Include="..\src\HexMap.cpp" />
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\MapEntity.cpp" />
+    <ClCompile Include="..\src\MapControlState.cpp" />
     <ClCompile Include="..\src\rng.cpp" />
     <ClCompile Include="..\src\ResourceLoader.cpp" />
     <ClCompile Include="..\src\SelectState.cpp" />

@@ -39,7 +39,7 @@ void SelectState::update()
 void SelectState::render(sf::RenderWindow &window)
 {
 	prev->render(window);
-	window.setView(HexMap::view);
+	window.setView(HEXMAP.view);
 	for (auto& s : selectable_) {
 		window.draw(s);
 	}
@@ -50,8 +50,8 @@ void SelectState::render(sf::RenderWindow &window)
 void SelectState::input(sf::Event &e)
 {
 	if (e.type == sf::Event::MouseMoved) {
-		const sf::Vector2f& size = HexMap::view.getSize();
-		const sf::Vector2f& center = HexMap::view.getCenter();
+		const sf::Vector2f& size = HEXMAP.view.getSize();
+		const sf::Vector2f& center = HEXMAP.view.getCenter();
 		sf::Vector2f newTilePos = HEXMAP.pixelToHex({ e.mouseMove.x - size.x / 2.0f + center.x, e.mouseMove.y - size.y / 2.0f + center.y });
 		if (tilePos_ != newTilePos) {
 			if (HEXMAP.isAxialInBounds((sf::Vector2i)newTilePos)) {

@@ -9,7 +9,9 @@
 #include "MapEntity.h"
 #include "UIdef.h"
 
-
+///////////////
+// HexMap    //
+///////////////
 const sf::Vector2i HexMap::directions[dir::SIZE] = { { 1, -1 }, { 0, -1 }, { -1, 0 }, { -1, 1 }, { 0, 1 }, { 1, 0 } };
 
 const int HexMap::CHUNK_SIZE = 16;
@@ -103,7 +105,8 @@ void HexMap::FloodFill::setOutputContainer(VectorSet* container)
 HexMap::HexMap() :
 activeBgVertices_(&bgVertices_[0]),
 nextUnitId(0),
-nextSiteId(0)
+nextSiteId(0),
+isGrabbed(false)
 {
 }
 
@@ -113,7 +116,7 @@ HexMap& HexMap::instance()
 	return map;
 }
 
-sf::View HexMap::view;
+float HexMap::cloudSpeed = 100.0f;
 
 int HexMap::heuristic(sf::Vector2i& a, sf::Vector2i& b)
 {

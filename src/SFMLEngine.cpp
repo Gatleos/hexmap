@@ -22,25 +22,31 @@ void SFMLEngine::start() {
 		while (window->isOpen()) {
 			while (window->pollEvent(event)) {
 				desktop.HandleEvent(event);
-				if (event.type == sf::Event::Resized) {
-					UI::setAppSize({ (float)event.size.width, (float)event.size.height });
-					HexMap::view.setSize(sf::Vector2f((float)event.size.width, (float)event.size.height));
-					HexMap::view.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
-					UI::view.setSize(sf::Vector2f(roundf((float)event.size.width), roundf((float)event.size.height)));
-					UI::view.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
-					UI::view.setCenter(UI::view.getSize() / 2.0f);
-					//
-					HEXMAP.constrainView(HexMap::view);
-					HEXMAP.calculateViewArea(HexMap::view);
-				}
-				if (event.type == sf::Event::MouseButtonPressed && !UI::gotMouseInput()) {
-					UI::dropFocus();
-				}
 				if (event.type == sf::Event::Closed) {
 					window->close();
 					UI::end();
 				}
-				else { states.top()->input(event); }
+				else {
+					states.top()->input(event);
+				}
+				// Special UI event responses
+				if (event.type == sf::Event::MouseMoved) {
+					UI::lastMousePos = { event.mouseMove.x, event.mouseMove.y };
+				}
+				else if (event.type == sf::Event::MouseButtonPressed && !UI::gotMouseInput()) {
+					UI::dropFocus();
+				}
+				else if (event.type == sf::Event::Resized) {
+					UI::setAppSize({ (float)event.size.width, (float)event.size.height });
+					HEXMAP.view.setSize(sf::Vector2f((float)event.size.width, (float)event.size.height));
+					HEXMAP.view.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
+					UI::view.setSize(sf::Vector2f(roundf((float)event.size.width), roundf((float)event.size.height)));
+					UI::view.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
+					UI::view.setCenter(UI::view.getSize() / 2.0f);
+					//
+					HEXMAP.constrainView(HEXMAP.view);
+					HEXMAP.calculateViewArea(HEXMAP.view);
+				}
 				UI::resetInputFlags();
 			}
 			//
