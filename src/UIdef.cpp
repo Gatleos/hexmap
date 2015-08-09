@@ -23,12 +23,16 @@ namespace UIdef {
 		seedBox->SetAllocation({ 0.0f, 0.0f, 75.0f, 5.0f });
 		seedBox->SetRequisition({ 75.0f, 5.0f });
 		seedBox->SetMaximumLength(8);
+		UI::connectKeyboardInputFlag(seedBox);
 		randomSeed = sfg::CheckButton::Create("Random seed");
 		randomSeed->SetActive(true);
+		UI::connectMouseInputFlag(randomSeed);
 		auto box1 = sfg::Box::Create(sfg::Box::Orientation::VERTICAL, 10.0f);
 		auto box2 = sfg::Box::Create(sfg::Box::Orientation::HORIZONTAL, 5.0f);
 		gen = sfg::Button::Create("Generate");
+		UI::connectMouseInputFlag(gen);
 		reload = sfg::Button::Create("Reload Files");
+		UI::connectMouseInputFlag(reload);
 		box1->Pack(table1);
 		box1->Pack(box2);
 		box1->Pack(gen);
@@ -109,7 +113,7 @@ namespace UIdef {
 		sWindow->AddWithViewport(mainBox);
 		sWindow->SetScrollbarPolicy(sfg::ScrolledWindow::ScrollbarPolicy::HORIZONTAL_NEVER | sfg::ScrolledWindow::ScrollbarPolicy::VERTICAL_AUTOMATIC);
 		window->Add(sWindow);
-		addWindow(window, UIAlign({ 1.0f, 0.0f, 250.0f, 300.0f }, UI::ALIGN_RIGHT | UI::ALIGN_FRAC_POSX | UI::ALIGN_FRAC_POSY));
+		addWindow(window, UIAlign({ 1.0f, 1.0f, 250.0f, 300.0f }, UI::ALIGN_RIGHT | UI::ALIGN_FRAC_POSX | UI::ALIGN_FRAC_POSY | UI::ALIGN_BOTTOM));
 	}
 	void SiteMenu::setSite(Site& site) {
 		site_ = &site;
@@ -149,7 +153,8 @@ namespace UIdef {
 		///////////
 		auto posFrame = sfg::Frame::Create("Position");
 		auto posBox = sfg::Box::Create();
-		coordLabel_ = sfg::Label::Create("(?, ?)");
+		coordLabel_ = sfg::Label::Create();
+		setCoord({ -1, -1 });
 		posBox->Pack(coordLabel_);
 		selectCoordButton_ = sfg::Button::Create("Choose");
 		UI::connectMouseInputFlag(selectCoordButton_);
@@ -166,14 +171,16 @@ namespace UIdef {
 			auto label = sfg::Label::Create(g);
 			label->SetAlignment({ 0.0f, 0.0f });
 			boxH->Pack(label, false);
-			// Horizontal slider
-			auto slider = sfg::Scale::Create(0.0f, 100.0f, 1.0f);
 			// Spin button for adjustment
-			auto spin = sfg::SpinButton::Create(slider->GetAdjustment());
-			boxH->Pack(slider, true);
+			auto spin = sfg::SpinButton::Create(0.0f, 100.0f, 1.0f);
+			popAdjust_.push_back(spin->GetAdjustment());
 			boxH->Pack(spin, false);
 			label->SetRequisition({ 60.0f, 20.0f });
-			spin->SetRequisition({ 50.0f, 20.0f });
+			spin->SetRequisition({ 80.0f, 20.0f });
+			// Pop total label
+			popLabel_.emplace_back(sfg::Label::Create());
+			popLabel_.back()->SetRequisition({ 60.0f, 20.0f });
+			boxH->Pack(popLabel_.back(), false);
 			peopleBox->Pack(boxH, true, false);
 		}
 		peopleFrame->Add(peopleBox);
@@ -182,20 +189,22 @@ namespace UIdef {
 		////////////
 		auto resourceBox = sfg::Box::Create(sfg::Box::Orientation::VERTICAL);
 		auto resourceFrame = sfg::Frame::Create("Resources");
-		for (auto& r : MapEntity::resourceNames) {
+		for (auto& r : MapEntityS::resourceNames) {
 			auto boxH = sfg::Box::Create();
 			// Resource name
 			auto label = sfg::Label::Create(r);
 			label->SetAlignment({ 0.0f, 0.0f });
 			boxH->Pack(label, false);
-			// Horizontal slider
-			auto slider = sfg::Scale::Create(0.0f, 100.0f, 1.0f);
 			// Spin button for adjustment
-			auto spin = sfg::SpinButton::Create(slider->GetAdjustment());
-			boxH->Pack(slider, true);
+			auto spin = sfg::SpinButton::Create(0.0f, 100.0f, 1.0f);
+			resAdjust_.push_back(spin->GetAdjustment());
 			boxH->Pack(spin, false);
 			label->SetRequisition({ 60.0f, 20.0f });
-			spin->SetRequisition({ 50.0f, 20.0f });
+			spin->SetRequisition({ 80.0f, 20.0f });
+			// Pop total label
+			resLabel_.emplace_back(sfg::Label::Create());
+			resLabel_.back()->SetRequisition({ 60.0f, 20.0f });
+			boxH->Pack(resLabel_.back(), false);
 			resourceBox->Pack(boxH, true, false);
 		}
 		resourceFrame->Add(resourceBox);
@@ -205,10 +214,14 @@ namespace UIdef {
 		auto boxH = sfg::Box::Create();
 		// Deploy
 		auto deployButton = sfg::Button::Create("Deploy");
+		deployButton->GetSignal(sfg::Button::OnLeftClick).Connect([]() {
+			//HEXMAP.addMapUnit
+		});
 		boxH->Pack(deployButton, true, false);
 		UI::connectMouseInputFlag(deployButton);
 		// Cancel
 		auto cancelButton = sfg::Button::Create("Cancel");
+		//addTooltip(cancelButton)->Add(sfg::Label::Create("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."));
 		cancelButton->GetSignal(sfg::Button::OnLeftClick).Connect(bind([](shared_ptr<sfg::Window> win) {win->Show(false); }, window));
 		UI::connectMouseInputFlag(cancelButton);
 		boxH->Pack(cancelButton, true, false);
@@ -216,7 +229,7 @@ namespace UIdef {
 		// Alignment
 		////////////
 		window->Add(mainBox);
-		addWindow(window, UIAlign({ 0.5f, 0.5f, 250.0f, 300.0f },
+		addWindow(window, UIAlign({ 0.5f, 0.5f, 0.0f, 0.0f },
 			UI::ALIGN_CENTERX | UI::ALIGN_FRAC_POSX | UI::ALIGN_CENTERY | UI::ALIGN_FRAC_POSY, false));
 	}
 	void DeployGroupMenu::setSite(Site& site)
@@ -225,11 +238,12 @@ namespace UIdef {
 		static auto createSelection = [](Site* site) {
 			auto vs = make_shared<VectorSet>();
 			HexMap::neighbors(site->getMapPos(), *vs);
-			SFMLEngine::instance().pushState(new SelectState(vs));
+			SFMLEngine::instance().pushState(new SelectState(vs, setSelection));
 		};
 		setCoord({ -1, -1 });
 		selectCoordButton_->GetSignal(sfg::Button::OnLeftClick).Connect(bind(createSelection, &site));
-		UI::connectMouseInputFlag(selectCoordButton_);
+		updateSitePop();
+		updateSiteResources();
 	}
 	void DeployGroupMenu::setCoord(const sf::Vector2i& coord)
 	{
@@ -243,11 +257,42 @@ namespace UIdef {
 			coordLabel_->SetText("(?, ?)");
 		}
 	}
+	void DeployGroupMenu::updateSitePop()
+	{
+		stringstream ss;
+		for (int i = 0; i < popLabel_.size(); i++) {
+			auto p = popLabel_[i];
+			ss << " / " << (int)site_->pop.size(i);
+			p->SetText(ss.str());
+			ss.str(string());
+			popAdjust_[i]->SetUpper((int)site_->pop.size(i));
+		}
+	}
+	void DeployGroupMenu::updateSiteResources()
+	{
+		stringstream ss;
+		for (int i = 0; i < resLabel_.size(); i++) {
+			auto r = resLabel_[i];
+			ss << " / " << (int)site_->resources[i];
+			r->SetText(ss.str());
+			ss.str(string());
+			resAdjust_[i]->SetUpper((int)site_->resources[i]);
+		}
+	}
+
 
 	void setSite(Site& site)
 	{
 		SiteMenu::instance()->setSite(site);
 		DeployGroupMenu::instance()->setSite(site);
+	}
+	void updateSitePop()
+	{
+		DeployGroupMenu::instance()->updateSitePop();
+	}
+	void updateSiteResources()
+	{
+		DeployGroupMenu::instance()->updateSiteResources();
 	}
 	void setSelection(const sf::Vector2i& selection)
 	{

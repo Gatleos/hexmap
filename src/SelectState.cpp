@@ -8,10 +8,11 @@ const sf::Color SelectState::selectCol{ 100, 100, 255 };
 const sf::Color SelectState::validCol{ 100, 255, 100 };
 const sf::Color SelectState::invalidCol{ 255, 100, 100 };
 
-SelectState::SelectState(shared_ptr<VectorSet> selectable) :
+SelectState::SelectState(shared_ptr<VectorSet> selectable, std::function<void(const sf::Vector2i&)> selectCallback) :
 selectableCoords_(selectable),
 tilePos_(-1.0f, -1.0f),
-inBounds_(false)
+inBounds_(false),
+selectCallback_(selectCallback)
 {
 }
 void SelectState::init()
@@ -22,7 +23,6 @@ void SelectState::init()
 		spr.setColor(selectCol);
 		spr.setPosition(HEXMAP.hexToPixel(hexCoord) - HEXMAP.getOrigin() - sf::Vector2f(1.0f, 1.0f));
 	};
-	UIdef::setSelection({ -1, -1 });
 	for (auto& v : *selectableCoords_) {
 		selectable_.push_back(sf::Sprite());
 		setupSprite(selectable_.back(), (sf::Vector2f)v);
@@ -78,10 +78,10 @@ void SelectState::input(sf::Event &e)
 		}
 		if (e.mouseButton.button == sf::Mouse::Left) {
 			if (selectableCoords_->find((sf::Vector2i)tilePos_) == selectableCoords_->end()) {
-				UIdef::setSelection({ -1, -1 });
+				selectCallback_(sf::Vector2i(-1, -1));
 			}
 			else {
-				UIdef::setSelection((sf::Vector2i)tilePos_);
+				selectCallback_((sf::Vector2i)tilePos_);
 			}
 			engine->popState();
 		}

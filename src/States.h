@@ -42,11 +42,12 @@ class SelectState : public GameState
 	std::vector<sf::Sprite> selectable_;
 	sf::Sprite selected_;
 	bool inBounds_;
+	std::function<void(const sf::Vector2i&)> selectCallback_;
 public:
 	static const sf::Color selectCol;
 	static const sf::Color validCol;
 	static const sf::Color invalidCol;
-	SelectState(shared_ptr<VectorSet> selectable);
+	SelectState(shared_ptr<VectorSet> selectable, std::function<void(const sf::Vector2i&)> selectCallback);
 	void init();
 	void end();
 	void update();

@@ -36,13 +36,23 @@ namespace UIdef {
 		shared_ptr<sfg::Label> coordLabel_;
 		shared_ptr<sfg::Button> selectCoordButton_;
 		sf::Vector2i deployTo_;
+		vector<shared_ptr<sfg::Label>> popLabel_;
+		vector<shared_ptr<sfg::Adjustment>> popAdjust_;
+		vector<shared_ptr<sfg::Label>> resLabel_;
+		vector<shared_ptr<sfg::Adjustment>> resAdjust_;
 	public:
 		static shared_ptr<DeployGroupMenu> instance();
 		void setSite(Site& site);
 		void setCoord(const sf::Vector2i& coord);
+		void updateSitePop();
+		void updateSiteResources();
 		shared_ptr<sfg::Window> window;
 	};
 	void setSite(Site& site);
+	// Update all UI elements that refer to site pop sizes
+	void updateSitePop();
+	// Update all UI elements that refer to site resource amounts
+	void updateSiteResources();
 	void setSelection(const sf::Vector2i& selection);
 }
 
