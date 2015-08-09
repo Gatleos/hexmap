@@ -47,6 +47,10 @@ public:
 	enum anim{ IDLE, ANIM_NUM };
 	static const array<string, ANIM_NUM> animTypes;
 public:
+	enum res {
+		FOOD, WOOD, ORE, RESOURCE_NUM
+	};
+	static const array<std::string, RESOURCE_NUM> resourceNames;
 	void loadEntityJson(Json::Value& edata, string& element, string id);
 	MapEntityS(string id);
 	string id_;
@@ -67,17 +71,11 @@ protected:
 	HexMap* hm;
 	Faction* faction;
 public:
-	enum {
-		FOOD, WOOD, ORE, RESOURCE_NUM
-	};
-	static const array<std::string, RESOURCE_NUM> resourceNames;
-private:
-	array<float, RESOURCE_NUM> resources_;
-public:
 	int id;
 	MapEntity(const MapEntityS* sEnt, HexMap* hmSet, Faction* parent);
 	void setAnimationType(MapEntityS::anim num);
 	Population pop;
+	array<float, MapEntityS::RESOURCE_NUM> resources;
 	bool initMapPos(sf::Vector2i axialCoord);
 	bool setMapPos(sf::Vector2i axialCoord);
 	const sf::Vector2i& getMapPos();

@@ -24,7 +24,7 @@ const array<float, Population::GROUP_NUM> Population::growthRate = { {
 const float Population::deathRate = 0.0003f;
 const unsigned int Population::POP_LIMIT = 100000u;
 //
-const array<std::string, MapEntity::RESOURCE_NUM> MapEntity::resourceNames = { {
+const array<std::string, MapEntityS::RESOURCE_NUM> MapEntityS::resourceNames = { {
 		"Food", "Wood", "Ore"
 	} };
 
@@ -182,7 +182,7 @@ MapEntity::MapEntity(const MapEntityS* sEnt, HexMap* hmSet, Faction* parent)
 	for (int i = 0; i < ZOOM_LEVELS; i++) {
 		handlers_[i].setAnimationData(*mes->animData_[i]);
 	}
-	for (auto& r : resources_) {
+	for (auto& r : resources) {
 		r = 0.0f;
 	}
 }

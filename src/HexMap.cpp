@@ -7,6 +7,7 @@
 #include "clamp.h"
 #include "Site.h"
 #include "MapEntity.h"
+#include "UIdef.h"
 
 
 const sf::Vector2i HexMap::directions[dir::SIZE] = { { 1, -1 }, { 0, -1 }, { -1, 0 }, { -1, 1 }, { 0, 1 }, { 1, 0 } };
@@ -852,4 +853,6 @@ void HexMap::advanceTurn()
 	for (auto& u : units) {
 		u.second.advanceTurn();
 	}
+	UIdef::updateSitePop();
+	UIdef::updateSiteResources();
 }
