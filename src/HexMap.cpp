@@ -383,18 +383,18 @@ sf::Vector2f HexMap::pixelToHex(sf::Vector2f pixel) const
 	return roundHex(pixel);
 }
 
-bool HexMap::isAxialInBounds(sf::Vector2i axialPos) const
+bool HexMap::isAxialInBounds(sf::Vector2i posAxial) const
 {
-	axialPos.x -= -floorf(axialPos.y / 2.0);
-	if (axialPos.x < 0 || axialPos.x >= mapSize_.x || axialPos.y < 0 || axialPos.y >= mapSize_.y) {
+	posAxial.x -= -floorf(posAxial.y / 2.0);
+	if (posAxial.x < 0 || posAxial.x >= mapSize_.x || posAxial.y < 0 || posAxial.y >= mapSize_.y) {
 		return false;
 	}
 	return true;
 }
 
-bool HexMap::isOffsetInBounds(sf::Vector2i offsetPos) const
+bool HexMap::isOffsetInBounds(sf::Vector2i posOffset) const
 {
-	if (offsetPos.x < 0 || offsetPos.x >= mapSize_.x || offsetPos.y < 0 || offsetPos.y >= mapSize_.y) {
+	if (posOffset.x < 0 || posOffset.x >= mapSize_.x || posOffset.y < 0 || posOffset.y >= mapSize_.y) {
 		return false;
 	}
 	return true;
@@ -597,18 +597,18 @@ void HexMap::setAllTiles(const HexTileS& hts, mt19937& urng)
 		}
 	}
 }
-void HexMap::setTile(sf::Vector2i offsetPos, const HexTileS& hts, mt19937& urng)
+void HexMap::setTile(sf::Vector2i posOffset, const HexTileS& hts, mt19937& urng)
 {
-	auto& hex = hexes_(offsetPos.x, offsetPos.y);
+	auto& hex = hexes_(posOffset.x, posOffset.y);
 	hex.hts = &hts;
-	sf::Vector2i chunkPos = { (offsetPos.x / CHUNK_SIZE), (offsetPos.y / CHUNK_SIZE) };
-	int index = ((offsetPos.y % CHUNK_SIZE) * CHUNK_SIZE + (offsetPos.x % CHUNK_SIZE)) * 4;
+	sf::Vector2i chunkPos = { (posOffset.x / CHUNK_SIZE), (posOffset.y / CHUNK_SIZE) };
+	int index = ((posOffset.y % CHUNK_SIZE) * CHUNK_SIZE + (posOffset.x % CHUNK_SIZE)) * 4;
 	int rNum = 0;
 	for (int a = 0; a < 3; a++) {
 		rNum = hts.tiles[a].randomize(urng);
 		const sf::FloatRect& rect = hts.tiles[a].getRect(rNum);
 		if (hts.features[a] != nullptr) {
-			setTileFeature(offsetPos, *hts.features[a], a, urng);
+			setTileFeature(posOffset, *hts.features[a], a, urng);
 		}
 		sf::VertexArray& chunk = bgVertices_[a](chunkPos.x, chunkPos.y);
 		chunk[index].texCoords = { rect.left, rect.top };
@@ -617,11 +617,11 @@ void HexMap::setTile(sf::Vector2i offsetPos, const HexTileS& hts, mt19937& urng)
 		chunk[index + 3].texCoords = { rect.left, rect.top + rect.height };
 	}
 }
-void HexMap::pushTileColor(sf::Vector2i offsetPos, sf::Color col)
+void HexMap::pushTileColor(sf::Vector2i posOffset, sf::Color col)
 {
-	hexes_(offsetPos.x, offsetPos.y).color.push(col);
-	sf::Vector2i chunkPos = { (offsetPos.x / CHUNK_SIZE), (offsetPos.y / CHUNK_SIZE) };
-	int index = ((offsetPos.y % CHUNK_SIZE) * CHUNK_SIZE + (offsetPos.x % CHUNK_SIZE)) * 4;
+	hexes_(posOffset.x, posOffset.y).color.push(col);
+	sf::Vector2i chunkPos = { (posOffset.x / CHUNK_SIZE), (posOffset.y / CHUNK_SIZE) };
+	int index = ((posOffset.y % CHUNK_SIZE) * CHUNK_SIZE + (posOffset.x % CHUNK_SIZE)) * 4;
 	for (int a = 0; a < 3; a++) {
 		sf::VertexArray& chunk = bgVertices_[a](chunkPos.x, chunkPos.y);
 		chunk[index].color = col;
@@ -630,9 +630,9 @@ void HexMap::pushTileColor(sf::Vector2i offsetPos, sf::Color col)
 		chunk[index + 3].color = col;
 	}
 }
-void HexMap::popTileColor(sf::Vector2i offsetPos)
+void HexMap::popTileColor(sf::Vector2i posOffset)
 {
-	auto& hex = hexes_(offsetPos.x, offsetPos.y);
+	auto& hex = hexes_(posOffset.x, posOffset.y);
 	hex.color.pop();
 	const sf::Color* col = nullptr;
 	if (hex.color.empty()) {
@@ -641,8 +641,8 @@ void HexMap::popTileColor(sf::Vector2i offsetPos)
 	else {
 		col = &hex.color.top();
 	}
-	sf::Vector2i chunkPos = { (offsetPos.x / CHUNK_SIZE), (offsetPos.y / CHUNK_SIZE) };
-	int index = ((offsetPos.y % CHUNK_SIZE) * CHUNK_SIZE + (offsetPos.x % CHUNK_SIZE)) * 4;
+	sf::Vector2i chunkPos = { (posOffset.x / CHUNK_SIZE), (posOffset.y / CHUNK_SIZE) };
+	int index = ((posOffset.y % CHUNK_SIZE) * CHUNK_SIZE + (posOffset.x % CHUNK_SIZE)) * 4;
 	for (int a = 0; a < 3; a++) {
 		sf::VertexArray& chunk = bgVertices_[a](chunkPos.x, chunkPos.y);
 		chunk[index].color = *col;
@@ -651,39 +651,39 @@ void HexMap::popTileColor(sf::Vector2i offsetPos)
 		chunk[index + 3].color = *col;
 	}
 }
-void HexMap::setTileFeature(sf::Vector2i offsetPos, const TileFeatureS& tfs, mt19937& urng)
+void HexMap::setTileFeature(sf::Vector2i posOffset, const TileFeatureS& tfs, mt19937& urng)
 {
-	auto& hex = hexes_(offsetPos.x, offsetPos.y);
+	auto& hex = hexes_(posOffset.x, posOffset.y);
 	int rNum = 0;
 	hex.tfs = &tfs;
 	for (int s = 0; s < 3; s++) {
-		sf::Vector2f pix = hexToPixel((sf::Vector2f)offsetToAxial(offsetPos), s);
+		sf::Vector2f pix = hexToPixel((sf::Vector2f)offsetToAxial(posOffset), s);
 		hex.spr[s].setTexture(TileFeatureS::getTexture());
 		rNum = tfs.rects_[s].randomize(urng);
 		hex.spr[s].setTextureRect((sf::IntRect)tfs.rects_[s].getRect(rNum));
 		hex.spr[s].setPosition(pix + tfs.rects_[s].getPos(rNum));
 	}
 }
-void HexMap::setTileFeature(sf::Vector2i offsetPos, const TileFeatureS& tfs, int zoom, mt19937& urng)
+void HexMap::setTileFeature(sf::Vector2i posOffset, const TileFeatureS& tfs, int zoom, mt19937& urng)
 {
-	auto& hex = hexes_(offsetPos.x, offsetPos.y);
+	auto& hex = hexes_(posOffset.x, posOffset.y);
 	hex.tfs = &tfs;
-	sf::Vector2f pix = hexToPixel((sf::Vector2f)offsetToAxial(offsetPos), zoom);
+	sf::Vector2f pix = hexToPixel((sf::Vector2f)offsetToAxial(posOffset), zoom);
 	hex.spr[zoom].setTexture(TileFeatureS::getTexture());
 	int rNum = tfs.rects_[zoom].randomize(urng);
 	hex.spr[zoom].setTextureRect((sf::IntRect)tfs.rects_[zoom].getRect(rNum));
 	hex.spr[zoom].setPosition(pix + tfs.rects_[zoom].getPos(rNum));
 }
-void HexMap::setFeatureColor(sf::Vector2i offsetPos, const sf::Color& col)
+void HexMap::setFeatureColor(sf::Vector2i posOffset, const sf::Color& col)
 {
-	auto& spr = hexes_(offsetPos.x, offsetPos.y).spr;
+	auto& spr = hexes_(posOffset.x, posOffset.y).spr;
 	for (int s = 0; s < 3; s++) {
 		spr[s].setColor(col);
 	}
 }
-void HexMap::setFeatureFade(sf::Vector2i offsetPos, bool fade)
+void HexMap::setFeatureFade(sf::Vector2i posOffset, bool fade)
 {
-	auto& hex = hexes_(offsetPos.x, offsetPos.y);
+	auto& hex = hexes_(posOffset.x, posOffset.y);
 	if (hex.ent != nullptr) {
 		fade = true;
 	}
@@ -828,11 +828,11 @@ void HexMap::clearEntities()
 	units.clear();
 }
 
-void HexMap::setEntity(sf::Vector2i offsetPos, MapEntity* ent)
+void HexMap::setEntity(sf::Vector2i posOffset, MapEntity* ent)
 {
-	getOffset(offsetPos.x, offsetPos.y).ent = ent;
+	getOffset(posOffset.x, posOffset.y).ent = ent;
 	// We use false here because entity presence will override it
-	setFeatureFade(offsetPos, false);
+	setFeatureFade(posOffset, false);
 }
 
 void HexMap::update(const sf::Time& timeElapsed)

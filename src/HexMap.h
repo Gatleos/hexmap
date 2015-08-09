@@ -135,11 +135,9 @@ public:
 	// Measurement //
 	/////////////////
 
-	// Get exact distance between axial coordinates; the returned value
-	// should be passed to roundHex to get a usable coordinate
+	// Get exact distance between axial coordinates
 	static float distAxial(sf::Vector2f& a, sf::Vector2f& b);
-	// Get exact distance between axial coordinates; the returned value
-	// should be passed to roundHex to get a usable coordinate
+	// Get exact distance between axial coordinates
 	static float distAxial(sf::Vector2i& a, sf::Vector2i& b);
 	// Round a floating point axial coordinate to the nearest hex
 	static sf::Vector2f roundHex(sf::Vector2f hex);
@@ -162,9 +160,9 @@ public:
 	// Convert local pixel coordinate to axial hex coordinate
 	sf::Vector2f pixelToHex(sf::Vector2f pixel) const;
 	// Check if axial coordinate is within map bounds
-	bool isAxialInBounds(sf::Vector2i axialPos) const;
+	bool isAxialInBounds(sf::Vector2i posAxial) const;
 	// Check if offset coordinate is within map bounds
-	bool isOffsetInBounds(sf::Vector2i offsetPos) const;
+	bool isOffsetInBounds(sf::Vector2i posOffset) const;
 	// Return the tile coordinate in the given direction (use HexMap::dir and HexMap::directions)
 	static sf::Vector2i neighbor(const sf::Vector2i& centerAxial, int dir);
 	// Return a list of hex tile neighbors (axial)
@@ -209,16 +207,16 @@ public:
 	int getZoomLevel();
 	// 0-2, 0 is the closest
 	void setZoomLevel(int zoom);
-	void setTile(sf::Vector2i offsetPos, const HexTileS& hts, mt19937& urng);
+	void setTile(sf::Vector2i posOffset, const HexTileS& hts, mt19937& urng);
 	void setAllTiles(const HexTileS& hts, mt19937& urng);
-	void pushTileColor(sf::Vector2i offsetPos, sf::Color col);
-	void popTileColor(sf::Vector2i offsetPos);
-	void setTileFeature(sf::Vector2i offsetPos, const TileFeatureS& tfs, mt19937& urng);
-	void setTileFeature(sf::Vector2i offsetPos, const TileFeatureS& tfs, int zoom, mt19937& urng);
-	void setFeatureColor(sf::Vector2i offsetPos, const sf::Color& col);
+	void pushTileColor(sf::Vector2i posOffset, sf::Color col);
+	void popTileColor(sf::Vector2i posOffset);
+	void setTileFeature(sf::Vector2i posOffset, const TileFeatureS& tfs, mt19937& urng);
+	void setTileFeature(sf::Vector2i posOffset, const TileFeatureS& tfs, int zoom, mt19937& urng);
+	void setFeatureColor(sf::Vector2i posOffset, const sf::Color& col);
 	// Fade out the feature on this tile? Overridden to true automatically
 	// if there is an entity on the tile
-	void setFeatureFade(sf::Vector2i offsetPos, bool fade);
+	void setFeatureFade(sf::Vector2i posOffset, bool fade);
 	void clearTileFeatures();
 	void draw(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) const;
 	void drawEnts(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) const;
@@ -238,7 +236,7 @@ public:
 	Site* addSite(const SiteS* sSite, Faction* parent);
 	MapUnit* addMapUnit(const MapEntityS* sEnt, Faction* parent);
 	void clearEntities();
-	void setEntity(sf::Vector2i offsetPos, MapEntity* ent);
+	void setEntity(sf::Vector2i posOffset, MapEntity* ent);
 	void update(const sf::Time& timeElapsed);
 	void advanceTurn();
 
