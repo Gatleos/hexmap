@@ -49,6 +49,7 @@ void SelectState::render(sf::RenderWindow &window)
 }
 void SelectState::input(sf::Event &e)
 {
+	prev->input(e);
 	if (e.type == sf::Event::MouseMoved) {
 		const sf::Vector2f& size = HEXMAP.view.getSize();
 		const sf::Vector2f& center = HEXMAP.view.getCenter();
