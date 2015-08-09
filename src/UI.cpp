@@ -7,10 +7,10 @@ sf::View UI::view;
 static vector<pair<shared_ptr<UILayout>, bool>> UI_layoutStack;
 static sf::Vector2f UI_appSize;
 static bool UI_gotMouseInput = false;
+static bool UI_gotKeyboardInput = false;
 static sf::Image UI_image;
 static const sf::Texture* UI_texture = nullptr;
 static SpriteSheet* UI_sprites = nullptr;
-static shared_ptr<sfg::Widget> UI_dummyWindow;
 
 /////////////////
 // UIAlign //////
@@ -116,11 +116,22 @@ void UI::setAppSize(sf::Vector2f size)
 void UI::resetInputFlags()
 {
 	UI_gotMouseInput = false;
+	UI_gotKeyboardInput = false;
 }
 
 bool UI::gotMouseInput()
 {
 	return UI_gotMouseInput;
+}
+
+bool UI::gotKeyboardInput()
+{
+	return UI_gotKeyboardInput;
+}
+
+bool UI::gotInput()
+{
+	return UI_gotMouseInput || UI_gotKeyboardInput;
 }
 
 void UI::connectMouseInputFlag(shared_ptr<sfg::Widget> w)
@@ -130,6 +141,13 @@ void UI::connectMouseInputFlag(shared_ptr<sfg::Widget> w)
 	w->GetSignal(sfg::Window::OnMouseLeftRelease).Connect(setMouseFlag);
 	w->GetSignal(sfg::Window::OnMouseRightPress).Connect(setMouseFlag);
 	w->GetSignal(sfg::Window::OnMouseRightRelease).Connect(setMouseFlag);
+}
+
+void UI::connectKeyboardInputFlag(shared_ptr<sfg::Widget> w)
+{
+	static auto setKeyboardFlag = [](){UI_gotKeyboardInput = true; };
+	w->GetSignal(sfg::Window::OnKeyPress).Connect(setKeyboardFlag);
+	w->GetSignal(sfg::Window::OnKeyPress).Connect(setKeyboardFlag);
 }
 
 const sf::Image& UI::image()
@@ -154,7 +172,6 @@ void UI::init(sfg::Desktop* d)
 	UI_sprites = RESOURCE.sh("ui.sprites");
 	UI_texture = RESOURCE.tex(UI_sprites->getImageName());
 	UI_image = UI_texture->copyToImage();
-	UI_dummyWindow = sfg::Window::Create();
 }
 
 void UI::end()
@@ -165,11 +182,13 @@ void UI::end()
 void UI::addWindow(shared_ptr<sfg::Window> newWin)
 {
 	desktop->Add(newWin);
+	connectMouseInputFlag(newWin);
 }
 
 void UI::addWindow(shared_ptr<sfg::Window> newWin, UIAlign a)
 {
 	desktop->Add(newWin);
+	connectMouseInputFlag(newWin);
 	a.resize(newWin);
 }
 
@@ -206,5 +225,6 @@ void UI::popLayout()
 
 void UI::dropFocus()
 {
+	static auto UI_dummyWindow = sfg::Window::Create();
 	UI_dummyWindow->GrabFocus();
 }

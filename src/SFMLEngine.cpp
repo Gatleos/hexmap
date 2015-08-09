@@ -39,7 +39,6 @@ void SFMLEngine::start() {
 				if (event.type == sf::Event::Closed) {
 					window->close();
 					UI::end();
-					//return;
 				}
 				else { states.top()->input(event); }
 				UI::resetInputFlags();

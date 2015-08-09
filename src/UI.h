@@ -44,12 +44,23 @@ namespace UI
 	// Update the size of the overall app window
 	void setAppSize(sf::Vector2f size);
 	void resetInputFlags();
-	// Did the UI process the last input?
+	// Did the UI process the last mouse input?
 	bool gotMouseInput();
+	// Did the UI process the last keyboard input?
+	bool gotKeyboardInput();
+	// Did the UI process the last mouse or keyboard input?
+	bool gotInput();
+	// This widget will set the mouse input flag for this loop when clicked, "consuming"
+	// the input; automatically applied to newly added windows, needs to be added to
+	// Buttons and CheckButtons
 	void connectMouseInputFlag(shared_ptr<sfg::Widget> w);
+	// This widget will set the keyboard input flag for this loop when it receives
+	// keystrokes, "consuming" the input; should be added to any text input widget
+	void connectKeyboardInputFlag(shared_ptr<sfg::Widget> w);
 	const sf::Image& image();
 	const sf::Texture& texture();
 	SpriteSheet& sprites();
+	// Lose focus on all windows and contained widgets
 	void dropFocus();
 };
 
