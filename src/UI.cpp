@@ -138,9 +138,7 @@ void UI::connectMouseInputFlag(shared_ptr<sfg::Widget> w)
 {
 	static auto setMouseFlag = [](){UI_gotMouseInput = true; };
 	w->GetSignal(sfg::Window::OnMouseLeftPress).Connect(setMouseFlag);
-	w->GetSignal(sfg::Window::OnMouseLeftRelease).Connect(setMouseFlag);
 	w->GetSignal(sfg::Window::OnMouseRightPress).Connect(setMouseFlag);
-	w->GetSignal(sfg::Window::OnMouseRightRelease).Connect(setMouseFlag);
 }
 
 void UI::connectKeyboardInputFlag(shared_ptr<sfg::Widget> w)
