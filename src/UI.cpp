@@ -10,6 +10,7 @@ static bool UI_gotMouseInput = false;
 static sf::Image UI_image;
 static const sf::Texture* UI_texture = nullptr;
 static SpriteSheet* UI_sprites = nullptr;
+static shared_ptr<sfg::Widget> UI_dummyWindow;
 
 /////////////////
 // UIAlign //////
@@ -153,6 +154,7 @@ void UI::init(sfg::Desktop* d)
 	UI_sprites = RESOURCE.sh("ui.sprites");
 	UI_texture = RESOURCE.tex(UI_sprites->getImageName());
 	UI_image = UI_texture->copyToImage();
+	UI_dummyWindow = sfg::Window::Create();
 }
 
 void UI::end()
@@ -200,4 +202,9 @@ void UI::popLayout()
 	if (replacePrevious) {
 		UI_layoutStack.back().first->show(true);
 	}
+}
+
+void UI::dropFocus()
+{
+	UI_dummyWindow->GrabFocus();
 }

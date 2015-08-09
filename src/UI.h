@@ -50,6 +50,7 @@ namespace UI
 	const sf::Image& image();
 	const sf::Texture& texture();
 	SpriteSheet& sprites();
+	void dropFocus();
 };
 
 #endif

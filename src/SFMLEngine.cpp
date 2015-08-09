@@ -33,6 +33,9 @@ void SFMLEngine::start() {
 					HEXMAP.constrainView(HexMap::view);
 					HEXMAP.calculateViewArea(HexMap::view);
 				}
+				if (event.type == sf::Event::MouseButtonPressed && !UI::gotMouseInput()) {
+					UI::dropFocus();
+				}
 				if (event.type == sf::Event::Closed) {
 					window->close();
 					UI::end();
