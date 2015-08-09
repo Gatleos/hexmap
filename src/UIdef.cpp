@@ -263,7 +263,7 @@ namespace UIdef {
 		static auto createSelection = [](Site* site) {
 			auto vs = make_shared<VectorSet>();
 			HexMap::neighbors(site->getMapPos(), *vs);
-			SFMLEngine::instance().pushState(new SelectState(vs, setSelection));
+			SFMLEngine::instance().pushState(std::unique_ptr<GameState>(new SelectState(vs, setSelection)));
 		};
 		setCoord({ -1, -1 });
 		selectCoordButton_->GetSignal(sfg::Button::OnLeftClick).Connect(bind(createSelection, &site));

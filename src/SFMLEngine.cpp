@@ -67,17 +67,16 @@ void SFMLEngine::start() {
 	}
 }
 
-void SFMLEngine::pushState(GameState* newState) {
+void SFMLEngine::pushState(std::unique_ptr<GameState> newState) {
 	if (states.size())
-		newState->prev = states.top();
-	states.push(newState);
+		newState->prev = states.top().get();
+	states.push(std::move(newState));
 	states.top()->engine = this;
 	states.top()->init();
 }
 void SFMLEngine::popState() {
 	if (!states.empty()) {
 		states.top()->end();
-		delete states.top();
 		states.pop();
 		while (window->pollEvent(event));
 	}
@@ -86,7 +85,6 @@ void SFMLEngine::popAllStates() {
 	if (states.empty()) return;
 	while (states.size()) {
 		states.top()->end();
-		delete states.top();
 		states.pop();
 	}
 }

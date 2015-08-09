@@ -76,7 +76,7 @@ void EngineState::init()
 	shader.setParameter("contrast", 0.25f);
 	shader.setParameter("brightness", 0.9f);
 	//engine->window->setFramerateLimit(600);
-	engine->pushState(new MapControlState);
+	engine->pushState(std::unique_ptr<GameState>(new MapControlState));
 }
 void EngineState::end()
 {
