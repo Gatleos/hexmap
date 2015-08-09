@@ -48,6 +48,8 @@ void EngineState::init()
 	HEXMAP.setAllTiles(HexTileS::get(HexTileS::OCEAN), rng::r);
 	HEXMAP.calculateViewArea(HEXMAP.view);
 	// GUI construction
+	UI::addNewLayout(UIdef::MapGenDebug::instance());
+	UI::pushLayout(UIdef::MapGenDebug::instance());
 	auto* f = HEXMAP.addFaction();
 	Site* site = HEXMAP.addSite(&SiteS::get(SiteS::CITY), f);
 	site->pop.setSize(Population::GROUP_CIV, 2000.0f);
@@ -107,7 +109,7 @@ void EngineState::render(sf::RenderWindow &window)
 	const sf::Vector2f& size = HEXMAP.view.getSize();
 	const sf::Vector2f& center = HEXMAP.view.getCenter();
 	snprintf(str, 50, "%d", mtMilli);
-	UIdef::MapGenDebug::instance().debugInfo[4]->SetText(str);
+	UIdef::MapGenDebug::instance()->debugInfo[4]->SetText(str);
 }
 void EngineState::input(sf::Event &e)
 {
@@ -129,11 +131,11 @@ void EngineState::generate()
 {
 	HEXMAP.clearTileFeatures();
 	unsigned long hexSeed = 0;
-	if (UIdef::MapGenDebug::instance().randomSeed->IsActive()) {
+	if (UIdef::MapGenDebug::instance()->randomSeed->IsActive()) {
 		hexSeed = rng::r();
 	}
 	else {
-		string seed = (string)UIdef::MapGenDebug::instance().seedBox->GetText();
+		string seed = (string)UIdef::MapGenDebug::instance()->seedBox->GetText();
 		if (seed.empty()) {
 			seed = "0";
 		}
@@ -150,7 +152,7 @@ void EngineState::generate()
 	mtMilli = mtTime.asMilliseconds();
 	stringstream ss;
 	ss << std::hex << hexSeed;
-	UIdef::MapGenDebug::instance().seedBox->SetText(ss.str());
+	UIdef::MapGenDebug::instance()->seedBox->SetText(ss.str());
 }
 
 // Clear and reload all resource files, then generate the map
@@ -160,7 +162,7 @@ void EngineState::loadResourcesInPlace()
 	config::load();
 	RESOURCE.releaseAll();
 	config::loadAllJson();
-	string seed = (string)UIdef::MapGenDebug::instance().seedBox->GetText();
+	string seed = (string)UIdef::MapGenDebug::instance()->seedBox->GetText();
 	if (seed.empty()) {
 		seed = "0";
 	}
@@ -176,7 +178,7 @@ void EngineState::loadResourcesInPlace()
 	mtMilli = mtTime.asMilliseconds();
 	stringstream ss;
 	ss << std::hex << hexSeed;
-	UIdef::MapGenDebug::instance().seedBox->SetText(ss.str());
+	UIdef::MapGenDebug::instance()->seedBox->SetText(ss.str());
 	// Shader
 	shader.loadFromFile("data/simplex.glsl", sf::Shader::Type::Fragment);
 	shader.setParameter("offset", HEXMAP.view.getCenter());

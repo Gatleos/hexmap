@@ -9,7 +9,7 @@ namespace UIdef {
 	class MapGenDebug : public UILayout {
 		MapGenDebug();
 	public:
-		static MapGenDebug& instance();
+		static shared_ptr<MapGenDebug> instance();
 		shared_ptr<sfg::Button> gen;
 		shared_ptr<sfg::Button> reload;
 		array<shared_ptr<sfg::Label>, 6U> debugInfo;

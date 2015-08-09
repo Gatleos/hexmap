@@ -4,9 +4,9 @@
 #include "States.h"
 
 namespace UIdef {
-	MapGenDebug& MapGenDebug::instance()
+	shared_ptr<MapGenDebug> MapGenDebug::instance()
 	{
-		static MapGenDebug mgd;
+		static auto mgd = make_shared<MapGenDebug>(MapGenDebug());
 		return mgd;
 	}
 	MapGenDebug::MapGenDebug() {

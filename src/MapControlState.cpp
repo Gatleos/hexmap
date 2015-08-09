@@ -38,13 +38,13 @@ void MapControlState::input(sf::Event &e)
 		const sf::Vector2f& center = HEXMAP.view.getCenter();
 		sf::Vector2f mouseMapPos = { e.mouseMove.x - size.x / 2.0f + center.x, e.mouseMove.y - size.y / 2.0f + center.y };
 		sf::Vector2i tilePos = (sf::Vector2i)HEXMAP.pixelToHex(mouseMapPos);
-		UIdef::MapGenDebug::instance().updateDebugInfo((sf::Vector2i)mouseMapPos, tilePos, (sf::Vector2i)center);
+		UIdef::MapGenDebug::instance()->updateDebugInfo((sf::Vector2i)mouseMapPos, tilePos, (sf::Vector2i)center);
 		if (HEXMAP.isAxialInBounds(tilePos)) {
-			UIdef::MapGenDebug::instance().debugInfo[3]->SetText(HEXMAP.getAxial((int)tilePos.x, (int)tilePos.y).hts->name);
+			UIdef::MapGenDebug::instance()->debugInfo[3]->SetText(HEXMAP.getAxial((int)tilePos.x, (int)tilePos.y).hts->name);
 			HEXMAP.updateCursorPos((sf::Vector2i)tilePos);
 		}
 		else {
-			UIdef::MapGenDebug::instance().debugInfo[3]->SetText("");
+			UIdef::MapGenDebug::instance()->debugInfo[3]->SetText("");
 			HEXMAP.updateCursorPos({ -10, -10 });
 		}
 	}
