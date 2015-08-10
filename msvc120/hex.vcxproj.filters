@@ -60,6 +60,9 @@
     <ClInclude Include="..\src\UIdef.h">
       <Filter>UI</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\MapUnit.h">
+      <Filter>MapEntities</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\main.cpp" />
@@ -121,6 +124,9 @@
     </ClCompile>
     <ClCompile Include="..\src\MapControlState.cpp">
       <Filter>States</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\MapUnit.cpp">
+      <Filter>MapEntities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

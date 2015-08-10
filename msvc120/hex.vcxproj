@@ -26,6 +26,7 @@
     <ClInclude Include="..\src\HexTile.h" />
     <ClInclude Include="..\src\config.h" />
     <ClInclude Include="..\src\lerp.h" />
+    <ClInclude Include="..\src\MapUnit.h" />
     <ClInclude Include="..\src\MapEntity.h" />
     <ClInclude Include="..\src\rng.h" />
     <ClInclude Include="..\src\clamp.h" />
@@ -55,6 +56,7 @@
     <ClCompile Include="..\src\lerp.cpp" />
     <ClCompile Include="..\src\HexMap.cpp" />
     <ClCompile Include="..\src\main.cpp" />
+    <ClCompile Include="..\src\MapUnit.cpp" />
     <ClCompile Include="..\src\MapEntity.cpp" />
     <ClCompile Include="..\src\MapControlState.cpp" />
     <ClCompile Include="..\src\rng.cpp" />

@@ -9,6 +9,7 @@
 #include "Faction.h"
 #include "HexTile.h"
 #include "Array2d.h"
+#include "MapUnit.h"
 
 typedef set<sf::Vector2i, Vector2iCompare> VectorSet;
 
