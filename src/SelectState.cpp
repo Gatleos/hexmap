@@ -8,6 +8,14 @@ const sf::Color SelectState::selectCol{ 100, 100, 255 };
 const sf::Color SelectState::validCol{ 100, 255, 100 };
 const sf::Color SelectState::invalidCol{ 255, 100, 100 };
 
+SelectState::SelectState(std::function<void(const sf::Vector2i&)> selectCallback) :
+selectableCoords_(nullptr),
+tilePos_(-1.0f, -1.0f),
+inBounds_(false),
+selectCallback_(selectCallback)
+{
+
+}
 SelectState::SelectState(shared_ptr<VectorSet> selectable, std::function<void(const sf::Vector2i&)> selectCallback) :
 selectableCoords_(selectable),
 tilePos_(-1.0f, -1.0f),
@@ -23,9 +31,11 @@ void SelectState::init()
 		spr.setColor(selectCol);
 		spr.setPosition(HEXMAP.hexToPixel(hexCoord) - HEXMAP.getOrigin() - sf::Vector2f(1.0f, 1.0f));
 	};
-	for (auto& v : *selectableCoords_) {
-		selectable_.push_back(sf::Sprite());
-		setupSprite(selectable_.back(), (sf::Vector2f)v);
+	if (selectableCoords_ != nullptr) {
+		for (auto& v : *selectableCoords_) {
+			selectable_.push_back(sf::Sprite());
+			setupSprite(selectable_.back(), (sf::Vector2f)v);
+		}
 	}
 	setupSprite(selected_, sf::Vector2f(0.0f, 0.0f));
 }
@@ -56,7 +66,7 @@ void SelectState::input(sf::Event &e)
 		sf::Vector2f newTilePos = HEXMAP.pixelToHex({ e.mouseMove.x - size.x / 2.0f + center.x, e.mouseMove.y - size.y / 2.0f + center.y });
 		if (tilePos_ != newTilePos) {
 			if (HEXMAP.isAxialInBounds((sf::Vector2i)newTilePos)) {
-				if (selectableCoords_->find((sf::Vector2i)newTilePos) == selectableCoords_->end()) {
+				if (selectableCoords_ != nullptr && selectableCoords_->find((sf::Vector2i)newTilePos) == selectableCoords_->end()) {
 					selected_.setColor(invalidCol);
 				}
 				else {
@@ -78,7 +88,7 @@ void SelectState::input(sf::Event &e)
 			return;
 		}
 		if (e.mouseButton.button == sf::Mouse::Left) {
-			if (selectableCoords_->find((sf::Vector2i)tilePos_) == selectableCoords_->end()) {
+			if (selectableCoords_ != nullptr && selectableCoords_->find((sf::Vector2i)tilePos_) == selectableCoords_->end()) {
 				selectCallback_(sf::Vector2i(-1, -1));
 			}
 			else {

@@ -57,6 +57,7 @@ public:
 	static const sf::Color selectCol;
 	static const sf::Color validCol;
 	static const sf::Color invalidCol;
+	SelectState(std::function<void(const sf::Vector2i&)> selectCallback);
 	SelectState(shared_ptr<VectorSet> selectable, std::function<void(const sf::Vector2i&)> selectCallback);
 	void init();
 	void end();
