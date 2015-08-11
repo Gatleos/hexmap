@@ -140,36 +140,36 @@ namespace UIdef {
 		window->Add(sWindow);
 		addWindow(window, UIAlign({ 1.0f, 1.0f, 250.0f, 300.0f }, UI::ALIGN_RIGHT | UI::ALIGN_FRAC_POSX | UI::ALIGN_FRAC_POSY | UI::ALIGN_BOTTOM));
 	}
-	void SiteMenu::setSite(Site& site) {
-		site_ = &site;
-		for (int indexTab = 0; indexTab < site.pop.activities().size(); indexTab++) {
-			int size = site.pop.activities()[indexTab].size();
+	void SiteMenu::setEntity(MapEntity& ent) {
+		ent_ = &ent;
+		for (int indexTab = 0; indexTab < ent.pop.activities().size(); indexTab++) {
+			int size = ent.pop.activities()[indexTab].size();
 			stringstream ss;
-			ss << "Pop: " << site.pop.size(indexTab);
+			ss << "Pop: " << ent.pop.size(indexTab);
 			population[indexTab]->SetText(ss.str());
 			ss.str(std::string());
-			ss << "Idle: " << site.pop.activities()[indexTab][Population::IDLE] << "%";
+			ss << "Idle: " << ent.pop.activities()[indexTab][Population::IDLE] << "%";
 			idlePercent[indexTab]->SetText(ss.str());
 			for (int index = 1; index < size; index++) {
 				// Link up the slider value to one of the population percentages
 				sliders[indexTab][index - 1]->GetSignal(sfg::Adjustment::OnChange).Connect(bind(&SiteMenu::adjust, this, indexTab, index));
-				sliders[indexTab][index - 1]->SetValue(site.pop.activities()[indexTab][index]);
+				sliders[indexTab][index - 1]->SetValue(ent.pop.activities()[indexTab][index]);
 			}
 		}
 	}
 	void SiteMenu::updateSitePop()
 	{
 		stringstream ss;
-		for (int indexTab = 0; indexTab < site_->pop.activities().size(); indexTab++) {
-			ss << "Pop: " << site_->pop.size(indexTab);
+		for (int indexTab = 0; indexTab < ent_->pop.activities().size(); indexTab++) {
+			ss << "Pop: " << ent_->pop.size(indexTab);
 			population[indexTab]->SetText(ss.str());
 			ss.str(std::string());
 		}
 	}
 	void SiteMenu::adjust(int group, int act) {
-		sliders[group][act - 1]->SetValue(site_->pop.set(group, act, sliders[group][act - 1]->GetValue()));
+		sliders[group][act - 1]->SetValue(ent_->pop.set(group, act, sliders[group][act - 1]->GetValue()));
 		stringstream ss;
-		ss << "Idle: " << site_->pop.activities()[group][Population::IDLE] << "%";
+		ss << "Idle: " << ent_->pop.activities()[group][Population::IDLE] << "%";
 		idlePercent[group]->SetText(ss.str());
 	}
 
@@ -255,7 +255,7 @@ namespace UIdef {
 				deployed->initMapPos(dMenu->deployTo_);
 				for (int i = 0; i < Population::groupNames.size(); i++) {
 					deployed->pop.setSize(i, dMenu->popAdjust[i]->GetValue());
-					dMenu->site->pop.addSize(i, -dMenu->popAdjust[i]->GetValue());
+					dMenu->ent->pop.addSize(i, -dMenu->popAdjust[i]->GetValue());
 					dMenu->popAdjust[i]->SetValue(0.0f);
 				}
 				UIdef::updateSitePop();
@@ -277,16 +277,16 @@ namespace UIdef {
 		addWindow(window, UIAlign({ 0.5f, 0.5f, 0.0f, 0.0f },
 			UI::ALIGN_CENTERX | UI::ALIGN_FRAC_POSX | UI::ALIGN_CENTERY | UI::ALIGN_FRAC_POSY, false));
 	}
-	void DeployGroupMenu::setSite(Site& s)
+	void DeployGroupMenu::setEntity(MapEntity& s)
 	{
-		site = &s;
-		static auto createSelection = [](Site* site) {
+		ent = &s;
+		static auto createSelection = [](MapEntity* ent) {
 			auto vs = make_shared<VectorSet>();
-			HexMap::neighbors(site->getMapPos(), *vs);
+			HexMap::neighbors(ent->getMapPos(), *vs);
 			SFMLEngine::instance().pushState(std::shared_ptr<GameState>(new SelectState(vs, setSelection)));
 		};
 		setCoord({ -1, -1 });
-		selectCoordButton_->GetSignal(sfg::Button::OnLeftClick).Connect(bind(createSelection, site));
+		selectCoordButton_->GetSignal(sfg::Button::OnLeftClick).Connect(bind(createSelection, ent));
 		updateSitePop();
 		updateSiteResources();
 	}
@@ -307,10 +307,10 @@ namespace UIdef {
 		stringstream ss;
 		for (int i = 0; i < popLabel_.size(); i++) {
 			auto p = popLabel_[i];
-			ss << " / " << (int)site->pop.size(i);
+			ss << " / " << (int)ent->pop.size(i);
 			p->SetText(ss.str());
 			ss.str(string());
-			popAdjust[i]->SetUpper((int)site->pop.size(i));
+			popAdjust[i]->SetUpper((int)ent->pop.size(i));
 		}
 	}
 	void DeployGroupMenu::updateSiteResources()
@@ -318,18 +318,18 @@ namespace UIdef {
 		stringstream ss;
 		for (int i = 0; i < resLabel_.size(); i++) {
 			auto r = resLabel_[i];
-			ss << " / " << (int)site->resources[i];
+			ss << " / " << (int)ent->resources[i];
 			r->SetText(ss.str());
 			ss.str(string());
-			resAdjust[i]->SetUpper((int)site->resources[i]);
+			resAdjust[i]->SetUpper((int)ent->resources[i]);
 		}
 	}
 
 
-	void setSite(Site& site)
+	void setEntity(MapEntity& ent)
 	{
-		SiteMenu::instance()->setSite(site);
-		DeployGroupMenu::instance()->setSite(site);
+		SiteMenu::instance()->setEntity(ent);
+		DeployGroupMenu::instance()->setEntity(ent);
 	}
 	void updateSitePop()
 	{

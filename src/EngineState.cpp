@@ -46,7 +46,7 @@ void EngineState::init()
 	UI::addNewLayout(siteMenu);
 	UI::pushLayout(siteMenu);
 	UI::addNewLayout(UIdef::DeployGroupMenu::instance());
-	UIdef::setSite(*site);
+	UIdef::setEntity(*site);
 	// Entities
 	//auto* f = HEXMAP.addFaction();
 	//for (int x = 0; x < 16384; x++) {

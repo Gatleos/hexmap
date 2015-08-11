@@ -22,11 +22,11 @@ namespace UIdef {
 		vector<shared_ptr<sfg::Label>> idlePercent;
 		vector<shared_ptr<sfg::Label>> population;
 		void adjust(int group, int act);
-		Site* site_;
+		MapEntity* ent_;
 		SiteMenu();
 	public:
 		static shared_ptr<SiteMenu> instance();
-		void setSite(Site& site);
+		void setEntity(MapEntity& ent);
 		void updateSitePop();
 		shared_ptr<sfg::Window> window;
 	};
@@ -38,20 +38,20 @@ namespace UIdef {
 		vector<shared_ptr<sfg::Label>> popLabel_;
 		vector<shared_ptr<sfg::Label>> resLabel_;
 	public:
-		Site* site;
+		MapEntity* ent;
 		vector<shared_ptr<sfg::Adjustment>> popAdjust;
 		vector<shared_ptr<sfg::Adjustment>> resAdjust;
 		static shared_ptr<DeployGroupMenu> instance();
-		void setSite(Site& s);
+		void setEntity(MapEntity& s);
 		void setCoord(const sf::Vector2i& coord);
 		void updateSitePop();
 		void updateSiteResources();
 		shared_ptr<sfg::Window> window;
 	};
-	void setSite(Site& site);
-	// Update all UI elements that refer to site pop sizes
+	void setEntity(MapEntity& ent);
+	// Update all UI elements that refer to ent pop sizes
 	void updateSitePop();
-	// Update all UI elements that refer to site resource amounts
+	// Update all UI elements that refer to ent resource amounts
 	void updateSiteResources();
 	void setSelection(const sf::Vector2i& selection);
 }
