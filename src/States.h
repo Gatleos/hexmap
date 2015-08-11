@@ -36,8 +36,14 @@ public:
 
 class MapControlState : public GameState
 {
+	const sf::Vector2f& viewSize_;
+	const sf::Vector2f& viewCenter_;
 	sf::Vector2i camDelta_;
+	MapControlState();
 public:
+	sf::Vector2f mouseMapPos;
+	sf::Vector2i tilePos;
+	static std::shared_ptr<MapControlState> instance();
 	void init();
 	void end();
 	void update();

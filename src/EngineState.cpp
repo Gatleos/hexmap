@@ -51,7 +51,7 @@ void EngineState::init()
 	UI::addNewLayout(UIdef::MapGenDebug::instance());
 	UI::pushLayout(UIdef::MapGenDebug::instance());
 	auto* f = HEXMAP.addFaction();
-	Site* site = HEXMAP.addSite(&SiteS::get(SiteS::CITY), f);
+	Site* site = HEXMAP.addSite(&SiteS::get(SiteS::TOWN), f);
 	site->pop.setSize(Population::GROUP_CIV, 2000.0f);
 	site->pop.setSize(Population::GROUP_PR, 2000.0f);
 	site->initMapPos({ 0, 4 });
@@ -76,7 +76,7 @@ void EngineState::init()
 	shader.setParameter("contrast", 0.25f);
 	shader.setParameter("brightness", 0.9f);
 	//engine->window->setFramerateLimit(600);
-	engine->pushState(std::unique_ptr<GameState>(new MapControlState));
+	engine->pushState(MapControlState::instance());
 }
 void EngineState::end()
 {

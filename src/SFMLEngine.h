@@ -33,7 +33,7 @@ class SFMLEngine
 public:
 	sf::RenderWindow* window;
 	sf::Event event;
-	std::stack<std::unique_ptr<GameState>> states;
+	std::stack<std::shared_ptr<GameState>> states;
 	sf::Color clearColor;
 	sf::Time lastFrame;
 	sfg::SFGUI sfgui;
@@ -43,7 +43,7 @@ public:
 	~SFMLEngine(){ popAllStates(); }
 	void init(sf::RenderWindow* windowset);
 	void start();
-	void pushState(std::unique_ptr<GameState> newState);
+	void pushState(std::shared_ptr<GameState> newState);
 	void popState();
 	void popAllStates();
 	int getFPS() const;
