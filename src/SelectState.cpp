@@ -59,6 +59,23 @@ void SelectState::render(sf::RenderWindow &window)
 }
 void SelectState::input(sf::Event &e)
 {
+	if (e.type == sf::Event::MouseButtonPressed) {
+		if (UI::gotMouseInput()) {
+			selectCallback_(sf::Vector2i(-1, -1));
+			engine->popState();
+			return;
+		}
+		if (e.mouseButton.button == sf::Mouse::Left) {
+			if (selectableCoords_ != nullptr && selectableCoords_->find((sf::Vector2i)tilePos_) == selectableCoords_->end()) {
+				selectCallback_(sf::Vector2i(-1, -1));
+			}
+			else {
+				selectCallback_((sf::Vector2i)tilePos_);
+			}
+			engine->popState();
+			return;
+		}
+	}
 	// make sure we execute other states first,
 	// so MapControlState::tilePos is set
 	prev->input(e);
@@ -82,21 +99,6 @@ void SelectState::input(sf::Event &e)
 				tilePos_ = { -1.0f, -1.0f };
 				inBounds_ = false;
 			}
-		}
-	}
-	else if (e.type == sf::Event::MouseButtonPressed) {
-		if (UI::gotMouseInput()) {
-			engine->popState();
-			return;
-		}
-		if (e.mouseButton.button == sf::Mouse::Left) {
-			if (selectableCoords_ != nullptr && selectableCoords_->find((sf::Vector2i)tilePos_) == selectableCoords_->end()) {
-				selectCallback_(sf::Vector2i(-1, -1));
-			}
-			else {
-				selectCallback_((sf::Vector2i)tilePos_);
-			}
-			engine->popState();
 		}
 	}
 }
