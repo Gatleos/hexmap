@@ -47,6 +47,8 @@ namespace UIdef {
 		void setCoord(const sf::Vector2i& coord);
 		void updateSitePop();
 		void updateSiteResources();
+		void reset();
+		bool optionsValid();
 		shared_ptr<sfg::Window> window;
 	};
 	void setEntity(MapEntity& ent);

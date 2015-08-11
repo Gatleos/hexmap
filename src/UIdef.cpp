@@ -253,14 +253,16 @@ namespace UIdef {
 		auto deployButton = sfg::Button::Create("Deploy");
 		deployButton->GetSignal(sfg::Button::OnLeftClick).Connect([]() {
 			auto dMenu = DeployGroupMenu::instance();
-			if (dMenu->deployTo_ != sf::Vector2i(-1, -1)) {
+			if (dMenu->optionsValid()) {
 				auto* deployed = HEXMAP.addMapUnit(&SiteS::get(SiteS::CITY), HEXMAP.addFaction());
 				deployed->initMapPos(dMenu->deployTo_);
+				// Take pop values
 				for (int i = 0; i < Population::groupNames.size(); i++) {
 					deployed->pop.setSize(i, dMenu->popAdjust[i]->GetValue());
 					dMenu->ent->pop.addSize(i, -dMenu->popAdjust[i]->GetValue());
-					dMenu->popAdjust[i]->SetValue(0.0f);
 				}
+				// Reset UI
+				dMenu->reset();
 				UIdef::updateSitePop();
 				dMenu->window->Show(false);
 			}
@@ -329,6 +331,30 @@ namespace UIdef {
 			ss.str(string());
 			resAdjust[i]->SetUpper((int)ent->resources[i]);
 		}
+	}
+	void DeployGroupMenu::reset()
+	{
+		for (int i = 0; i < Population::groupNames.size(); i++) {
+			popAdjust[i]->SetValue(0.0f);
+		}
+		for (int i = 0; i < Population::groupNames.size(); i++) {
+			resAdjust[i]->SetValue(0.0f);
+		}
+		setCoord({ -1, -1 });
+	}
+	bool DeployGroupMenu::optionsValid()
+	{
+		if (deployTo_ == sf::Vector2i(-1, -1)) {
+			return false;
+		}
+		bool validSize = false;
+		// Check if at least one category has at least one person selected
+		for (int i = 0; i < Population::groupNames.size(); i++) {
+			if (popAdjust[i]->GetValue() > 0.0f) {
+				validSize = true;
+			}
+		}
+		return validSize;
 	}
 
 
