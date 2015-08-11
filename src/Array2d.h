@@ -123,7 +123,7 @@ public:
 		if (data_) {
 			data_.reset();
 		}
-		data_ = std::unique_ptr<T[]>(new T[size_]);
+		data_ = std::make_unique<T[]>(size_);
 	}
 	void reset()
 	{
