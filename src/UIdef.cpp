@@ -157,6 +157,15 @@ namespace UIdef {
 			}
 		}
 	}
+	void SiteMenu::updateSitePop()
+	{
+		stringstream ss;
+		for (int indexTab = 0; indexTab < site_->pop.activities().size(); indexTab++) {
+			ss << "Pop: " << site_->pop.size(indexTab);
+			population[indexTab]->SetText(ss.str());
+			ss.str(std::string());
+		}
+	}
 	void SiteMenu::adjust(int group, int act) {
 		sliders[group][act - 1]->SetValue(site_->pop.set(group, act, sliders[group][act - 1]->GetValue()));
 		stringstream ss;
@@ -198,7 +207,7 @@ namespace UIdef {
 			boxH->Pack(label, false);
 			// Spin button for adjustment
 			auto spin = sfg::SpinButton::Create(0.0f, 100.0f, 1.0f);
-			popAdjust_.push_back(spin->GetAdjustment());
+			popAdjust.push_back(spin->GetAdjustment());
 			boxH->Pack(spin, false);
 			label->SetRequisition({ 60.0f, 20.0f });
 			spin->SetRequisition({ 80.0f, 20.0f });
@@ -222,7 +231,7 @@ namespace UIdef {
 			boxH->Pack(label, false);
 			// Spin button for adjustment
 			auto spin = sfg::SpinButton::Create(0.0f, 100.0f, 1.0f);
-			resAdjust_.push_back(spin->GetAdjustment());
+			resAdjust.push_back(spin->GetAdjustment());
 			boxH->Pack(spin, false);
 			label->SetRequisition({ 60.0f, 20.0f });
 			spin->SetRequisition({ 80.0f, 20.0f });
@@ -240,7 +249,18 @@ namespace UIdef {
 		// Deploy
 		auto deployButton = sfg::Button::Create("Deploy");
 		deployButton->GetSignal(sfg::Button::OnLeftClick).Connect([]() {
-			//HEXMAP.addMapUnit
+			auto dMenu = DeployGroupMenu::instance();
+			if (dMenu->deployTo_ != sf::Vector2i(-1, -1)) {
+				auto* deployed = HEXMAP.addMapUnit(&SiteS::get(SiteS::CITY), HEXMAP.addFaction());
+				deployed->initMapPos(dMenu->deployTo_);
+				for (int i = 0; i < Population::groupNames.size(); i++) {
+					deployed->pop.setSize(i, dMenu->popAdjust[i]->GetValue());
+					dMenu->site->pop.addSize(i, -dMenu->popAdjust[i]->GetValue());
+					dMenu->popAdjust[i]->SetValue(0.0f);
+				}
+				UIdef::updateSitePop();
+				dMenu->window->Show(false);
+			}
 		});
 		boxH->Pack(deployButton, true, false);
 		UI::connectMouseInputFlag(deployButton);
@@ -257,16 +277,16 @@ namespace UIdef {
 		addWindow(window, UIAlign({ 0.5f, 0.5f, 0.0f, 0.0f },
 			UI::ALIGN_CENTERX | UI::ALIGN_FRAC_POSX | UI::ALIGN_CENTERY | UI::ALIGN_FRAC_POSY, false));
 	}
-	void DeployGroupMenu::setSite(Site& site)
+	void DeployGroupMenu::setSite(Site& s)
 	{
-		site_ = &site;
+		site = &s;
 		static auto createSelection = [](Site* site) {
 			auto vs = make_shared<VectorSet>();
 			HexMap::neighbors(site->getMapPos(), *vs);
-			SFMLEngine::instance().pushState(std::unique_ptr<GameState>(new SelectState(vs, setSelection)));
+			SFMLEngine::instance().pushState(std::shared_ptr<GameState>(new SelectState(vs, setSelection)));
 		};
 		setCoord({ -1, -1 });
-		selectCoordButton_->GetSignal(sfg::Button::OnLeftClick).Connect(bind(createSelection, &site));
+		selectCoordButton_->GetSignal(sfg::Button::OnLeftClick).Connect(bind(createSelection, site));
 		updateSitePop();
 		updateSiteResources();
 	}
@@ -287,10 +307,10 @@ namespace UIdef {
 		stringstream ss;
 		for (int i = 0; i < popLabel_.size(); i++) {
 			auto p = popLabel_[i];
-			ss << " / " << (int)site_->pop.size(i);
+			ss << " / " << (int)site->pop.size(i);
 			p->SetText(ss.str());
 			ss.str(string());
-			popAdjust_[i]->SetUpper((int)site_->pop.size(i));
+			popAdjust[i]->SetUpper((int)site->pop.size(i));
 		}
 	}
 	void DeployGroupMenu::updateSiteResources()
@@ -298,10 +318,10 @@ namespace UIdef {
 		stringstream ss;
 		for (int i = 0; i < resLabel_.size(); i++) {
 			auto r = resLabel_[i];
-			ss << " / " << (int)site_->resources[i];
+			ss << " / " << (int)site->resources[i];
 			r->SetText(ss.str());
 			ss.str(string());
-			resAdjust_[i]->SetUpper((int)site_->resources[i]);
+			resAdjust[i]->SetUpper((int)site->resources[i]);
 		}
 	}
 
@@ -313,6 +333,7 @@ namespace UIdef {
 	}
 	void updateSitePop()
 	{
+		SiteMenu::instance()->updateSitePop();
 		DeployGroupMenu::instance()->updateSitePop();
 	}
 	void updateSiteResources()

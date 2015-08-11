@@ -27,21 +27,22 @@ namespace UIdef {
 	public:
 		static shared_ptr<SiteMenu> instance();
 		void setSite(Site& site);
+		void updateSitePop();
 		shared_ptr<sfg::Window> window;
 	};
 	class DeployGroupMenu : public UILayout {
 		DeployGroupMenu();
-		Site* site_;
 		shared_ptr<sfg::Label> coordLabel_;
 		shared_ptr<sfg::Button> selectCoordButton_;
 		sf::Vector2i deployTo_;
 		vector<shared_ptr<sfg::Label>> popLabel_;
-		vector<shared_ptr<sfg::Adjustment>> popAdjust_;
 		vector<shared_ptr<sfg::Label>> resLabel_;
-		vector<shared_ptr<sfg::Adjustment>> resAdjust_;
 	public:
+		Site* site;
+		vector<shared_ptr<sfg::Adjustment>> popAdjust;
+		vector<shared_ptr<sfg::Adjustment>> resAdjust;
 		static shared_ptr<DeployGroupMenu> instance();
-		void setSite(Site& site);
+		void setSite(Site& s);
 		void setCoord(const sf::Vector2i& coord);
 		void updateSitePop();
 		void updateSiteResources();
