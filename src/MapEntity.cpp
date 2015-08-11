@@ -65,6 +65,15 @@ void Population::setSize(unsigned int group, float size)
 	sizes_[group] = size;
 }
 
+void Population::addSize(unsigned int group, float amount)
+{
+	if (amount < 0.0f) {
+		amount = max(amount, -sizes_[group]);
+	}
+	size_ += amount;
+	sizes_[group] += amount;
+}
+
 void Population::clear()
 {
 	array<vector<float>*, GROUP_NUM> groups = {

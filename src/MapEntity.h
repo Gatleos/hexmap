@@ -34,6 +34,7 @@ public:
 	// actual amount after adjustment
 	float set(unsigned int group, unsigned int activity, float amount);
 	void setSize(unsigned int group, float size);
+	void addSize(unsigned int group, float amount);
 	void clear();
 	const array<vector<float>, GROUP_NUM>& activities() const;
 	float size() const;
