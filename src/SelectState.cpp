@@ -59,6 +59,8 @@ void SelectState::render(sf::RenderWindow &window)
 }
 void SelectState::input(sf::Event &e)
 {
+	// make sure we execute other states first,
+	// so MapControlState::tilePos is set
 	prev->input(e);
 	if (e.type == sf::Event::MouseMoved) {
 		const sf::Vector2f& size = HEXMAP.view.getSize();

@@ -2,6 +2,16 @@
 #include "HexMap.h"
 #include "clamp.h"
 
+std::shared_ptr<MapControlState> MapControlState::instance()
+{
+	static auto mcs = std::make_shared<MapControlState>(MapControlState());
+	return mcs;
+}
+MapControlState::MapControlState() :
+viewSize_(HEXMAP.view.getSize()),
+viewCenter_(HEXMAP.view.getCenter())
+{
+}
 void MapControlState::init()
 {
 }
@@ -36,8 +46,8 @@ void MapControlState::input(sf::Event &e)
 		}
 		const sf::Vector2f& size = HEXMAP.view.getSize();
 		const sf::Vector2f& center = HEXMAP.view.getCenter();
-		sf::Vector2f mouseMapPos = { e.mouseMove.x - size.x / 2.0f + center.x, e.mouseMove.y - size.y / 2.0f + center.y };
-		sf::Vector2i tilePos = (sf::Vector2i)HEXMAP.pixelToHex(mouseMapPos);
+		mouseMapPos = { e.mouseMove.x - size.x / 2.0f + center.x, e.mouseMove.y - size.y / 2.0f + center.y };
+		tilePos = (sf::Vector2i)HEXMAP.pixelToHex(mouseMapPos);
 		UIdef::MapGenDebug::instance()->updateDebugInfo((sf::Vector2i)mouseMapPos, tilePos, (sf::Vector2i)center);
 		if (HEXMAP.isAxialInBounds(tilePos)) {
 			UIdef::MapGenDebug::instance()->debugInfo[3]->SetText(HEXMAP.getAxial((int)tilePos.x, (int)tilePos.y).hts->name);
@@ -53,12 +63,12 @@ void MapControlState::input(sf::Event &e)
 		return;
 	}
 	if (e.type == sf::Event::MouseButtonPressed) {
-		if (e.mouseButton.button == 1) {
+		if (e.mouseButton.button == sf::Mouse::Middle) {
 			HEXMAP.isGrabbed = true;
 		}
 	}
 	else if (e.type == sf::Event::MouseButtonReleased) {
-		if (e.mouseButton.button == 1) {
+		if (e.mouseButton.button == sf::Mouse::Middle) {
 			HEXMAP.isGrabbed = false;
 		}
 	}
