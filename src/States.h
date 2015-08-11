@@ -10,15 +10,13 @@
 class EngineState: public GameState
 {
 public:
+	std::stringstream ss;
 	VectorSet vs;
 	shared_ptr<UIdef::SiteMenu> siteMenu;
+	int mtMilli = 0;
+	bool timeDisplay;
 	//
-	pugi::xml_document ani;
-	pugi::xml_document spr;
-	sf::Texture tex;
-	//AnimHandler sh[16384];
-	sf::Sprite sprite;
-	//
+	sf::Clock frames;
 	mt19937 customSeed;
 	sf::Font font;
 	sf::Text text;

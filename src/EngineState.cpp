@@ -15,21 +15,8 @@
 #include <limits>
 
 
-
 #define MAPX 128
 #define MAPY 128
-
-sf::Clock frames;
-char str[50];
-sf::Vector2f tilePos;
-bool mButtonPressed = false;
-sf::Vector2f mousePos = { 0.0f, 0.0f };
-sf::Vector2f mouseMapPos;
-sf::Vector2f camPos;
-char camDeltaX = 0, camDeltaY = 0;
-int mtMilli = 0;
-bool timeDisplay = false;
-float cloudSpeed = 100.0f;
 
 void EngineState::init()
 {
@@ -92,12 +79,13 @@ void EngineState::render(sf::RenderWindow &window)
 	if (elapsed >= 0.5f) {
 		elapsed = 0.0f;
 		if (timeDisplay) {
-			snprintf(str, 50, "SFML Test    last tick: %d", engine->getLastTick().asMicroseconds());
+			ss << "SFML Test    last tick: " << engine->getLastTick().asMicroseconds();
 		}
 		else {
-			snprintf(str, 50, "SFML Test    FPS: %d", engine->getFPS());
+			ss << "SFML Test    FPS: " << engine->getFPS();
 		}
-		window.setTitle(str);
+		window.setTitle(ss.str());
+		ss.str(std::string());
 	}
 	window.setView(HEXMAP.view);
 	for (int a = 0; a < 1; a++) {
@@ -105,25 +93,37 @@ void EngineState::render(sf::RenderWindow &window)
 		HEXMAP.drawEnts(window);
 	}
 	window.setView(UI::view);
-	sf::Vector2i mouse = sf::Mouse::getPosition(*engine->window);
-	const sf::Vector2f& size = HEXMAP.view.getSize();
-	const sf::Vector2f& center = HEXMAP.view.getCenter();
-	snprintf(str, 50, "%d", mtMilli);
-	UIdef::MapGenDebug::instance()->debugInfo[4]->SetText(str);
+	ss << mtMilli;
+	UIdef::MapGenDebug::instance()->debugInfo[4]->SetText(ss.str());
+	ss.str(std::string());
 }
 void EngineState::input(sf::Event &e)
 {
 	if (UI::gotInput()) {
 		return;
 	}
-	if (config::pressed(e, "fps_display")) {
-		timeDisplay = !timeDisplay;
+	if (e.type == sf::Event::MouseButtonPressed) {
+		if (e.mouseButton.button == sf::Mouse::Left) {
+			auto& clicked = MapControlState::instance()->tilePos;
+			auto& hex = HEXMAP.getAxial(clicked.x, clicked.y);
+			if (hex.ent == nullptr) {
+				UIdef::SiteMenu::instance()->show(false);
+			}
+			else {
+				UIdef::SiteMenu::instance()->show(true);
+			}
+		}
 	}
-	else if (config::pressed(e, "generate")) {
-		generate();
-	}
-	else if (config::pressed(e, "debug")) {
-		HEXMAP.advanceTurn();
+	else {
+		if (config::pressed(e, "fps_display")) {
+			timeDisplay = !timeDisplay;
+		}
+		else if (config::pressed(e, "generate")) {
+			generate();
+		}
+		else if (config::pressed(e, "debug")) {
+			HEXMAP.advanceTurn();
+		}
 	}
 }
 
