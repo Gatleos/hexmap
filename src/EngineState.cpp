@@ -18,6 +18,15 @@
 #define MAPX 128
 #define MAPY 128
 
+std::shared_ptr<EngineState> EngineState::instance()
+{
+	static EngineState* es = new EngineState;
+	static std::shared_ptr<EngineState> ptr(es);
+	return ptr;
+}
+EngineState::EngineState()
+{
+}
 void EngineState::init()
 {
 	// SFML init
@@ -38,15 +47,9 @@ void EngineState::init()
 	UI::addNewLayout(UIdef::MapGenDebug::instance());
 	UI::pushLayout(UIdef::MapGenDebug::instance());
 	auto* f = HEXMAP.addFaction();
-	Site* site = HEXMAP.addSite(&SiteS::get(SiteS::TOWN), f);
-	site->pop.setSize(Population::GROUP_CIV, 2000.0f);
-	site->pop.setSize(Population::GROUP_PR, 2000.0f);
-	site->initMapPos({ 0, 4 });
 	siteMenu = UIdef::SiteMenu::instance();
 	UI::addNewLayout(siteMenu);
-	UI::pushLayout(siteMenu);
 	UI::addNewLayout(UIdef::DeployGroupMenu::instance());
-	UIdef::setEntity(*site);
 	// Entities
 	//auto* f = HEXMAP.addFaction();
 	//for (int x = 0; x < 16384; x++) {
@@ -56,12 +59,12 @@ void EngineState::init()
 	//	s->setAnimationType(MapEntityS::anim::IDLE);
 	//}
 	// Shader
-	shader.loadFromFile("data/simplex.glsl", sf::Shader::Type::Fragment);
-	shader.setParameter("offset", HEXMAP.view.getCenter());
-	shader.setParameter("texture", sf::Shader::CurrentTexture);
-	shader.setParameter("scale", 0.001f);
-	shader.setParameter("contrast", 0.25f);
-	shader.setParameter("brightness", 0.9f);
+	//shader.loadFromFile("data/simplex.glsl", sf::Shader::Type::Fragment);
+	//shader.setParameter("offset", HEXMAP.view.getCenter());
+	//shader.setParameter("texture", sf::Shader::CurrentTexture);
+	//shader.setParameter("scale", 0.001f);
+	//shader.setParameter("contrast", 0.25f);
+	//shader.setParameter("brightness", 0.9f);
 	//engine->window->setFramerateLimit(600);
 	engine->pushState(MapControlState::instance());
 }
@@ -74,6 +77,7 @@ void EngineState::update()
 }
 void EngineState::render(sf::RenderWindow &window)
 {
+	stringstream ss;
 	static float elapsed = 0.0f;
 	elapsed += engine->getLastTick().asSeconds();
 	if (elapsed >= 0.5f) {
@@ -111,6 +115,7 @@ void EngineState::input(sf::Event &e)
 			}
 			else {
 				UIdef::SiteMenu::instance()->show(true);
+				UIdef::setEntity(*hex.ent);
 			}
 		}
 	}
@@ -147,7 +152,7 @@ void EngineState::generate()
 	for (int a = 0; a < config::gen::mountNum; a++) {
 		HEXMAP.generateMountainRange(customSeed);
 	}
-	//HEXMAP.placeSites(customSeed);
+	HEXMAP.placeSites(customSeed);
 	sf::Time mtTime = mtClock.getElapsedTime();
 	mtMilli = mtTime.asMilliseconds();
 	stringstream ss;
@@ -173,17 +178,17 @@ void EngineState::loadResourcesInPlace()
 	for (int a = 0; a < config::gen::mountNum; a++) {
 		HEXMAP.generateMountainRange(customSeed);
 	}
-	//HEXMAP.placeSites(customSeed);
+	HEXMAP.placeSites(customSeed);
 	sf::Time mtTime = mtClock.getElapsedTime();
 	mtMilli = mtTime.asMilliseconds();
 	stringstream ss;
 	ss << std::hex << hexSeed;
 	UIdef::MapGenDebug::instance()->seedBox->SetText(ss.str());
 	// Shader
-	shader.loadFromFile("data/simplex.glsl", sf::Shader::Type::Fragment);
-	shader.setParameter("offset", HEXMAP.view.getCenter());
-	shader.setParameter("texture", sf::Shader::CurrentTexture);
-	shader.setParameter("scale", 0.001f);
-	shader.setParameter("contrast", 0.25f);
-	shader.setParameter("brightness", 0.9f);
+	//shader.loadFromFile("data/simplex.glsl", sf::Shader::Type::Fragment);
+	//shader.setParameter("offset", HEXMAP.view.getCenter());
+	//shader.setParameter("texture", sf::Shader::CurrentTexture);
+	//shader.setParameter("scale", 0.001f);
+	//shader.setParameter("contrast", 0.25f);
+	//shader.setParameter("brightness", 0.9f);
 }

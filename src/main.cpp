@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
 			auto& s = SFMLEngine::instance();
 			sf::RenderWindow window(sf::VideoMode(640, 512), "", sf::Style::Default, sf::ContextSettings());
 			s.init(&window);
-			s.pushState(std::shared_ptr<GameState>(new EngineState));
+			s.pushState(EngineState::instance());
 			s.start();
 		}
 	}

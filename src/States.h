@@ -9,8 +9,9 @@
 
 class EngineState: public GameState
 {
+	EngineState();
 public:
-	std::stringstream ss;
+	static std::shared_ptr<EngineState> instance();
 	VectorSet vs;
 	shared_ptr<UIdef::SiteMenu> siteMenu;
 	int mtMilli = 0;
@@ -22,7 +23,6 @@ public:
 	sf::Text text;
 	sf::Texture hex;
 	sf::Sprite hexspr;
-	sf::Shader shader;
 	void init();
 	void end();
 	void update();
