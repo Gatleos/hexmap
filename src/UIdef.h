@@ -37,6 +37,7 @@ namespace UIdef {
 		sf::Vector2i deployTo_;
 		vector<shared_ptr<sfg::Label>> popLabel_;
 		vector<shared_ptr<sfg::Label>> resLabel_;
+		int deploySignal_;
 	public:
 		MapEntity* ent;
 		vector<shared_ptr<sfg::Adjustment>> popAdjust;

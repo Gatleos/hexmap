@@ -36,8 +36,10 @@ namespace UIdef {
 		auto box2 = sfg::Box::Create(sfg::Box::Orientation::HORIZONTAL, 5.0f);
 		gen = sfg::Button::Create("Generate");
 		UI::connectMouseInputFlag(gen);
+		gen->GetSignal(sfg::Button::OnLeftClick).Connect(bind(&EngineState::generate, EngineState::instance().get()));
 		reload = sfg::Button::Create("Reload Files");
 		UI::connectMouseInputFlag(reload);
+		reload->GetSignal(sfg::Button::OnLeftClick).Connect(bind(&EngineState::loadResourcesInPlace, EngineState::instance().get()));
 		box1->Pack(table1);
 		box1->Pack(box2);
 		box1->Pack(gen);
@@ -180,6 +182,7 @@ namespace UIdef {
 	}
 	DeployGroupMenu::DeployGroupMenu()
 	{
+		deploySignal_ = -1;
 		window = sfg::Window::Create(sfg::Window::Style::TOPLEVEL | sfg::Window::Style::CLOSE);
 		window->GetSignal(sfg::Window::OnCloseButton).Connect(bind([](shared_ptr<sfg::Window> win) {win->Show(false); }, window));
 		auto mainBox = sfg::Box::Create(sfg::Box::Orientation::VERTICAL);
@@ -286,7 +289,10 @@ namespace UIdef {
 			SFMLEngine::instance().pushState(std::shared_ptr<GameState>(new SelectState(vs, setSelection)));
 		};
 		setCoord({ -1, -1 });
-		selectCoordButton_->GetSignal(sfg::Button::OnLeftClick).Connect(bind(createSelection, ent));
+		if (deploySignal_ >= 0) {
+			selectCoordButton_->GetSignal(sfg::Button::OnLeftClick).Disconnect(deploySignal_);
+		}
+		deploySignal_ = selectCoordButton_->GetSignal(sfg::Button::OnLeftClick).Connect(bind(createSelection, ent));
 		updateSitePop();
 		updateSiteResources();
 	}
