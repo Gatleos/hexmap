@@ -299,6 +299,7 @@ void HexMap::init(int width, int height)
 		currentVertices++;
 	}
 	setZoomLevel(0);
+	clearEntities();
 }
 
 void HexMap::updateCursorPos(sf::Vector2i cursorPos)
@@ -787,6 +788,11 @@ void HexMap::constrainView(sf::View& view)
 	view.setCenter(upper);
 }
 
+Faction* HexMap::playerFaction()
+{
+	return &factions.front();
+}
+
 Faction* HexMap::addFaction()
 {
 	factions.emplace_back();
@@ -826,6 +832,7 @@ void HexMap::clearEntities()
 		setFeatureColor(axialToOffset(pos), sf::Color::White);
 	}
 	units.clear();
+	factions.emplace_back();
 }
 
 void HexMap::setEntity(sf::Vector2i posOffset, MapEntity* ent)

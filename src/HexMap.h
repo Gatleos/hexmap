@@ -97,7 +97,7 @@ private:
 	// Currently used vertices
 	Array2D<sf::VertexArray>* activeBgVertices_;
 	std::deque<sf::Vector2f> land;
-	vector<Faction> factions;
+	list<Faction> factions;
 	unsigned int nextSiteId;
 	map<int, Site> sites;
 	unsigned int nextUnitId;
@@ -233,6 +233,7 @@ public:
 	// MapEntities //
 	/////////////////
 
+	Faction* playerFaction();
 	Faction* addFaction();
 	Site* addSite(const SiteS* sSite, Faction* parent);
 	MapUnit* addMapUnit(const MapEntityS* sEnt, Faction* parent);
