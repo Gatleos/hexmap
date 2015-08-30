@@ -17,8 +17,7 @@ Json::Value config::openJson(string file) {
 	filebuf fb;
 	fb.open(file, ios::in);
 	istream config_file(&fb);
-	if (!reader.parse(config_file, root))
-	{
+	if (!reader.parse(config_file, root)) {
 		cerr << "Failed to parse " << file << "\n"
 			<< reader.getFormattedErrorMessages();
 	}

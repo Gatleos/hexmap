@@ -4,8 +4,7 @@
 #include "MapEntity.h"
 
 // A map entity with added movement functions
-class MapUnit : public MapEntity
-{
+class MapUnit : public MapEntity {
 	// The unit's current movement path
 	std::deque<sf::Vector2i> path;
 	int moveTimer;

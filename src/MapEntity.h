@@ -10,8 +10,7 @@
 
 class HexMap;
 
-class Population
-{
+class Population {
 public:
 	enum {
 		GROUP_CIV, GROUP_MIL, GROUP_PR, GROUP_NUM,
@@ -42,8 +41,7 @@ public:
 	void popGrowth(int turns);
 };
 
-class MapEntityS
-{
+class MapEntityS {
 public:
 	enum anim{ IDLE, ANIM_NUM };
 	static const array<string, ANIM_NUM> animTypes;
@@ -62,8 +60,7 @@ public:
 
 // Anything on a HexMap which has a hex position and is drawn along
 // with the map is derived from this
-class MapEntity
-{
+class MapEntity {
 	const MapEntityS* mes;
 protected:
 	// Current position

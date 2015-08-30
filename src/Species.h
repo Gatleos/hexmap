@@ -8,8 +8,7 @@
 
 using namespace std;
 
-class Species
-{
+class Species {
 public:
 	static unordered_map<string, Species> map;
 	static const Species& null;

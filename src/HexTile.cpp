@@ -21,12 +21,10 @@ array<unique_ptr<HexTileS>, HexTileS::TERRAIN_NUM> HexTileS::terrain = { {
 	} };
 const sf::Texture* HexTileS::tex = nullptr;
 
-HexTileS::HexTileS(string idSet) :id(idSet), moveCost(10U)
-{
+HexTileS::HexTileS(string idSet) :id(idSet), moveCost(10U) {
 }
 
-void HexTileS::loadJson(string filename)
-{
+void HexTileS::loadJson(string filename) {
 	Json::Value root = config::openJson(filename);
 	if (root.begin() == root.end()) {
 		cerr << "ERROR: couldn't open file \"" << filename << "\"\n";
@@ -145,19 +143,16 @@ void HexTileS::loadJson(string filename)
 	}
 }
 
-const HexTileS& HexTileS::get(int t)
-{
+const HexTileS& HexTileS::get(int t) {
 	return *terrain[t];
 }
 
-const sf::Texture& HexTileS::getTexture()
-{
+const sf::Texture& HexTileS::getTexture() {
 	return *tex;
 }
 
 HexTile::HexTile() :
 ent(nullptr),
 hts(nullptr),
-tfs(nullptr)
-{
+tfs(nullptr) {
 }

@@ -4,8 +4,7 @@
 #include "MapEntity.h"
 #include "Species.h"
 
-class SiteS : public MapEntityS
-{
+class SiteS : public MapEntityS {
 public:
 	enum {
 		NONE, CITY, TOWN, VILLAGE, SITE_NUM
@@ -18,8 +17,7 @@ public:
 	static const SiteS& get(int id);
 };
 
-class Site : public MapEntity
-{
+class Site : public MapEntity {
 	const SiteS* ss;
 public:
 	Site(const SiteS* sSite, HexMap* hmSet, Faction* parent);

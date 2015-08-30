@@ -11,8 +11,7 @@
 
 class SFMLEngine;
 
-class GameState
-{
+class GameState {
 protected:
 	GameState* prev;
 	SFMLEngine* engine;
@@ -27,8 +26,7 @@ public:
 	friend class SFMLEngine;
 };//GameState
 
-class SFMLEngine
-{
+class SFMLEngine {
 	SFMLEngine() :lastFrame(sf::Time::Zero){}
 public:
 	sf::RenderWindow* window;

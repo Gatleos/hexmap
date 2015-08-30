@@ -7,8 +7,7 @@ static const vector<string> bindingNames = {
 };
 static map<string, config::KeyBinding> bindings;
 
-void config::loadKeyJson(std::string file)
-{
+void config::loadKeyJson(std::string file) {
 	Json::Value root = openJson(file);
 	if (root.begin() == root.end()) {
 		return;

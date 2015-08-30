@@ -7,8 +7,7 @@
 #include "AnimHandler.h"
 #include "UIdef.h"
 
-class EngineState: public GameState
-{
+class EngineState: public GameState {
 	EngineState();
 public:
 	static std::shared_ptr<EngineState> instance();
@@ -32,8 +31,7 @@ public:
 	void loadResourcesInPlace();
 }; // EngineState
 
-class MapControlState : public GameState
-{
+class MapControlState : public GameState {
 	const sf::Vector2f& viewSize_;
 	const sf::Vector2f& viewCenter_;
 	sf::Vector2i camDelta_;
@@ -49,8 +47,7 @@ public:
 	void input(sf::Event &e);
 }; // MapControlState
 
-class SelectState : public GameState
-{
+class SelectState : public GameState {
 	shared_ptr<VectorSet> selectableCoords_;
 	sf::Vector2f tilePos_;
 	std::vector<sf::Sprite> selectable_;

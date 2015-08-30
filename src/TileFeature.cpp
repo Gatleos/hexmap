@@ -13,32 +13,26 @@ array<unique_ptr<TileFeatureS>, TileFeatureS::FEATURE_NUM> TileFeatureS::feature
 		ftrptr("f_taiga_snow_l")
 	} };
 
-RandomRect::RandomRect() :rectChance(new std::discrete_distribution <int>{ 1 })
-{
+RandomRect::RandomRect() :rectChance(new std::discrete_distribution <int>{ 1 }) {
 	rects.resize(1U);
 	pos.resize(1U);
 }
-int RandomRect::randomize(std::mt19937& urng) const
-{
+int RandomRect::randomize(std::mt19937& urng) const {
 	return (*rectChance)(urng);
 }
-const sf::FloatRect& RandomRect::getRect(int index) const
-{
+const sf::FloatRect& RandomRect::getRect(int index) const {
 	return rects[index];
 }
-const sf::Vector2f& RandomRect::getPos(int index) const
-{
+const sf::Vector2f& RandomRect::getPos(int index) const {
     return pos[index];
 }
-void RandomRect::setToDefaultRect()
-{
+void RandomRect::setToDefaultRect() {
 	rects.clear();
 	rects.resize(1U);
 	pos.resize(1U);
 	rectChance = unique_ptr<std::discrete_distribution<int>>(new std::discrete_distribution <int>{ 1 });
 }
-void RandomRect::loadJson(Json::Value& rData, SpriteSheet* sheet, const sf::Vector2i& hexSize)
-{
+void RandomRect::loadJson(Json::Value& rData, SpriteSheet* sheet, const sf::Vector2i& hexSize) {
 	// If a rect isn't provided, stick with the default
 	if (rData.isNull() || rData.empty()) {
 		return;
@@ -99,8 +93,7 @@ void RandomRect::loadJson(Json::Value& rData, SpriteSheet* sheet, const sf::Vect
 		setToDefaultRect();
 	}
 }
-bool RandomRect::empty()
-{
+bool RandomRect::empty() {
 	return rects.empty();
 }
 
@@ -108,18 +101,15 @@ bool RandomRect::empty()
 const unsigned char TileFeatureS::fade = static_cast<unsigned char>(100);
 const sf::Texture* TileFeatureS::tex = nullptr;
 
-const TileFeatureS& TileFeatureS::get(int t)
-{
+const TileFeatureS& TileFeatureS::get(int t) {
 	return *feature[t];
 }
 
-const sf::Texture& TileFeatureS::getTexture()
-{
+const sf::Texture& TileFeatureS::getTexture() {
 	return *tex;
 }
 
-const TileFeatureS& TileFeatureS::get(string t)
-{
+const TileFeatureS& TileFeatureS::get(string t) {
 	for (auto& tf : feature) {
 		if (tf->id_ == t) {
 			return *tf;
@@ -132,12 +122,10 @@ const TileFeatureS& TileFeatureS::get(string t)
 TileFeatureS::TileFeatureS(string id) :
 vert_(sf::PrimitiveType::Quads, 4U),
 id_(id),
-moveCost(0)
-{
+moveCost(0) {
 }
 
-void TileFeatureS::loadJson(string filename)
-{
+void TileFeatureS::loadJson(string filename) {
 	Json::Value root = config::openJson(filename);
 	if (root.begin() == root.end()) {
 		cerr << "ERROR: couldn't open file \"" << filename << "\"\n";

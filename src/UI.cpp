@@ -20,12 +20,10 @@ static SpriteSheet* UI_sprites = nullptr;
 UIAlign::UIAlign(sf::FloatRect alloc, unsigned char FLAGS, bool autoResize) :
 alloc_(alloc),
 FLAGS_(FLAGS),
-autoResize_(autoResize)
-{
+autoResize_(autoResize) {
 }
 
-void UIAlign::resize(shared_ptr<sfg::Widget> win)
-{
+void UIAlign::resize(shared_ptr<sfg::Widget> win) {
 	auto alloc = alloc_;
 	const auto& req = win->GetRequisition();
 	if (alloc.width == 0.0f) {
@@ -65,8 +63,7 @@ void UIAlign::resize(shared_ptr<sfg::Widget> win)
 // UILayout /////
 /////////////////
 
-void UILayout::show(bool show)
-{
+void UILayout::show(bool show) {
 	if (show) {
 		for (auto w : windows) {
 			w.first->Show(true);
@@ -80,14 +77,12 @@ void UILayout::show(bool show)
 	}
 }
 
-void UILayout::addWindow(shared_ptr<sfg::Widget> newWin, UIAlign a)
-{
+void UILayout::addWindow(shared_ptr<sfg::Widget> newWin, UIAlign a) {
 	newWin->Show(false);
 	windows.push_back(make_pair(newWin, a));
 }
 
-void UILayout::bringToFront()
-{
+void UILayout::bringToFront() {
 	for (auto& w : windows) {
 		UI::desktop->BringToFront(w.first);
 	}
@@ -97,8 +92,7 @@ void UILayout::bringToFront()
 // UI ///////////
 /////////////////
 
-void UI::setAppSize(sf::Vector2f size)
-{
+void UI::setAppSize(sf::Vector2f size) {
 	UI_appSize = size;
 	if (!UI_layoutStack.empty()) {
 		for (auto l = UI_layoutStack.rbegin(); l != UI_layoutStack.rend(); l++) {
@@ -114,56 +108,46 @@ void UI::setAppSize(sf::Vector2f size)
 	}
 }
 
-void UI::resetInputFlags()
-{
+void UI::resetInputFlags() {
 	UI_gotMouseInput = false;
 	UI_gotKeyboardInput = false;
 }
 
-bool UI::gotMouseInput()
-{
+bool UI::gotMouseInput() {
 	return UI_gotMouseInput;
 }
 
-bool UI::gotKeyboardInput()
-{
+bool UI::gotKeyboardInput() {
 	return UI_gotKeyboardInput;
 }
 
-bool UI::gotInput()
-{
+bool UI::gotInput() {
 	return UI_gotMouseInput || UI_gotKeyboardInput;
 }
 
-void UI::connectMouseInputFlag(shared_ptr<sfg::Widget> w)
-{
+void UI::connectMouseInputFlag(shared_ptr<sfg::Widget> w) {
 	static auto setMouseFlag = [](){UI_gotMouseInput = true; };
 	w->GetSignal(sfg::Window::OnMouseLeftPress).Connect(setMouseFlag);
 	w->GetSignal(sfg::Window::OnMouseRightPress).Connect(setMouseFlag);
 }
 
-void UI::connectKeyboardInputFlag(shared_ptr<sfg::Widget> w)
-{
+void UI::connectKeyboardInputFlag(shared_ptr<sfg::Widget> w) {
 	static auto setKeyboardFlag = [](){UI_gotKeyboardInput = true; };
 	w->GetSignal(sfg::Window::OnKeyPress).Connect(setKeyboardFlag);
 	w->GetSignal(sfg::Window::OnKeyPress).Connect(setKeyboardFlag);
 }
 
-const sf::Image& UI::image()
-{
+const sf::Image& UI::image() {
 	return UI_image;
 }
-const sf::Texture& UI::texture()
-{
+const sf::Texture& UI::texture() {
 	return *UI_texture;
 }
-SpriteSheet& UI::sprites()
-{
+SpriteSheet& UI::sprites() {
 	return *UI_sprites;
 }
 
-void UI::init(sfg::Desktop* d)
-{
+void UI::init(sfg::Desktop* d) {
 	desktop = d;
 	auto renderer = sfg::VertexBufferRenderer::Create(); // Fix a NonLegacyRenderer-related text bug
 	sfg::Renderer::Set(renderer);
@@ -173,34 +157,29 @@ void UI::init(sfg::Desktop* d)
 	UI_image = UI_texture->copyToImage();
 }
 
-void UI::end()
-{
+void UI::end() {
 	UI_layoutStack.clear();
 }
 
-void UI::addWindow(shared_ptr<sfg::Window> newWin)
-{
+void UI::addWindow(shared_ptr<sfg::Window> newWin) {
 	desktop->Add(newWin);
 	connectMouseInputFlag(newWin);
 }
 
-void UI::addWindow(shared_ptr<sfg::Window> newWin, UIAlign a)
-{
+void UI::addWindow(shared_ptr<sfg::Window> newWin, UIAlign a) {
 	desktop->Add(newWin);
 	connectMouseInputFlag(newWin);
 	a.resize(newWin);
 }
 
-void UI::addNewLayout(shared_ptr<UILayout> layout)
-{
+void UI::addNewLayout(shared_ptr<UILayout> layout) {
 	for (auto& w : layout->windows) {
 		desktop->Add(w.first);
 		connectMouseInputFlag(w.first);
 	}
 }
 
-void UI::pushLayout(shared_ptr<UILayout> layout, bool replacePrevious)
-{
+void UI::pushLayout(shared_ptr<UILayout> layout, bool replacePrevious) {
 	if (!UI_layoutStack.empty() && replacePrevious) {
 		UI_layoutStack.back().first->show(false);
 	}
@@ -208,8 +187,7 @@ void UI::pushLayout(shared_ptr<UILayout> layout, bool replacePrevious)
 	UI_layoutStack.back().first->show(true);
 }
 
-void UI::popLayout()
-{
+void UI::popLayout() {
 	if (UI_layoutStack.empty()) {
 		return;
 	}
@@ -222,8 +200,7 @@ void UI::popLayout()
 	}
 }
 
-void UI::dropFocus()
-{
+void UI::dropFocus() {
 	static auto UI_dummyWindow = sfg::Window::Create();
 	UI_dummyWindow->GrabFocus();
 }

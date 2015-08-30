@@ -7,8 +7,7 @@
 
 using namespace std;
 
-class ResourceLoader
-{
+class ResourceLoader {
 	string root;
 	map<string, sf::Texture> textures;
 	map<string, SpriteSheet> sheets;

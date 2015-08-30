@@ -2,24 +2,19 @@
 #include "HexMap.h"
 #include "clamp.h"
 
-std::shared_ptr<MapControlState> MapControlState::instance()
-{
+std::shared_ptr<MapControlState> MapControlState::instance() {
 	static auto mcs = std::make_shared<MapControlState>(MapControlState());
 	return mcs;
 }
 MapControlState::MapControlState() :
 viewSize_(HEXMAP.view.getSize()),
-viewCenter_(HEXMAP.view.getCenter())
-{
+viewCenter_(HEXMAP.view.getCenter()) {
 }
-void MapControlState::init()
-{
+void MapControlState::init() {
 }
-void MapControlState::end()
-{
+void MapControlState::end() {
 }
-void MapControlState::update()
-{
+void MapControlState::update() {
 	float move = 60.0f / engine->getFPS();
 	if (camDelta_.x != 0 || camDelta_.y != 0) {
 		HEXMAP.view.move({ (float)camDelta_.x * 20 * move, (float)camDelta_.y * 20 * move });
@@ -32,12 +27,10 @@ void MapControlState::update()
 	HEXMAP.cloudShader.setParameter("offset", timeOffset);
 	prev->update();
 }
-void MapControlState::render(sf::RenderWindow &window)
-{
+void MapControlState::render(sf::RenderWindow &window) {
 	prev->render(window);
 }
-void MapControlState::input(sf::Event &e)
-{
+void MapControlState::input(sf::Event &e) {
 	if (e.type == sf::Event::MouseMoved) {
 		if (HEXMAP.isGrabbed) {
 			HEXMAP.view.move((sf::Vector2f)(UI::lastMousePos - sf::Mouse::getPosition(*engine->window)));

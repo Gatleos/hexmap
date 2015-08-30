@@ -18,17 +18,14 @@
 #define MAPX 128
 #define MAPY 128
 
-std::shared_ptr<EngineState> EngineState::instance()
-{
+std::shared_ptr<EngineState> EngineState::instance() {
 	static EngineState* es = new EngineState;
 	static std::shared_ptr<EngineState> ptr(es);
 	return ptr;
 }
-EngineState::EngineState()
-{
+EngineState::EngineState() {
 }
-void EngineState::init()
-{
+void EngineState::init() {
 	// SFML init
 	engine->clearColor = { 0, 43, 77, 255 };
 	engine->window->setFramerateLimit(60);
@@ -68,15 +65,12 @@ void EngineState::init()
 	//engine->window->setFramerateLimit(600);
 	engine->pushState(MapControlState::instance());
 }
-void EngineState::end()
-{
+void EngineState::end() {
 }
-void EngineState::update()
-{
+void EngineState::update() {
 	HEXMAP.update(engine->getLastTick());
 }
-void EngineState::render(sf::RenderWindow &window)
-{
+void EngineState::render(sf::RenderWindow &window) {
 	stringstream ss;
 	static float elapsed = 0.0f;
 	elapsed += engine->getLastTick().asSeconds();
@@ -101,8 +95,7 @@ void EngineState::render(sf::RenderWindow &window)
 	UIdef::MapGenDebug::instance()->debugInfo[4]->SetText(ss.str());
 	ss.str(std::string());
 }
-void EngineState::input(sf::Event &e)
-{
+void EngineState::input(sf::Event &e) {
 	if (UI::gotInput()) {
 		return;
 	}
@@ -132,8 +125,7 @@ void EngineState::input(sf::Event &e)
 	}
 }
 
-void EngineState::generate()
-{
+void EngineState::generate() {
 	HEXMAP.clearTileFeatures();
 	unsigned long hexSeed = 0;
 	if (UIdef::MapGenDebug::instance()->randomSeed->IsActive()) {
@@ -162,8 +154,7 @@ void EngineState::generate()
 
 // Clear and reload all resource files, then generate the map
 // with the same seed so we can see the changes
-void EngineState::loadResourcesInPlace()
-{
+void EngineState::loadResourcesInPlace() {
 	config::load();
 	RESOURCE.releaseAll();
 	config::loadAllJson();

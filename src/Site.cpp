@@ -17,23 +17,19 @@ const SiteS* Site::sSite() {
 	return ss;
 }
 
-void Site::update(const sf::Time& timeElapsed)
-{
+void Site::update(const sf::Time& timeElapsed) {
 
 }
 
-void Site::advanceTurn()
-{
+void Site::advanceTurn() {
 	pop.popGrowth(1);
 }
 
 SiteS::SiteS(string id) :
-MapEntityS(id)
-{
+MapEntityS(id) {
 }
 
-void SiteS::loadJson(string filename)
-{
+void SiteS::loadJson(string filename) {
 	Json::Value root = config::openJson(filename);
 	if (root.begin() == root.end()) {
 		cerr << "ERROR: couldn't open file \"" << filename << "\"\n";
@@ -53,7 +49,6 @@ void SiteS::loadJson(string filename)
 	}
 }
 
-const SiteS& SiteS::get(int id)
-{
+const SiteS& SiteS::get(int id) {
 	return *site[id];
 }

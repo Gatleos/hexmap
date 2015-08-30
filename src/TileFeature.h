@@ -9,8 +9,7 @@
 #include "rng.h"
 #include "ResourceLoader.h"
 
-class RandomRect
-{
+class RandomRect {
 	std::unique_ptr<std::discrete_distribution<int>> rectChance;
 	std::vector<sf::FloatRect> rects;
 	std::vector<sf::Vector2f> pos;
@@ -27,8 +26,7 @@ public:
 	bool empty();
 };
 
-class TileFeatureS
-{
+class TileFeatureS {
 public:
 	enum {
 		NONE, MOUNTAIN, FOREST_S, FOREST_M, FOREST_L, TAIGA_S, TAIGA_M, TAIGA_L, TAIGA_SNOW_S, TAIGA_SNOW_M, TAIGA_SNOW_L, FEATURE_NUM

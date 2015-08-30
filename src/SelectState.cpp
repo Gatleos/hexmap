@@ -12,19 +12,16 @@ SelectState::SelectState(std::function<void(const sf::Vector2i&)> selectCallback
 selectableCoords_(nullptr),
 tilePos_(-1.0f, -1.0f),
 inBounds_(false),
-selectCallback_(selectCallback)
-{
+selectCallback_(selectCallback) {
 
 }
 SelectState::SelectState(shared_ptr<VectorSet> selectable, std::function<void(const sf::Vector2i&)> selectCallback) :
 selectableCoords_(selectable),
 tilePos_(-1.0f, -1.0f),
 inBounds_(false),
-selectCallback_(selectCallback)
-{
+selectCallback_(selectCallback) {
 }
-void SelectState::init()
-{
+void SelectState::init() {
 	static auto setupSprite = [](sf::Sprite& spr, sf::Vector2f& hexCoord) {
 		spr.setTexture(UI::texture());
 		spr.setTextureRect((sf::IntRect)*UI::sprites().spr("/select/full"));
@@ -39,15 +36,12 @@ void SelectState::init()
 	}
 	setupSprite(selected_, sf::Vector2f(0.0f, 0.0f));
 }
-void SelectState::end()
-{
+void SelectState::end() {
 }
-void SelectState::update()
-{
+void SelectState::update() {
 	prev->update();
 }
-void SelectState::render(sf::RenderWindow &window)
-{
+void SelectState::render(sf::RenderWindow &window) {
 	prev->render(window);
 	window.setView(HEXMAP.view);
 	for (auto& s : selectable_) {
@@ -57,8 +51,7 @@ void SelectState::render(sf::RenderWindow &window)
 		window.draw(selected_);
 	}
 }
-void SelectState::input(sf::Event &e)
-{
+void SelectState::input(sf::Event &e) {
 	if (e.type == sf::Event::MouseButtonPressed) {
 		if (UI::gotMouseInput()) {
 			selectCallback_(sf::Vector2i(-1, -1));

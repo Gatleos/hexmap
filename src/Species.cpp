@@ -8,8 +8,7 @@
 
 unordered_map<string, Species> Species::map;
 const Species& Species::null = Species::map["s_null"];
-const Species& Species::get(std::string s)
-{
+const Species& Species::get(std::string s) {
 	const auto& spc = map.find(s);
 	if (spc == map.end()) {
 		return null;
@@ -17,13 +16,11 @@ const Species& Species::get(std::string s)
 	return spc->second;
 }
 
-Species::Species() :anims(nullptr)
-{
+Species::Species() :anims(nullptr) {
 
 }
 
-void Species::loadJson(string filename)
-{
+void Species::loadJson(string filename) {
 	Species::map.clear();
 	Json::Value root = config::openJson("data/species.json");
 	if (root.begin() == root.end()) {

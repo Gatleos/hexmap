@@ -10,10 +10,7 @@
 const array<string, MapEntityS::ANIM_NUM> MapEntityS::animTypes = { {
 		"idle"
 	} };
-const array<vector<std::string>, Population::GROUP_NUM> Population::activityNames = { {
-	{ "Idle", "Farm", "Wood", "Mine", "Enlist" },
-	{ "Idle", "Guard" },
-	{ "Idle", "Farm", "Wood", "Mine", "Breed" }
+const array<vector<std::string>, Population::GROUP_NUM> Population::activityNames = { { { "Idle", "Farm", "Wood", "Mine", "Enlist" }, { "Idle", "Guard" }, { "Idle", "Farm", "Wood", "Mine", "Breed" }
 	} };
 const array<std::string, Population::GROUP_NUM> Population::groupNames = { {
 		"Civilian", "Military", "Prisoner"
@@ -28,8 +25,7 @@ const array<std::string, MapEntityS::RESOURCE_NUM> MapEntityS::resourceNames = {
 		"Food", "Wood", "Ore"
 	} };
 
-Population::Population() :size_(0)
-{
+Population::Population() :size_(0) {
 	for (auto& s : sizes_) {
 		s = 0;
 	}
@@ -47,8 +43,7 @@ Population::Population() :size_(0)
 	}
 }
 
-float Population::set(unsigned int group, unsigned int activity, float amount)
-{
+float Population::set(unsigned int group, unsigned int activity, float amount) {
 	if (!isInRange(group, 0u, (unsigned int)GROUP_NUM) ||
 		!isInRange(activity, 0u, (unsigned int)activities_[group].size() - 1)) {
 		return -1.0f;
@@ -59,14 +54,12 @@ float Population::set(unsigned int group, unsigned int activity, float amount)
 	return amount;
 }
 
-void Population::setSize(unsigned int group, float size)
-{
+void Population::setSize(unsigned int group, float size) {
 	size_ += size - sizes_[group];
 	sizes_[group] = size;
 }
 
-void Population::addSize(unsigned int group, float amount)
-{
+void Population::addSize(unsigned int group, float amount) {
 	if (amount < 0.0f) {
 		amount = max(amount, -sizes_[group]);
 	}
@@ -74,8 +67,7 @@ void Population::addSize(unsigned int group, float amount)
 	sizes_[group] += amount;
 }
 
-void Population::clear()
-{
+void Population::clear() {
 	array<vector<float>*, GROUP_NUM> groups = {
 		&activities_[GROUP_CIV], &activities_[GROUP_MIL], &activities_[GROUP_PR]
 	};
@@ -88,23 +80,19 @@ void Population::clear()
 	size_ = 0;
 }
 
-const array<vector<float>, Population::GROUP_NUM>& Population::activities() const
-{
+const array<vector<float>, Population::GROUP_NUM>& Population::activities() const {
 	return activities_;
 }
 
-float Population::size() const
-{
+float Population::size() const {
 	return size_;
 }
 
-float Population::size(unsigned int group) const
-{
+float Population::size(unsigned int group) const {
 	return sizes_[group];
 }
 
-void Population::popGrowth(int turns)
-{
+void Population::popGrowth(int turns) {
 	// P = P_0 * e ^ (r * t)
 	setSize(GROUP_CIV, sizes_[GROUP_CIV] * std::powf(2.71828f, (float)turns * growthRate[GROUP_CIV]));
 	// Prisoners will not breed unless told
@@ -112,8 +100,7 @@ void Population::popGrowth(int turns)
 	setSize(GROUP_PR, sizes_[GROUP_PR] * std::powf(2.71828f, (float)turns * rate));
 }
 
-bool MapEntity::initMapPos(sf::Vector2i axialCoord)
-{
+bool MapEntity::initMapPos(sf::Vector2i axialCoord) {
 	if (!hm->isAxialInBounds(axialCoord)) {
 		return false;
 	}
@@ -126,8 +113,7 @@ bool MapEntity::initMapPos(sf::Vector2i axialCoord)
 	return true;
 }
 
-bool MapEntity::setMapPos(sf::Vector2i axialCoord)
-{
+bool MapEntity::setMapPos(sf::Vector2i axialCoord) {
 	if (!hm->isAxialInBounds(axialCoord)) {
 		return false;
 	}
@@ -142,8 +128,7 @@ bool MapEntity::setMapPos(sf::Vector2i axialCoord)
 	return true;
 }
 
-const sf::Vector2i& MapEntity::getMapPos()
-{
+const sf::Vector2i& MapEntity::getMapPos() {
 	return pos;
 }
 
@@ -152,12 +137,10 @@ const MapEntityS* MapEntity::sMapEntity() {
 }
 
 MapEntityS::MapEntityS(string id) :
-id_(id)
-{
+id_(id) {
 }
 
-void MapEntityS::loadEntityJson(Json::Value& edata, string& element, string id)
-{
+void MapEntityS::loadEntityJson(Json::Value& edata, string& element, string id) {
 	id_ = id;
 	//name
 	element = "name";
@@ -186,8 +169,7 @@ void MapEntityS::loadEntityJson(Json::Value& edata, string& element, string id)
 	}
 }
 
-MapEntity::MapEntity(const MapEntityS* sEnt, HexMap* hmSet, Faction* parent)
-{
+MapEntity::MapEntity(const MapEntityS* sEnt, HexMap* hmSet, Faction* parent) {
 	mes = sEnt;
 	hm = hmSet;
 	faction = parent;
@@ -200,15 +182,13 @@ MapEntity::MapEntity(const MapEntityS* sEnt, HexMap* hmSet, Faction* parent)
 	}
 }
 
-void MapEntity::setAnimationType(MapEntityS::anim num)
-{	
+void MapEntity::setAnimationType(MapEntityS::anim num) {	
 	for (int i = 0; i < ZOOM_LEVELS; i++) {
 		handlers_[i].setAnimation(mes->animNames_[i][num]);
 		handlers_[i].randomFrame(rng::r);
 	}
 }
 
-void MapEntity::updateResources()
-{
+void MapEntity::updateResources() {
 	resources[MapEntityS::WOOD] += pop.activities()[Population::GROUP_CIV][Population::CIV_WOOD] * pop.size(Population::GROUP_CIV);
 }

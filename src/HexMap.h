@@ -20,8 +20,7 @@ typedef pair<sf::Vector2i, sf::FloatRect> Road;
 extern array<Road, 6> roadSprites;
 extern vector<sf::FloatRect> mountainSprites;
 
-class Region
-{
+class Region {
 public:
 	unsigned int size;
 	sf::Vector2i coord;
@@ -30,14 +29,12 @@ public:
 
 #define HEXMAP HexMap::instance()
 
-class HexMap : public sf::Drawable, public sf::Transformable
-{
+class HexMap : public sf::Drawable, public sf::Transformable {
 public:
 	enum dir{ NORTHEAST, NORTHWEST, WEST, SOUTHWEST, SOUTHEAST, EAST, SIZE };
 	static const sf::Vector2i directions[dir::SIZE];
 private:
-	struct cubepoint
-	{
+	struct cubepoint {
 		float x;
 		float y;
 		float z;
@@ -46,8 +43,7 @@ private:
 		cubepoint operator+= (cubepoint& cp){ x += cp.x; y += cp.y; z += cp.z; return *this; }
 		cubepoint operator+ (cubepoint& cp){ return cubepoint(*this) += cp; }
 	};
-	class FloodFill
-	{
+	class FloodFill {
 		sf::Vector2i start_;
 		int totalSize_;
 		// set to fill

@@ -4,8 +4,7 @@
 #include "States.h"
 
 namespace UIdef {
-	shared_ptr<MapGenDebug> MapGenDebug::instance()
-	{
+	shared_ptr<MapGenDebug> MapGenDebug::instance() {
 		static auto mgd = make_shared<MapGenDebug>(MapGenDebug());
 		return mgd;
 	}
@@ -49,8 +48,7 @@ namespace UIdef {
 		window1->Add(box1);
 		addWindow(window1, UIAlign({ 1.0f, 0.0f, 210.0f, 120.0f }, UI::ALIGN_RIGHT | UI::ALIGN_FRAC_POSX));
 	}
-	void MapGenDebug::updateDebugInfo(sf::Vector2i& mousePos, sf::Vector2i& tilePos, sf::Vector2i& camPos)
-	{
+	void MapGenDebug::updateDebugInfo(sf::Vector2i& mousePos, sf::Vector2i& tilePos, sf::Vector2i& camPos) {
 		stringstream ss;
 		// camPos
 		ss << camPos.x << "," << camPos.y;
@@ -70,8 +68,7 @@ namespace UIdef {
 		debugInfo[5]->SetText(ss.str());
 	}
 
-	shared_ptr<SiteMenu> SiteMenu::instance()
-	{
+	shared_ptr<SiteMenu> SiteMenu::instance() {
 		static auto sm = make_shared<SiteMenu>(SiteMenu());
 		return sm;
 	}
@@ -166,8 +163,7 @@ namespace UIdef {
 			}
 		}
 	}
-	void SiteMenu::updateSitePop()
-	{
+	void SiteMenu::updateSitePop() {
 		stringstream ss;
 		for (int indexTab = 0; indexTab < ent_->pop.activities().size(); indexTab++) {
 			ss << "Pop: " << ent_->pop.size(indexTab);
@@ -182,13 +178,11 @@ namespace UIdef {
 		idlePercent[group]->SetText(ss.str());
 	}
 
-	shared_ptr<DeployGroupMenu> DeployGroupMenu::instance()
-	{
+	shared_ptr<DeployGroupMenu> DeployGroupMenu::instance() {
 		static auto dgm = make_shared<DeployGroupMenu>(DeployGroupMenu());
 		return dgm;
 	}
-	DeployGroupMenu::DeployGroupMenu()
-	{
+	DeployGroupMenu::DeployGroupMenu() {
 		deploySignal_ = -1;
 		window = sfg::Window::Create(sfg::Window::Style::TOPLEVEL | sfg::Window::Style::CLOSE);
 		window->GetSignal(sfg::Window::OnCloseButton).Connect(bind([](shared_ptr<sfg::Window> win) {win->Show(false); }, window));
@@ -295,8 +289,7 @@ namespace UIdef {
 		addWindow(window, UIAlign({ 0.5f, 0.5f, 0.0f, 0.0f },
 			UI::ALIGN_CENTERX | UI::ALIGN_FRAC_POSX | UI::ALIGN_CENTERY | UI::ALIGN_FRAC_POSY, false));
 	}
-	void DeployGroupMenu::setEntity(MapEntity& s)
-	{
+	void DeployGroupMenu::setEntity(MapEntity& s) {
 		ent = &s;
 		static auto createSelection = [](MapEntity* ent) {
 			auto vs = make_shared<VectorSet>();
@@ -311,8 +304,7 @@ namespace UIdef {
 		updateSitePop();
 		updateSiteResources();
 	}
-	void DeployGroupMenu::setCoord(const sf::Vector2i& coord)
-	{
+	void DeployGroupMenu::setCoord(const sf::Vector2i& coord) {
 		deployTo_ = coord;
 		if (HEXMAP.isAxialInBounds(coord)) {
 			stringstream ss;
@@ -323,8 +315,7 @@ namespace UIdef {
 			coordLabel_->SetText("(?, ?)");
 		}
 	}
-	void DeployGroupMenu::updateSitePop()
-	{
+	void DeployGroupMenu::updateSitePop() {
 		stringstream ss;
 		for (int i = 0; i < popLabel_.size(); i++) {
 			auto p = popLabel_[i];
@@ -334,8 +325,7 @@ namespace UIdef {
 			popAdjust[i]->SetUpper((int)ent->pop.size(i));
 		}
 	}
-	void DeployGroupMenu::updateSiteResources()
-	{
+	void DeployGroupMenu::updateSiteResources() {
 		stringstream ss;
 		for (int i = 0; i < resLabel_.size(); i++) {
 			auto r = resLabel_[i];
@@ -345,8 +335,7 @@ namespace UIdef {
 			resAdjust[i]->SetUpper((int)ent->resources[i]);
 		}
 	}
-	void DeployGroupMenu::reset()
-	{
+	void DeployGroupMenu::reset() {
 		for (int i = 0; i < Population::groupNames.size(); i++) {
 			popAdjust[i]->SetValue(0.0f);
 		}
@@ -355,8 +344,7 @@ namespace UIdef {
 		}
 		setCoord({ -1, -1 });
 	}
-	bool DeployGroupMenu::optionsValid()
-	{
+	bool DeployGroupMenu::optionsValid() {
 		if (deployTo_ == sf::Vector2i(-1, -1)) {
 			return false;
 		}
@@ -371,22 +359,18 @@ namespace UIdef {
 	}
 
 
-	void setEntity(MapEntity& ent)
-	{
+	void setEntity(MapEntity& ent) {
 		SiteMenu::instance()->setEntity(ent);
 		DeployGroupMenu::instance()->setEntity(ent);
 	}
-	void updateSitePop()
-	{
+	void updateSitePop() {
 		SiteMenu::instance()->updateSitePop();
 		DeployGroupMenu::instance()->updateSitePop();
 	}
-	void updateSiteResources()
-	{
+	void updateSiteResources() {
 		DeployGroupMenu::instance()->updateSiteResources();
 	}
-	void setSelection(const sf::Vector2i& selection)
-	{
+	void setSelection(const sf::Vector2i& selection) {
 		DeployGroupMenu::instance()->setCoord(selection);
 	}
 }

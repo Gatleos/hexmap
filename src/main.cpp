@@ -4,8 +4,7 @@
 #include "rng.h"
 #include "States.h"
 
-int main(int argc, char* argv[])
-{
+int main(int argc, char* argv[]) {
 	try {
 		if (argc == 2) {
 			if (!std::strcmp(argv[1], "-v")) {
