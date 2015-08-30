@@ -13,6 +13,10 @@ array<unique_ptr<SiteS>, SiteS::SITE_NUM> SiteS::site = { {
 
 Site::Site(const SiteS* sSite, HexMap* hmSet, Faction* parent) :MapEntity(sSite, hmSet, parent), ss(sSite){}
 
+const SiteS* Site::sSite() {
+	return ss;
+}
+
 void Site::update(const sf::Time& timeElapsed)
 {
 

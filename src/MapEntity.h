@@ -80,6 +80,7 @@ public:
 	bool initMapPos(sf::Vector2i axialCoord);
 	bool setMapPos(sf::Vector2i axialCoord);
 	const sf::Vector2i& getMapPos();
+	const MapEntityS* sMapEntity();
 	virtual void update(const sf::Time& timeElapsed) = 0;
 	// Runs once per map turn
 	virtual void advanceTurn() = 0;

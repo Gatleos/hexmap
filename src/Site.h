@@ -20,9 +20,10 @@ public:
 
 class Site : public MapEntity
 {
-public:
 	const SiteS* ss;
+public:
 	Site(const SiteS* sSite, HexMap* hmSet, Faction* parent);
+	const SiteS* sSite();
 	void update(const sf::Time& timeElapsed);
 	void advanceTurn();
 };

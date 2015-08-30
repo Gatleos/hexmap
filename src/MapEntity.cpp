@@ -147,6 +147,10 @@ const sf::Vector2i& MapEntity::getMapPos()
 	return pos;
 }
 
+const MapEntityS* MapEntity::sMapEntity() {
+	return mes;
+}
+
 MapEntityS::MapEntityS(string id) :
 id_(id)
 {
