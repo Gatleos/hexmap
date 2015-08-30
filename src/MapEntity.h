@@ -83,6 +83,7 @@ public:
 	virtual void update(const sf::Time& timeElapsed) = 0;
 	// Runs once per map turn
 	virtual void advanceTurn() = 0;
+	void updateResources();
 	friend HexMap;
 };
 

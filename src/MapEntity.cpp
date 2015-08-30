@@ -203,3 +203,8 @@ void MapEntity::setAnimationType(MapEntityS::anim num)
 		handlers_[i].randomFrame(rng::r);
 	}
 }
+
+void MapEntity::updateResources()
+{
+	resources[MapEntityS::WOOD] += pop.activities()[Population::GROUP_CIV][Population::CIV_WOOD] * pop.size(Population::GROUP_CIV);
+}

@@ -79,6 +79,13 @@ namespace UIdef {
 		window = sfg::Window::Create(sfg::Window::Style::BACKGROUND);
 		auto sWindow = sfg::ScrolledWindow::Create(sfg::Adjustment::Create(), sfg::Adjustment::Create());
 		auto mainBox = sfg::Box::Create(sfg::Box::Orientation::VERTICAL);
+		auto infoTable = sfg::Table::Create();
+		array<const char*, 2U> name = { "Name:", "Type:" };
+		for (int a = 0; a < name.size(); a++) {
+			auto label = sfg::Label::Create(name[a]);
+			infoTable->Attach(label, { 0U, (sf::Uint32)a, 1U, 1U });
+		}
+		mainBox->Pack(infoTable);
 		auto deployGroupButton = sfg::Button::Create("Deploy Group");
 		deployGroupButton->GetSignal(sfg::Button::OnLeftClick).Connect([]() {
 			DeployGroupMenu::instance()->show(true);
@@ -261,9 +268,15 @@ namespace UIdef {
 					deployed->pop.setSize(i, dMenu->popAdjust[i]->GetValue());
 					dMenu->ent->pop.addSize(i, -dMenu->popAdjust[i]->GetValue());
 				}
+				// Take resource values
+				for (int i = 0; i < Population::groupNames.size(); i++) {
+					dMenu->ent->resources[i] -= dMenu->resAdjust[i]->GetValue();
+					deployed->resources[i] += dMenu->resAdjust[i]->GetValue();
+				}
 				// Reset UI
 				dMenu->reset();
 				UIdef::updateSitePop();
+				UIdef::updateSiteResources();
 				dMenu->window->Show(false);
 			}
 		});
