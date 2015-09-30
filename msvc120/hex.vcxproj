@@ -20,7 +20,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Array2d.h" />
-    <ClInclude Include="..\src\Arrow.h" />
     <ClInclude Include="..\src\BezierCurve.h" />
     <ClInclude Include="..\src\compat.h" />
     <ClInclude Include="..\src\HexMap.h" />
@@ -49,7 +48,6 @@
     <ClCompile Include="..\jsoncpp\src\jsoncpp.cpp" />
     <ClCompile Include="..\pugixml\src\pugixml.cpp" />
     <ClCompile Include="..\src\AnimHandler.cpp" />
-    <ClCompile Include="..\src\Arrow.cpp" />
     <ClCompile Include="..\src\EngineState.cpp" />
     <ClCompile Include="..\src\HexMapGen.cpp" />
     <ClCompile Include="..\src\HexTile.cpp" />

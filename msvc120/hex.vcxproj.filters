@@ -63,7 +63,6 @@
     <ClInclude Include="..\src\MapUnit.h">
       <Filter>MapEntities</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\Arrow.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\main.cpp" />
@@ -129,7 +128,6 @@
     <ClCompile Include="..\src\MapUnit.cpp">
       <Filter>MapEntities</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\Arrow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="utility">
