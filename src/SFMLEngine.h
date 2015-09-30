@@ -11,8 +11,7 @@
 
 class SFMLEngine;
 
-class GameState
-{
+class GameState {
 protected:
 	GameState* prev;
 	SFMLEngine* engine;
@@ -27,13 +26,12 @@ public:
 	friend class SFMLEngine;
 };//GameState
 
-class SFMLEngine
-{
+class SFMLEngine {
 	SFMLEngine() :lastFrame(sf::Time::Zero){}
 public:
 	sf::RenderWindow* window;
 	sf::Event event;
-	std::stack<GameState*> states;
+	std::stack<std::shared_ptr<GameState>> states;
 	sf::Color clearColor;
 	sf::Time lastFrame;
 	sfg::SFGUI sfgui;
@@ -43,7 +41,7 @@ public:
 	~SFMLEngine(){ popAllStates(); }
 	void init(sf::RenderWindow* windowset);
 	void start();
-	void pushState(GameState* newState);
+	void pushState(std::shared_ptr<GameState> newState);
 	void popState();
 	void popAllStates();
 	int getFPS() const;

@@ -10,31 +10,46 @@
 
 class HexMap;
 
-class Population
-{
+class Population {
 public:
-	enum{ IDLE, GUARD, FARM, WOOD, MINE, PRISONER, ACTIVITY_NUM };
+	enum {
+		GROUP_CIV, GROUP_MIL, GROUP_PR, GROUP_NUM,
+		IDLE = 0, CIV_FARM, CIV_WOOD, CIV_MINE, CIV_ENLIST, CIV_ACTIVITY_NUM,
+		MIL_GUARD = 1, MIL_ACTIVITY_NUM,
+		PR_FARM = 1, PR_WOOD, PR_MINE, PR_BREED, PR_ACTIVITY_NUM
+	};
 private:
-	int size;
-	array<int, ACTIVITY_NUM> activities;
+	float size_;
+	array<float, GROUP_NUM> sizes_;
+	array<vector<float>, GROUP_NUM> activities_;
 public:
-	static const int POP_LIMIT;
-	const Species& species;
-	Population(const Species& s);
-	// Add an amount to a specific activity group
-	void add(int activity, int amount);
-	// Add another population to this one, keeping it the same; must have same species
-	void addPop(const Population& p);
-	// Empty other population into this one; must have same species
-	void takePop(Population& p);
+	static const array<vector<std::string>, GROUP_NUM> activityNames;
+	static const array<std::string, GROUP_NUM> groupNames;
+	static const unsigned int POP_LIMIT;
+	static const array<float, GROUP_NUM> growthRate;
+	static const float deathRate;
+	Population();
+	// Set the amount for a specific activity group, drawing from idle amount; returns
+	// actual amount after adjustment
+	float set(unsigned int group, unsigned int activity, float amount);
+	void setSize(unsigned int group, float size);
+	void addSize(unsigned int group, float amount);
+	void clear();
+	const array<vector<float>, GROUP_NUM>& activities() const;
+	float size() const;
+	float size(unsigned int group) const;
+	void popGrowth(int turns);
 };
 
-class MapEntityS
-{
+class MapEntityS {
 public:
 	enum anim{ IDLE, ANIM_NUM };
 	static const array<string, ANIM_NUM> animTypes;
 public:
+	enum res {
+		FOOD, WOOD, ORE, RESOURCE_NUM
+	};
+	static const array<std::string, RESOURCE_NUM> resourceNames;
 	void loadEntityJson(Json::Value& edata, string& element, string id);
 	MapEntityS(string id);
 	string id_;
@@ -45,8 +60,7 @@ public:
 
 // Anything on a HexMap which has a hex position and is drawn along
 // with the map is derived from this
-class MapEntity
-{
+class MapEntity {
 	const MapEntityS* mes;
 protected:
 	// Current position
@@ -58,25 +72,17 @@ public:
 	int id;
 	MapEntity(const MapEntityS* sEnt, HexMap* hmSet, Faction* parent);
 	void setAnimationType(MapEntityS::anim num);
-	vector<Population> pops;
+	Population pop;
+	array<float, MapEntityS::RESOURCE_NUM> resources;
 	bool initMapPos(sf::Vector2i axialCoord);
 	bool setMapPos(sf::Vector2i axialCoord);
+	const sf::Vector2i& getMapPos();
+	const MapEntityS* sMapEntity();
 	virtual void update(const sf::Time& timeElapsed) = 0;
+	// Runs once per map turn
+	virtual void advanceTurn() = 0;
+	void updateResources();
 	friend HexMap;
-};
-
-// A map entity with added movement functions
-class MapUnit : public MapEntity
-{
-	// The unit's current movement path
-	std::deque<sf::Vector2i> path;
-	int moveTimer;
-public:
-	MapUnit(const MapEntityS* sEnt, HexMap* hmSet, Faction* parent);
-	bool walkPath();
-	void setPath(sf::Vector2i dest);
-	void appendPath(sf::Vector2i dest);
-	void update(const sf::Time& timeElapsed);
 };
 
 #endif

@@ -5,14 +5,12 @@
 
 ResourceLoader::ResourceLoader(){}
 
-ResourceLoader& ResourceLoader::instance()
-{
+ResourceLoader& ResourceLoader::instance() {
 	static ResourceLoader instance;
 	return instance;
 }
 
-void ResourceLoader::getSpriteRecursive(SpriteSheet& sheet, pugi::xml_node& node, string name)
-{
+void ResourceLoader::getSpriteRecursive(SpriteSheet& sheet, pugi::xml_node& node, string name) {
 	string newPath = name + node.attribute("name").as_string();
 	string curNodeType = node.name();
 	if (curNodeType == "spr") {
@@ -29,15 +27,13 @@ void ResourceLoader::getSpriteRecursive(SpriteSheet& sheet, pugi::xml_node& node
 	}
 }
 
-void ResourceLoader::releaseAll()
-{
+void ResourceLoader::releaseAll() {
 	textures.clear();
 	sheets.clear();
 	animations.clear();
 }
 
-const sf::Texture* ResourceLoader::tex(string name)
-{
+const sf::Texture* ResourceLoader::tex(string name) {
 	auto texIt = textures.find(name);
 	if (texIt == textures.end()) {
 		string path = root + name;
@@ -66,8 +62,7 @@ const sf::Texture* ResourceLoader::tex(string name)
 	return &texIt->second;
 }
 
-SpriteSheet* ResourceLoader::sh(string name)
-{
+SpriteSheet* ResourceLoader::sh(string name) {
 	const auto& sh = sheets.find(name);
 	if (sh == sheets.end()) {
 		string path = root + name;
@@ -89,8 +84,7 @@ SpriteSheet* ResourceLoader::sh(string name)
 	return &sh->second;
 }
 
-const AnimationData* ResourceLoader::anim(string name)
-{
+const AnimationData* ResourceLoader::anim(string name) {
 	auto anim = animations.find(name);
 	if (anim == animations.end()) {
 		pugi::xml_document animXml;
@@ -125,18 +119,15 @@ const AnimationData* ResourceLoader::anim(string name)
 	return &anim->second;
 }
 
-void ResourceLoader::setRoot(string r)
-{
+void ResourceLoader::setRoot(string r) {
 	root = r;
 }
 
-string ResourceLoader::getRoot()
-{
+string ResourceLoader::getRoot() {
 	return root;
 }
 
-bool ResourceLoader::loadAnimData(AnimationData& aData, const pugi::xml_document &animXmlDoc, const SpriteSheet* sheet)
-{
+bool ResourceLoader::loadAnimData(AnimationData& aData, const pugi::xml_document &animXmlDoc, const SpriteSheet* sheet) {
 	pugi::xml_node animationsXml = animXmlDoc.first_child();
 	aData.sheetName = animationsXml.attribute("spriteSheet").as_string();
 	// Iterate through all animations
@@ -169,12 +160,10 @@ bool ResourceLoader::loadAnimData(AnimationData& aData, const pugi::xml_document
 				s.offset.x = spriteXml.attribute("x").as_float() - (int)(s.draw.width / 2.0f);
 				s.offset.y = spriteXml.attribute("y").as_float() - (int)(s.draw.height / 2.0f);
 				// Does it need to be flipped?
-				if (spriteXml.attribute("flipH").as_bool())
-				{
+				if (spriteXml.attribute("flipH").as_bool()) {
 					s.flipH = true;
 				}
-				if (spriteXml.attribute("flipV").as_bool())
-				{
+				if (spriteXml.attribute("flipV").as_bool()) {
 					s.flipV = true;
 				}
 				// Use an associative container to keep the sprites in this frame in z-order
@@ -193,13 +182,11 @@ bool ResourceLoader::loadAnimData(AnimationData& aData, const pugi::xml_document
 				f.sprites[i + 2].position = { s.draw.width + s.offset.x, s.draw.height + s.offset.y };
 				f.sprites[i + 3].texCoords = { s.draw.left, s.draw.top + s.draw.height };
 				f.sprites[i + 3].position = { s.offset.x, s.draw.height + s.offset.y };
-				if (s.flipH)
-				{
+				if (s.flipH) {
 					std::swap(f.sprites[i].position, f.sprites[i + 1].position);
 					std::swap(f.sprites[i + 2].position, f.sprites[i + 3].position);
 				}
-				if (s.flipV)
-				{
+				if (s.flipV) {
 					std::swap(f.sprites[i].position, f.sprites[i + 3].position);
 					std::swap(f.sprites[i + 1].position, f.sprites[i + 2].position);
 				}

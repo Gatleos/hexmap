@@ -13,8 +13,7 @@
 class AnimHandler;
 class ResourceLoader;
 
-class SpriteSheet
-{
+class SpriteSheet {
 	std::string name;
 	std::map<std::string, sf::FloatRect> sprites;
 	std::string imageName;
@@ -24,25 +23,21 @@ public:
 	const std::string& getImageName();
 };
 
-class AnimationData
-{
+class AnimationData {
 	static const char* darkFunctionVersion();
-	struct sprite
-	{
+	struct sprite {
 		sf::FloatRect draw;
 		sf::Vector2f offset;
 		bool flipH;
 		bool flipV;
 		sprite() :flipH(false), flipV(false){}
 	};
-	struct frame
-	{
+	struct frame {
 		int delay;
 		sf::VertexArray sprites;
 		frame();
 	};
-	struct anim
-	{
+	struct anim {
 		anim(int frameNum);
 		std::string name;
 		unsigned int loops;
@@ -65,8 +60,7 @@ public:
 	friend ResourceLoader;
 };//AnimationData
 
-class AnimHandler : public sf::Transformable, public sf::Drawable
-{
+class AnimHandler : public sf::Transformable, public sf::Drawable {
 	const AnimationData *animInfo;
 	const AnimationData::anim *currentAnim;
 	const AnimationData::frame *currentFrame;

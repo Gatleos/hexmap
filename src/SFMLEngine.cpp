@@ -1,6 +1,7 @@
 #include <iostream>
 #include <SFGUI/Renderers.hpp>
 #include "SFMLEngine.h"
+#include "HexMap.h"
 
 
 
@@ -12,10 +13,8 @@ void SFMLEngine::init(sf::RenderWindow* windowset) {
 	window = windowset;
 	window->setFramerateLimit(60);
 	clearColor = sf::Color::Black;
-	auto renderer = sfg::VertexBufferRenderer::Create(); // Fix a NonLegacyRenderer-related text bug
-	sfg::Renderer::Set(renderer);
+	UI::init(&desktop);
 	UI::setAppSize((sf::Vector2f)window->getSize());
-	UI::init(&desktop); // Construct the gui
 }
 void SFMLEngine::start() {
 	try {
@@ -23,15 +22,32 @@ void SFMLEngine::start() {
 		while (window->isOpen()) {
 			while (window->pollEvent(event)) {
 				desktop.HandleEvent(event);
-				if (event.type == sf::Event::Resized) {
-					UI::setAppSize({ (float)event.size.width, (float)event.size.height });
-				}
 				if (event.type == sf::Event::Closed) {
 					window->close();
 					UI::end();
-					//return;
 				}
-				else states.top()->input(event);
+				else {
+					states.top()->input(event);
+				}
+				// Special UI event responses
+				if (event.type == sf::Event::MouseMoved) {
+					UI::lastMousePos = { event.mouseMove.x, event.mouseMove.y };
+				}
+				else if (event.type == sf::Event::MouseButtonPressed && !UI::gotMouseInput()) {
+					UI::dropFocus();
+				}
+				else if (event.type == sf::Event::Resized) {
+					UI::setAppSize({ (float)event.size.width, (float)event.size.height });
+					HEXMAP.view.setSize(sf::Vector2f((float)event.size.width, (float)event.size.height));
+					HEXMAP.view.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
+					UI::view.setSize(sf::Vector2f(roundf((float)event.size.width), roundf((float)event.size.height)));
+					UI::view.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
+					UI::view.setCenter(UI::view.getSize() / 2.0f);
+					//
+					HEXMAP.constrainView(HEXMAP.view);
+					HEXMAP.calculateViewArea(HEXMAP.view);
+				}
+				UI::resetInputFlags();
 			}
 			//
 			lastFrame = fr.restart();
@@ -51,26 +67,27 @@ void SFMLEngine::start() {
 	}
 }
 
-void SFMLEngine::pushState(GameState* newState) {
-	if (states.size())
-		newState->prev = states.top();
-	states.push(newState);
+void SFMLEngine::pushState(std::shared_ptr<GameState> newState) {
+	if (states.size()) {
+		newState->prev = states.top().get();
+	}
+	states.push(std::move(newState));
 	states.top()->engine = this;
 	states.top()->init();
 }
 void SFMLEngine::popState() {
 	if (!states.empty()) {
 		states.top()->end();
-		delete states.top();
 		states.pop();
 		while (window->pollEvent(event));
 	}
 }
 void SFMLEngine::popAllStates() {
-	if (states.empty()) return;
+	if (states.empty()) {
+		return;
+	}
 	while (states.size()) {
 		states.top()->end();
-		delete states.top();
 		states.pop();
 	}
 }

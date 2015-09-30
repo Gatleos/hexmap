@@ -8,8 +8,7 @@
 #include "config.h"
 #include "rng.h"
 
-void HexMap::generateBiomes(mt19937& urng)
-{
+void HexMap::generateBiomes(mt19937& urng) {
 	land.clear();
 	static uniform_real_distribution<float> offset(-10000000.0f, 10000000.0f);
 	int townChance = 16384 / 24;
@@ -159,17 +158,9 @@ void HexMap::generateBiomes(mt19937& urng)
 	}
 }
 
-void HexMap::generateMountainRange(mt19937& urng)
-{
+void HexMap::generateMountainRange(mt19937& urng) {
 	static sf::Color mt(128, 88, 44);
-	static vector<VectorSet> splat = { { { 1, -1 }, { 2, -1 }, { 0, 0 }, { 1, 0 }, { -1, 1 }, { 0, 1 }, { -2, 2 }, { -1, 2 }, { 0, 2 } },
-	{ { 1, -2 }, { 0, -1 }, { 1, -1 }, { -1, 0 }, { 0, 0 }, { 1, 0 }, { -1, 1 }, { 0, 1 }, { -1, 2 }, { 0, 2 } },
-	{ { 0, -1 }, { 1, -1 }, { -1, 0 }, { 0, 0 }, { 1, 0 }, { -1, 1 }, { 0, 1 } },
-	{ { 0, -1 }, { 1, -1 }, { 2, -1 }, { -1, 0 }, { 0, 0 }, { 1, 0 }, { -1, 1 }, { 0, 1 }, { 1, 1 } },
-	{ { 0, -2 }, { 1, -2 }, { -1, -1 }, { 0, -1 }, { 1, -1 }, { -1, 0 }, { 0, 0 }, { 1, 0 }, { -1, 1 } },
-	{ { -1, -1 }, { 0, -1 }, { -1, 0 }, { 0, 0 }, { 1, 0 }, { -2, 1 }, { -1, 1 }, { 0, 1 } },
-	{ { -1, 0 }, { 1, 0 }, { 0, 0 }, { -2, 1 }, { -1, 1 }, { 0, 1 }, { 1, 1 }, { -2, 2 }, { -1, 2 }, { 0, 2 } },
-	{ { 0, -2 }, { 1, -2 }, { 0, -1 }, { 1, -1 }, { 2, -1 }, { -1, 0 }, { 0, 0 }, { 1, 0 }, { 0, 1 } } };
+	static vector<VectorSet> splat = { { { 1, -1 }, { 2, -1 }, { 0, 0 }, { 1, 0 }, { -1, 1 }, { 0, 1 }, { -2, 2 }, { -1, 2 }, { 0, 2 } }, { { 1, -2 }, { 0, -1 }, { 1, -1 }, { -1, 0 }, { 0, 0 }, { 1, 0 }, { -1, 1 }, { 0, 1 }, { -1, 2 }, { 0, 2 } }, { { 0, -1 }, { 1, -1 }, { -1, 0 }, { 0, 0 }, { 1, 0 }, { -1, 1 }, { 0, 1 } }, { { 0, -1 }, { 1, -1 }, { 2, -1 }, { -1, 0 }, { 0, 0 }, { 1, 0 }, { -1, 1 }, { 0, 1 }, { 1, 1 } }, { { 0, -2 }, { 1, -2 }, { -1, -1 }, { 0, -1 }, { 1, -1 }, { -1, 0 }, { 0, 0 }, { 1, 0 }, { -1, 1 } }, { { -1, -1 }, { 0, -1 }, { -1, 0 }, { 0, 0 }, { 1, 0 }, { -2, 1 }, { -1, 1 }, { 0, 1 } }, { { -1, 0 }, { 1, 0 }, { 0, 0 }, { -2, 1 }, { -1, 1 }, { 0, 1 }, { 1, 1 }, { -2, 2 }, { -1, 2 }, { 0, 2 } }, { { 0, -2 }, { 1, -2 }, { 0, -1 }, { 1, -1 }, { 2, -1 }, { -1, 0 }, { 0, 0 }, { 1, 0 }, { 0, 1 } } };
 	sf::VertexArray va;
 	static sf::Vector2f w[4];
 	sf::Vector2f offset = { (float)rng::getInt(2, 85, urng), (float)rng::getInt(2, 85, urng) };
@@ -219,8 +210,7 @@ void HexMap::generateMountainRange(mt19937& urng)
 }
 
 // Detect contiguous terrain tiles and store them in the regions list
-void HexMap::findRegions()
-{
+void HexMap::findRegions() {
 	// new tiles to query
 	multimap<int, sf::Vector2i> frontier;
 	int i = (int)(mapSize_.x*mapSize_.y);
@@ -272,8 +262,7 @@ void HexMap::findRegions()
 	}
 }
 
-void HexMap::placeSites(mt19937& urng)
-{
+void HexMap::placeSites(mt19937& urng) {
 	array<sf::Color, 13> tColors = { sf::Color::Blue, sf::Color::Cyan, sf::Color::Black, sf::Color::Green, sf::Color::Magenta,
 	sf::Color::Red, sf::Color::White, sf::Color::Yellow, lerp::brown, lerp::limeGreen, lerp::orange, lerp::purple, lerp::turquoise};
 	static function<bool(HexTile&)> condition = [](HexTile& hex){ return hex.hts->FLAGS[HexTileS::WALKABLE] && !hex.FLAGS[HexTile::MOUNTAINS]; };
@@ -319,8 +308,10 @@ void HexMap::placeSites(mt19937& urng)
 		c->initMapPos(territories[index]);
 		for (auto& o : output) {
 			auto* s = addSite(&SiteS::get(rng::boolean(urng) ? SiteS::TOWN : SiteS::VILLAGE), fac);
+			c->addChild(s);
 			s->setAnimationType(MapEntityS::anim::IDLE);
 			s->initMapPos(o);
+			s->pop.setSize(Population::GROUP_MIL, 400.0);
 		}
 		output.clear();
 		index++;

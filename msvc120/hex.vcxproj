@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Array2d.h" />
+    <ClInclude Include="..\src\Arrow.h" />
     <ClInclude Include="..\src\BezierCurve.h" />
     <ClInclude Include="..\src\compat.h" />
     <ClInclude Include="..\src\HexMap.h" />
@@ -27,6 +28,7 @@
     <ClInclude Include="..\src\config.h" />
     <ClInclude Include="..\src\lerp.h" />
     <ClInclude Include="..\src\MapEntity.h" />
+    <ClInclude Include="..\src\MapUnit.h" />
     <ClInclude Include="..\src\rng.h" />
     <ClInclude Include="..\src\clamp.h" />
     <ClInclude Include="..\src\ResourceLoader.h" />
@@ -47,6 +49,7 @@
     <ClCompile Include="..\jsoncpp\src\jsoncpp.cpp" />
     <ClCompile Include="..\pugixml\src\pugixml.cpp" />
     <ClCompile Include="..\src\AnimHandler.cpp" />
+    <ClCompile Include="..\src\Arrow.cpp" />
     <ClCompile Include="..\src\EngineState.cpp" />
     <ClCompile Include="..\src\HexMapGen.cpp" />
     <ClCompile Include="..\src\HexTile.cpp" />
@@ -56,8 +59,11 @@
     <ClCompile Include="..\src\HexMap.cpp" />
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\MapEntity.cpp" />
+    <ClCompile Include="..\src\MapControlState.cpp" />
+    <ClCompile Include="..\src\MapUnit.cpp" />
     <ClCompile Include="..\src\rng.cpp" />
     <ClCompile Include="..\src\ResourceLoader.cpp" />
+    <ClCompile Include="..\src\SelectState.cpp" />
     <ClCompile Include="..\src\SFMLEngine.cpp" />
     <ClCompile Include="..\src\simplexnoise.cpp" />
     <ClCompile Include="..\src\Site.cpp" />

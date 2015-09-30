@@ -157,4 +157,9 @@
       <spr name="/2/1" x="0" y="0" z="0" flipH="1"/>
     </cell>
   </anim>
+  <anim name="Samus" loops="0">
+    <cell index="0" delay="1">
+      <spr name="/3/0" x="0" y="0" z="0"/>
+    </cell>
+  </anim>
 </animations>

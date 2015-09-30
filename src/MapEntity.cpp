@@ -1,4 +1,5 @@
 #include <iostream>
+#include <math.h>
 #include "ResourceLoader.h"
 #include "Species.h"
 #include "MapEntity.h"
@@ -9,50 +10,97 @@
 const array<string, MapEntityS::ANIM_NUM> MapEntityS::animTypes = { {
 		"idle"
 	} };
-const int Population::POP_LIMIT = 100000;
+const array<vector<std::string>, Population::GROUP_NUM> Population::activityNames = { { { "Idle", "Farm", "Wood", "Mine", "Enlist" }, { "Idle", "Guard" }, { "Idle", "Farm", "Wood", "Mine", "Breed" }
+	} };
+const array<std::string, Population::GROUP_NUM> Population::groupNames = { {
+		"Civilian", "Military", "Prisoner"
+	} };
+const array<float, Population::GROUP_NUM> Population::growthRate = { {
+		0.0168f, 0.0f, 0.0336f
+	} };
+const float Population::deathRate = 0.0003f;
+const unsigned int Population::POP_LIMIT = 100000u;
+//
+const array<std::string, MapEntityS::RESOURCE_NUM> MapEntityS::resourceNames = { {
+		"Food", "Wood", "Ore"
+	} };
 
-Population::Population(const Species& s) :species(s), size(0)
-{
-	for (auto& a : activities) {
-		a = 0;
+Population::Population() :size_(0) {
+	for (auto& s : sizes_) {
+		s = 0;
+	}
+	array<vector<float>*, GROUP_NUM> groups = { 
+		&activities_[GROUP_CIV], &activities_[GROUP_MIL], &activities_[GROUP_PR]
+	};
+	activities_[GROUP_CIV].resize(CIV_ACTIVITY_NUM);
+	activities_[GROUP_MIL].resize(MIL_ACTIVITY_NUM);
+	activities_[GROUP_PR].resize(PR_ACTIVITY_NUM);
+	for (auto g : groups) {
+		for (int a = 1; a < g->size(); a++) {
+			(*g)[a] = 0.0f;
+		}
+		(*g)[IDLE] = 100.0f;
 	}
 }
 
-void Population::add(int activity, int amount)
-{
-	if (!isInRange(activity, 0, ACTIVITY_NUM - 1)) {
-		return;
+float Population::set(unsigned int group, unsigned int activity, float amount) {
+	if (!isInRange(group, 0u, (unsigned int)GROUP_NUM) ||
+		!isInRange(activity, 0u, (unsigned int)activities_[group].size() - 1)) {
+		return -1.0f;
 	}
-	if (amount < 0) {
-		amount = max(amount, -activities[activity]);
-	}
-	size += amount;
-	activities[activity] += amount;
+	amount = clamp(amount, 0.0f, activities_[group][activity] + activities_[group][IDLE]);
+	activities_[group][IDLE] -= amount - activities_[group][activity];
+	activities_[group][activity] = amount;
+	return amount;
 }
 
-void Population::addPop(const Population& p)
-{
-	if (species.id != p.species.id) {
-		return;
-	}
-	for (int a = 0; a < ACTIVITY_NUM; a++) {
-		add(a, p.activities[a]);
-	}
+void Population::setSize(unsigned int group, float size) {
+	size_ += size - sizes_[group];
+	sizes_[group] = size;
 }
 
-void Population::takePop(Population& p)
-{
-	if (species.id != p.species.id) {
-		return;
+void Population::addSize(unsigned int group, float amount) {
+	if (amount < 0.0f) {
+		amount = max(amount, -sizes_[group]);
 	}
-	for (int a = 0; a < ACTIVITY_NUM; a++) {
-		add(a, p.activities[a]);
-		p.activities[a] = 0;
-	}
+	size_ += amount;
+	sizes_[group] += amount;
 }
 
-bool MapEntity::initMapPos(sf::Vector2i axialCoord)
-{
+void Population::clear() {
+	array<vector<float>*, GROUP_NUM> groups = {
+		&activities_[GROUP_CIV], &activities_[GROUP_MIL], &activities_[GROUP_PR]
+	};
+	for (auto g : groups) {
+		for (int a = 1; a < g->size(); a++) {
+			(*g)[a] = 0.0f;
+		}
+		(*g)[IDLE] = 100.0f;
+	}
+	size_ = 0;
+}
+
+const array<vector<float>, Population::GROUP_NUM>& Population::activities() const {
+	return activities_;
+}
+
+float Population::size() const {
+	return size_;
+}
+
+float Population::size(unsigned int group) const {
+	return sizes_[group];
+}
+
+void Population::popGrowth(int turns) {
+	// P = P_0 * e ^ (r * t)
+	setSize(GROUP_CIV, sizes_[GROUP_CIV] * std::powf(2.71828f, (float)turns * growthRate[GROUP_CIV]));
+	// Prisoners will not breed unless told
+	float rate = activities_[GROUP_PR][PR_BREED] * growthRate[GROUP_PR] * 0.01f - deathRate;
+	setSize(GROUP_PR, sizes_[GROUP_PR] * std::powf(2.71828f, (float)turns * rate));
+}
+
+bool MapEntity::initMapPos(sf::Vector2i axialCoord) {
 	if (!hm->isAxialInBounds(axialCoord)) {
 		return false;
 	}
@@ -65,8 +113,7 @@ bool MapEntity::initMapPos(sf::Vector2i axialCoord)
 	return true;
 }
 
-bool MapEntity::setMapPos(sf::Vector2i axialCoord)
-{
+bool MapEntity::setMapPos(sf::Vector2i axialCoord) {
 	if (!hm->isAxialInBounds(axialCoord)) {
 		return false;
 	}
@@ -81,13 +128,19 @@ bool MapEntity::setMapPos(sf::Vector2i axialCoord)
 	return true;
 }
 
-MapEntityS::MapEntityS(string id) :
-id_(id)
-{
+const sf::Vector2i& MapEntity::getMapPos() {
+	return pos;
 }
 
-void MapEntityS::loadEntityJson(Json::Value& edata, string& element, string id)
-{
+const MapEntityS* MapEntity::sMapEntity() {
+	return mes;
+}
+
+MapEntityS::MapEntityS(string id) :
+id_(id) {
+}
+
+void MapEntityS::loadEntityJson(Json::Value& edata, string& element, string id) {
 	id_ = id;
 	//name
 	element = "name";
@@ -116,8 +169,7 @@ void MapEntityS::loadEntityJson(Json::Value& edata, string& element, string id)
 	}
 }
 
-MapEntity::MapEntity(const MapEntityS* sEnt, HexMap* hmSet, Faction* parent)
-{
+MapEntity::MapEntity(const MapEntityS* sEnt, HexMap* hmSet, Faction* parent) {
 	mes = sEnt;
 	hm = hmSet;
 	faction = parent;
@@ -125,50 +177,18 @@ MapEntity::MapEntity(const MapEntityS* sEnt, HexMap* hmSet, Faction* parent)
 	for (int i = 0; i < ZOOM_LEVELS; i++) {
 		handlers_[i].setAnimationData(*mes->animData_[i]);
 	}
-	// Create space for creature populations
-	pops.reserve(Species::map.size());
-	for (auto& s : Species::map) {
-		pops.emplace_back(s.second);
+	for (auto& r : resources) {
+		r = 0.0f;
 	}
 }
 
-void MapEntity::setAnimationType(MapEntityS::anim num)
-{	
+void MapEntity::setAnimationType(MapEntityS::anim num) {	
 	for (int i = 0; i < ZOOM_LEVELS; i++) {
 		handlers_[i].setAnimation(mes->animNames_[i][num]);
 		handlers_[i].randomFrame(rng::r);
 	}
 }
 
-
-MapUnit::MapUnit(const MapEntityS* sEnt, HexMap* hmSet, Faction* parent) :moveTimer(0), MapEntity(sEnt, hmSet, parent){}
-
-bool MapUnit::walkPath()
-{
-	if (path.empty()) {
-		return false;
-	}
-	setMapPos(*path.begin());
-	path.erase(path.begin());
-	return true;
-}
-
-void MapUnit::setPath(sf::Vector2i dest)
-{
-	path.clear();
-	hm->getPath(path, pos, dest);
-}
-
-void MapUnit::appendPath(sf::Vector2i dest)
-{
-	hm->getPath(path, pos, dest);
-}
-
-void MapUnit::update(const sf::Time& timeElapsed)
-{
-	moveTimer += timeElapsed.asMilliseconds();
-	if (moveTimer >= 500) {
-		walkPath();
-		moveTimer = moveTimer % 500;
-	}
+void MapEntity::updateResources() {
+	resources[MapEntityS::WOOD] += pop.activities()[Population::GROUP_CIV][Population::CIV_WOOD] * pop.size(Population::GROUP_CIV);
 }

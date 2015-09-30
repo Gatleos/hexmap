@@ -4,5 +4,6 @@
 	"scroll_up": ["Key", "Up", "Key", "W"],
 	"scroll_down": ["Key", "Down", "Key", "S"],
 	"generate": ["Key", "Return"],
-	"fps_display": ["Key", "Tab"]
+	"fps_display": ["Key", "Tab"],
+	"debug": ["Key", "Period"]
 }

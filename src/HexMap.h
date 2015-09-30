@@ -9,6 +9,7 @@
 #include "Faction.h"
 #include "HexTile.h"
 #include "Array2d.h"
+#include "MapUnit.h"
 
 typedef set<sf::Vector2i, Vector2iCompare> VectorSet;
 
@@ -19,22 +20,21 @@ typedef pair<sf::Vector2i, sf::FloatRect> Road;
 extern array<Road, 6> roadSprites;
 extern vector<sf::FloatRect> mountainSprites;
 
-class Region
-{
+class Region {
 public:
 	unsigned int size;
 	sf::Vector2i coord;
 	Region(unsigned int sizeSet, sf::Vector2i coordSet) : size(sizeSet), coord(coordSet) {}
 };
 
-class HexMap : public sf::Drawable, public sf::Transformable
-{
+#define HEXMAP HexMap::instance()
+
+class HexMap : public sf::Drawable, public sf::Transformable {
 public:
 	enum dir{ NORTHEAST, NORTHWEST, WEST, SOUTHWEST, SOUTHEAST, EAST, SIZE };
 	static const sf::Vector2i directions[dir::SIZE];
 private:
-	struct cubepoint
-	{
+	struct cubepoint {
 		float x;
 		float y;
 		float z;
@@ -43,8 +43,7 @@ private:
 		cubepoint operator+= (cubepoint& cp){ x += cp.x; y += cp.y; z += cp.z; return *this; }
 		cubepoint operator+ (cubepoint& cp){ return cubepoint(*this) += cp; }
 	};
-	class FloodFill
-	{
+	class FloodFill {
 		sf::Vector2i start_;
 		int totalSize_;
 		// set to fill
@@ -94,7 +93,7 @@ private:
 	// Currently used vertices
 	Array2D<sf::VertexArray>* activeBgVertices_;
 	std::deque<sf::Vector2f> land;
-	vector<Faction> factions;
+	list<Faction> factions;
 	unsigned int nextSiteId;
 	map<int, Site> sites;
 	unsigned int nextUnitId;
@@ -103,8 +102,15 @@ private:
 	uniform_int_distribution<int> xRange;
 	// Distribution for rng along map's y coordinate
 	uniform_int_distribution<int> yRange;
-public:
+	// private constructor
 	HexMap();
+public:
+	// Get singleton instance
+	static HexMap& instance();
+	static float cloudSpeed;
+	sf::View view;
+	bool isGrabbed;
+	sf::Shader cloudShader;
 	// Create hex tiles and vertices (for drawing), and initialize size values
 	void init(int width, int height);
 	const sf::Vector2i& getMapSize() const;
@@ -126,11 +132,9 @@ public:
 	// Measurement //
 	/////////////////
 
-	// Get exact distance between axial coordinates; the returned value
-	// should be passed to roundHex to get a usable coordinate
+	// Get exact distance between axial coordinates
 	static float distAxial(sf::Vector2f& a, sf::Vector2f& b);
-	// Get exact distance between axial coordinates; the returned value
-	// should be passed to roundHex to get a usable coordinate
+	// Get exact distance between axial coordinates
 	static float distAxial(sf::Vector2i& a, sf::Vector2i& b);
 	// Round a floating point axial coordinate to the nearest hex
 	static sf::Vector2f roundHex(sf::Vector2f hex);
@@ -153,13 +157,13 @@ public:
 	// Convert local pixel coordinate to axial hex coordinate
 	sf::Vector2f pixelToHex(sf::Vector2f pixel) const;
 	// Check if axial coordinate is within map bounds
-	bool isAxialInBounds(sf::Vector2i axialPos) const;
+	bool isAxialInBounds(sf::Vector2i posAxial) const;
 	// Check if offset coordinate is within map bounds
-	bool isOffsetInBounds(sf::Vector2i offsetPos) const;
+	bool isOffsetInBounds(sf::Vector2i posOffset) const;
 	// Return the tile coordinate in the given direction (use HexMap::dir and HexMap::directions)
-	static sf::Vector2i neighbor(sf::Vector2i centerAxial, int dir);
+	static sf::Vector2i neighbor(const sf::Vector2i& centerAxial, int dir);
 	// Return a list of hex tile neighbors (axial)
-	static VectorSet& neighbors(sf::Vector2i centerAxial, VectorSet& neighbors);
+	static VectorSet& neighbors(const sf::Vector2i& centerAxial, VectorSet& neighbors);
 	// Return a list of hex tiles contained in a given radius (axial)
 	static VectorSet& area(sf::Vector2i centerAxial, int radius, VectorSet& n);
 	// Return a list of hex tiles with the given distance (radius) from center (axial)
@@ -200,16 +204,16 @@ public:
 	int getZoomLevel();
 	// 0-2, 0 is the closest
 	void setZoomLevel(int zoom);
-	void setTile(sf::Vector2i offsetPos, const HexTileS& hts, mt19937& urng);
+	void setTile(sf::Vector2i posOffset, const HexTileS& hts, mt19937& urng);
 	void setAllTiles(const HexTileS& hts, mt19937& urng);
-	void pushTileColor(sf::Vector2i offsetPos, sf::Color col);
-	void popTileColor(sf::Vector2i offsetPos);
-	void setTileFeature(sf::Vector2i offsetPos, const TileFeatureS& tfs, mt19937& urng);
-	void setTileFeature(sf::Vector2i offsetPos, const TileFeatureS& tfs, int zoom, mt19937& urng);
-	void setFeatureColor(sf::Vector2i offsetPos, const sf::Color& col);
+	void pushTileColor(sf::Vector2i posOffset, sf::Color col);
+	void popTileColor(sf::Vector2i posOffset);
+	void setTileFeature(sf::Vector2i posOffset, const TileFeatureS& tfs, mt19937& urng);
+	void setTileFeature(sf::Vector2i posOffset, const TileFeatureS& tfs, int zoom, mt19937& urng);
+	void setFeatureColor(sf::Vector2i posOffset, const sf::Color& col);
 	// Fade out the feature on this tile? Overridden to true automatically
 	// if there is an entity on the tile
-	void setFeatureFade(sf::Vector2i offsetPos, bool fade);
+	void setFeatureFade(sf::Vector2i posOffset, bool fade);
 	void clearTileFeatures();
 	void draw(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) const;
 	void drawEnts(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) const;
@@ -225,12 +229,14 @@ public:
 	// MapEntities //
 	/////////////////
 
+	Faction* playerFaction();
 	Faction* addFaction();
 	Site* addSite(const SiteS* sSite, Faction* parent);
 	MapUnit* addMapUnit(const MapEntityS* sEnt, Faction* parent);
 	void clearEntities();
-	void setEntity(sf::Vector2i offsetPos, MapEntity* ent);
+	void setEntity(sf::Vector2i posOffset, MapEntity* ent);
 	void update(const sf::Time& timeElapsed);
+	void advanceTurn();
 
 	////////////
 	// MapGen //

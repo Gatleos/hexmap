@@ -6,8 +6,7 @@ static std::uniform_int_distribution<int> degreesGen(0, 359);
 static std::uniform_real_distribution<double> radiansGen(0.0, 6.28318530718);
 static std::bernoulli_distribution booleanGen(0.5);
 
-namespace rng
-{
+namespace rng {
 	std::mt19937 r;
 
 	void init() {

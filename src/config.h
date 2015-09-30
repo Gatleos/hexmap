@@ -42,6 +42,7 @@ namespace config {
 		extern float mountNum;
 		extern float mountDensity;
 	}
+	extern const char* resourceRoot;
 	// load functions
 	void load();
 	void save(); // TODO

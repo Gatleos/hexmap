@@ -7,8 +7,7 @@
 
 using namespace std;
 
-class Faction
-{
+class Faction {
 public:
 	int capitol;
 	set<int> sites;

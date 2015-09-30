@@ -11,8 +11,7 @@ class MapEntity;
 extern const int SEA_LEVEL;
 extern const int HEIGHT_LIMIT;
 
-class HexTileS
-{
+class HexTileS {
 public:
 	enum {
 		NONE, OCEAN, TUNDRA, TUNDRA_SNOW, TAIGA_S, TAIGA_M, TAIGA_L, TAIGA_SNOW_S, TAIGA_SNOW_M, TAIGA_SNOW_L, FOREST_S,
@@ -38,8 +37,7 @@ public:
 	HexTileS(std::string idSet);
 };
 
-class HexTile
-{
+class HexTile {
 public:
 	enum {
 		MOUNTAINS, FLAG_MAX
