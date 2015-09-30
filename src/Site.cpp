@@ -11,7 +11,7 @@ array<unique_ptr<SiteS>, SiteS::SITE_NUM> SiteS::site = { {
 		siteptr("si_null"), siteptr("si_city"), siteptr("si_town"), siteptr("si_village")
 	} };
 
-Site::Site(const SiteS* sSite, HexMap* hmSet, Faction* parent) :MapEntity(sSite, hmSet, parent), ss(sSite){}
+Site::Site(const SiteS* sSite, HexMap* hmSet, Faction* parent) : MapEntity(sSite, hmSet, parent), ss(sSite), parent(nullptr){}
 
 const SiteS* Site::sSite() {
 	return ss;
@@ -23,6 +23,28 @@ void Site::update(const sf::Time& timeElapsed) {
 
 void Site::advanceTurn() {
 	pop.popGrowth(1);
+}
+
+void Site::addChild(Site* s) {
+	children.push_back(s);
+	s->parent = this;
+}
+
+void Site::removeChild(Site* s) {
+	for (auto it = children.begin(); it != children.end(); it++) {
+		if (*it == s) {
+			s->parent = nullptr;
+			children.erase(it);
+			return;
+		}
+	}
+}
+
+void Site::clearChildren(Site* s) {
+	for (auto ptr : children) {
+		ptr->parent = nullptr;
+	}
+	children.clear();
 }
 
 SiteS::SiteS(string id) :

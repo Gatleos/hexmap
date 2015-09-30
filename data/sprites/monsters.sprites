@@ -48,6 +48,9 @@
         <spr name="10" x="129" y="180" w="28" h="32"/>
         <spr name="11" x="161" y="180" w="28" h="31"/>
       </dir>
+      <dir name="3">
+        <spr name="0" x="218" y="127" w="25" h="48"/>
+      </dir>
     </dir>
   </definitions>
 </img>

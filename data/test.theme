@@ -1,53 +1,6 @@
-Window {
-	BackgroundColor: #9bad72ff;}
-
-/* Matches all Labels who are direct children of the table */
-/* This is NOT equivalent to "Window Label" */
-Window > * > * > Label {
-	FontSize: 12;
-	Color: #47781bff;}
-	
-Entry {
-	BackgroundColor: #b1bf93ff;
-	Color: #47781bff;}
-
-Button {
-	BackgroundColor: #888751ff;
-	Color: #6c461cff;
-	BorderColor: #6D491Eff;
-	BorderColorShift: 32;}
-Button:PRELIGHT {
-	BackgroundColor: #A4A362ff;
-	Color: #6c461cff;}
-Button:ACTIVE {
-	BackgroundColor: #6B6B41ff;
-	Color: #A4A362ff;}
-
-/* Matches all Buttons who are descendants of ScrolledWindow */
-ScrolledWindow Button {
-	BackgroundColor: #123456ff;}
-ScrolledWindow Button:PRELIGHT {
-	BackgroundColor: #345678ff;}
-ScrolledWindow Button {
-	Color: #ffffffff;}
-Scrollbar {
-	TroughColor: #37521Fff;
-	SliderColor: #37981Fff;
-	StepperBackgroundColor: #47781Bff;
-	StepperArrowColor: #37981Fff;}
-
-Button#close {
-	BackgroundColor: #47781bff;}
-
-/* Grouping multiple selectors is also possible.
-   This is the same as writing the same declarations
-   in multiple rule blocks for each widget, just
-   compact. :) */
-CheckButton, ToggleButton {
-	FontSize: 12;
-	BackgroundColor: #47781bff;
-	Color: #6c461cff;
-	CheckColor: #b1bf93ff;}
-CheckButton:ACTIVE {
-	BackgroundColor: #37671Fff;}
-	
+Label#good {
+	Color: #1df95bff;
+}
+Label#bad {
+	Color: #f9321dff;
+}

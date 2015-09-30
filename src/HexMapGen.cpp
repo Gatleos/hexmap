@@ -308,8 +308,10 @@ void HexMap::placeSites(mt19937& urng) {
 		c->initMapPos(territories[index]);
 		for (auto& o : output) {
 			auto* s = addSite(&SiteS::get(rng::boolean(urng) ? SiteS::TOWN : SiteS::VILLAGE), fac);
+			c->addChild(s);
 			s->setAnimationType(MapEntityS::anim::IDLE);
 			s->initMapPos(o);
+			s->pop.setSize(Population::GROUP_MIL, 400.0);
 		}
 		output.clear();
 		index++;
