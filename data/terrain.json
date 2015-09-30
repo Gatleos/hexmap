@@ -48,13 +48,13 @@
 	"t_taiga_s": {
 		"name": "Taiga",
 		"full": [
-			[1, "/tiles/full/taiga", 0, 0]
+			[1, "/tiles/full/tundra", 0, 0]
 		],
 		"half": [
-			[1, "/tiles/half/taiga", 0, 0]
+			[1, "/tiles/half/tundra", 0, 0]
 		],
 		"quarter": [
-			[1, "/tiles/quarter/taiga", 0, 0]
+			[1, "/tiles/quarter/tundra", 0, 0]
 		],
 		"feature": "f_taiga_s",
 		"moveCost": 4
@@ -62,13 +62,13 @@
 	"t_taiga_m": {
 		"name": "Taiga",
 		"full": [
-			[1, "/tiles/full/taiga", 0, 0]
+			[1, "/tiles/full/tundra", 0, 0]
 		],
 		"half": [
-			[1, "/tiles/half/taiga", 0, 0]
+			[1, "/tiles/half/tundra", 0, 0]
 		],
 		"quarter": [
-			[1, "/tiles/quarter/taiga", 0, 0]
+			[1, "/tiles/quarter/tundra", 0, 0]
 		],
 		"feature": "f_taiga_m",
 		"moveCost": 4
@@ -76,13 +76,13 @@
 	"t_taiga_l": {
 		"name": "Taiga",
 		"full": [
-			[1, "/tiles/full/taiga", 0, 0]
+			[1, "/tiles/full/tundra", 0, 0]
 		],
 		"half": [
-			[1, "/tiles/half/taiga", 0, 0]
+			[1, "/tiles/half/tundra", 0, 0]
 		],
 		"quarter": [
-			[1, "/tiles/quarter/taiga", 0, 0]
+			[1, "/tiles/quarter/tundra", 0, 0]
 		],
 		"feature": "f_taiga_l",
 		"moveCost": 5
@@ -132,7 +132,7 @@
 	"t_forest_s": {
 		"name": "Forest",
 		"full": [
-			[1, "/tiles/full/forest", 0, 0]
+			[1, "/tiles/full/grassland", 0, 0]
 		],
 		"half": [
 			[1, "/tiles/half/forest", 0, 0]
@@ -146,7 +146,7 @@
 	"t_forest_m": {
 		"name": "Forest",
 		"full": [
-			[1, "/tiles/full/forest", 0, 0]
+			[1, "/tiles/full/grassland", 0, 0]
 		],
 		"half": [
 			[1, "/tiles/half/forest", 0, 0]
@@ -160,7 +160,7 @@
 	"t_forest_l": {
 		"name": "Forest",
 		"full": [
-			[1, "/tiles/full/forest", 0, 0]
+			[1, "/tiles/full/grassland", 0, 0]
 		],
 		"half": [
 			[1, "/tiles/half/forest", 0, 0]

@@ -3,7 +3,7 @@
 		"name": "Castle",
 		"full": {
 			"animFile": "castle.anim",
-			"idle": "full"
+			"idle": "castle"
 		},
 		"half": {
 			"animFile": "monsters.anim",
@@ -18,7 +18,7 @@
 		"name": "Town",
 		"full": {
 			"animFile": "castle.anim",
-			"idle": "full"
+			"idle": "town"
 		},
 		"half": {
 			"animFile": "monsters.anim",

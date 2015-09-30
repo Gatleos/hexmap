@@ -1,70 +1,48 @@
-{
-	"spriteSheet": "feature.sprites",
+{	"spriteSheet": "feature.sprites",
 	
 	"f_mountain": {
 		"name": "Mountain",
 		"full": [
-			[1, "/mountains/full/mountain1", 1, -14]
-		],
+			[1, "/mountains/full/1", 1, -14]],
 		"half": [
-			[1, "/mountains/half/mountain1", 1, -6]
-		],
+			[1, "/mountains/half/1", 1, -6]],
 		"quarter": [
-			[1, "/mountains/quarter/mountain1", 1, -2]
-		]
+			[1, "/mountains/quarter/1", 1, -2]]
 	},
 	"f_forest_s": {
 		"name": "Forest S",
 		"full": [
-			[1, "/plants/forest1", "center"]
-		]
+			[1, "/plants/forest/s1", -5,-4]]
 	},
 	"f_forest_m": {
 		"name": "Forest M",
-		"full": [
-			[1, "/plants/forest2", "center"]
-		]
+		"full": [[1, "/plants/forest/m1", -3,-17]]
 	},
 	"f_forest_l": {
 		"name": "Forest L",
-		"full": [
-			[1, "/plants/forest3", "center"]
-		]
+		"full": [[1, "/plants/forest/l1", -3,-20]]
 	},
 	"f_taiga_s": {
 		"name": "Taiga S",
-		"full": [
-			[1, "/plants/pine1", "center"]
-		]
+		"full": [[1, "/plants/pine/s1", -8,-15]]
 	},
 	"f_taiga_m": {
 		"name": "Taiga M",
-		"full": [
-			[1, "/plants/pine2", "center"]
-		]
+		"full": [[1, "/plants/pine/m1", -6,-18]]
 	},
 	"f_taiga_l": {
 		"name": "Taiga L",
-		"full": [
-			[1, "/plants/pine3", "center"]
-		]
+		"full": [[1, "/plants/pine/l1", -5,-28]]
 	},
 	"f_taiga_snow_s": {
 		"name": "Taiga S",
-		"full": [
-			[1, "/plants/pineSnow1", "center"]
-		]
+		"full": [[1, "/plants/pineSnow/s1", -8,-15]]
 	},
 	"f_taiga_snow_m": {
 		"name": "Taiga M",
-		"full": [
-			[1, "/plants/pineSnow2", "center"]
-		]
+		"full": [[1, "/plants/pineSnow/m1", -6,-18]]
 	},
 	"f_taiga_snow_l": {
 		"name": "Taiga L",
-		"full": [
-			[1, "/plants/pineSnow3", "center"]
-		]
-	}
-}
+		"full": [[1, "/plants/pineSnow/l1", -5,-28]]
+	}}
