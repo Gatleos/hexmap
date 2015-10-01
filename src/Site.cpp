@@ -2,6 +2,7 @@
 #include "Site.h"
 #include "config.h"
 #include "ResourceLoader.h"
+#include "UIdef.h"
 
 using namespace std;
 
@@ -23,6 +24,15 @@ void Site::update(const sf::Time& timeElapsed) {
 
 void Site::advanceTurn() {
 	pop.popGrowth(1);
+}
+
+void Site::select() {
+	UIdef::SiteMenu::instance()->show(true);
+	UIdef::setEntity(*this);
+}
+
+void Site::setPath(sf::Vector2i dest) {
+
 }
 
 void Site::addChild(Site* s) {

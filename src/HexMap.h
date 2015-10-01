@@ -232,7 +232,7 @@ public:
 	Faction* playerFaction();
 	Faction* addFaction();
 	Site* addSite(const SiteS* sSite, Faction* parent);
-	MapUnit* addMapUnit(const MapEntityS* sEnt, Faction* parent);
+	MapUnit* addMapUnit(const MapUnitS* sEnt, Faction* parent);
 	void clearEntities();
 	void setEntity(sf::Vector2i posOffset, MapEntity* ent);
 	void update(const sf::Time& timeElapsed);

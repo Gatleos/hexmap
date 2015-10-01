@@ -1,10 +1,48 @@
+#include <iostream>
 #include "MapUnit.h"
 #include "HexMap.h"
 
+using namespace std;
 
-MapUnit::MapUnit(const MapEntityS* sEnt, HexMap* hmSet, Faction* parent) :
+#define unitptr(x) unique_ptr<MapUnitS>(new MapUnitS(x))
+
+std::array<std::unique_ptr<MapUnitS>, MapUnitS::UNIT_NUM> MapUnitS::unit = { {
+		unitptr("un_null"), unitptr("un_army")
+	} };
+
+MapUnitS::MapUnitS(std::string id) :
+MapEntityS(id) {
+}
+
+void MapUnitS::loadJson(std::string filename) {
+	Json::Value root = config::openJson(filename);
+	if (root.begin() == root.end()) {
+		cerr << "ERROR: couldn't open file \"" << filename << "\"\n";
+		return;
+	}
+	// Cycle through defined unit types; make sure to skip un_null!
+	for (int a = 1; a < UNIT_NUM; a++) {
+		auto& un = unit[a];
+		Json::Value udata = root.get(un->id_, Json::Value::null);
+		string element;
+		try {
+			un->loadEntityJson(udata, element, un->id_);
+		}
+		catch (runtime_error e) { // report the error with the name of the object and member
+			cerr << "[" << filename << ", " << un->id_ << ", " << element << "] " << e.what() << "\n";
+		}
+	}
+}
+
+const MapUnitS& MapUnitS::get(int id) {
+	return *unit[id];
+}
+
+
+
+MapUnit::MapUnit(const MapUnitS* sUnit, HexMap* hmSet, Faction* parent) :
 moveTimer(0),
-MapEntity(sEnt, hmSet, parent) {
+MapEntity(sUnit, hmSet, parent) {
 }
 
 bool MapUnit::walkPath() {
@@ -34,5 +72,9 @@ void MapUnit::update(const sf::Time& timeElapsed) {
 }
 
 void MapUnit::advanceTurn() {
+	walkPath();
+}
+
+void MapUnit::select() {
 
 }

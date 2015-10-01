@@ -6,6 +6,7 @@
 #include "Site.h"
 
 namespace UIdef {
+	extern MapEntity* selectedEnt;
 	class MapGenDebug : public UILayout {
 		MapGenDebug();
 	public:

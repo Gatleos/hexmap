@@ -1,0 +1,17 @@
+{
+	"un_army": {
+		"name": "Army",
+		"full": {
+			"animFile": "monsters.anim",
+			"idle": "Samus"
+		},
+		"half": {
+			"animFile": "monsters.anim",
+			"idle": "Samus"
+		},
+		"quarter": {
+			"animFile": "monsters.anim",
+			"idle": "Samus"
+		}
+	}
+}

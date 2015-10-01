@@ -740,7 +740,7 @@ Site* HexMap::addSite(const SiteS* sSite, Faction* parent) {
 	return &s;
 }
 
-MapUnit* HexMap::addMapUnit(const MapEntityS* sEnt, Faction* parent) {
+MapUnit* HexMap::addMapUnit(const MapUnitS* sEnt, Faction* parent) {
 	auto& u = units.emplace(nextUnitId, MapUnit(sEnt, this, parent)).first->second;
 	parent->units.insert(nextUnitId);
 	u.id = nextUnitId;

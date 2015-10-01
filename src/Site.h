@@ -26,6 +26,8 @@ public:
 	const SiteS* sSite();
 	void update(const sf::Time& timeElapsed);
 	void advanceTurn();
+	void select();
+	void setPath(sf::Vector2i dest);
 	void addChild(Site* s);
 	void removeChild(Site* s);
 	void clearChildren(Site* s);

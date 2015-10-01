@@ -105,15 +105,17 @@ void EngineState::input(sf::Event &e) {
 		return;
 	}
 	if (e.type == sf::Event::MouseButtonPressed) {
+		auto& clicked = MapControlState::instance()->tilePos;
+		auto& hex = HEXMAP.getAxial(clicked.x, clicked.y);
 		if (e.mouseButton.button == sf::Mouse::Left) {
-			auto& clicked = MapControlState::instance()->tilePos;
-			auto& hex = HEXMAP.getAxial(clicked.x, clicked.y);
-			if (hex.ent == nullptr) {
-				UIdef::SiteMenu::instance()->show(false);
+			if (hex.ent != nullptr) {
+				UIdef::selectedEnt = hex.ent;
+				hex.ent->select();
 			}
-			else {
-				UIdef::SiteMenu::instance()->show(true);
-				UIdef::setEntity(*hex.ent);
+		}
+		else if (e.mouseButton.button == sf::Mouse::Right) {
+			if (UIdef::selectedEnt != nullptr) {
+				UIdef::selectedEnt->setPath(clicked);
 			}
 		}
 	}

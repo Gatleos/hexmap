@@ -30,6 +30,7 @@ void config::loadAllJson() {
 	HexTileS::loadJson("data/terrain.json");
 	Species::loadJson("data/species.json");
 	SiteS::loadJson("data/sites.json");
+	MapUnitS::loadJson("data/units.json");
 	config::loadKeyJson("data/keybindings.json");
 	cerr << "------------\nParsing Done\n\n";
 }

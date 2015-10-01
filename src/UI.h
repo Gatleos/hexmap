@@ -4,6 +4,7 @@
 #include <SFGUI/SFGUI.hpp>
 #include <SFGUI/Widgets.hpp>
 #include "ResourceLoader.h"
+#include "MapEntity.h"
 
 using namespace std;
 

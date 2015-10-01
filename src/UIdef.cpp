@@ -255,8 +255,9 @@ namespace UIdef {
 		deployButton->GetSignal(sfg::Button::OnLeftClick).Connect([]() {
 			auto dMenu = DeployGroupMenu::instance();
 			if (dMenu->optionsValid()) {
-				auto* deployed = HEXMAP.addMapUnit(&SiteS::get(SiteS::CITY), HEXMAP.addFaction());
+				auto* deployed = HEXMAP.addMapUnit(&MapUnitS::get(MapUnitS::ARMY), HEXMAP.playerFaction());
 				deployed->initMapPos(dMenu->deployTo_);
+				deployed->setAnimationType(MapEntityS::anim::IDLE);
 				// Take pop values
 				for (int i = 0; i < Population::groupNames.size(); i++) {
 					deployed->pop.setSize(i, dMenu->popAdjust[i]->GetValue());
@@ -358,6 +359,7 @@ namespace UIdef {
 		return validSize;
 	}
 
+	MapEntity* selectedEnt = nullptr;
 
 	void setEntity(MapEntity& ent) {
 		SiteMenu::instance()->setEntity(ent);
@@ -372,5 +374,9 @@ namespace UIdef {
 	}
 	void setSelection(const sf::Vector2i& selection) {
 		DeployGroupMenu::instance()->setCoord(selection);
+	}
+	void deselectEnt() {
+		selectedEnt = nullptr;
+		SiteMenu::instance()->show(false);
 	}
 }
