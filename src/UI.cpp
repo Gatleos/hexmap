@@ -1,10 +1,12 @@
 #include <stack>
 #include <SFGUI/Renderers.hpp>
 #include "UI.h"
+#include "HexMap.h"
 
 sfg::Desktop* UI::desktop = nullptr;
 sf::View UI::view;
 sf::Vector2i UI::lastMousePos(0, 0);
+sf::Sprite UI::hexSelector;
 static vector<pair<shared_ptr<UILayout>, bool>> UI_layoutStack;
 static sf::Vector2f UI_appSize;
 static bool UI_gotMouseInput = false;
@@ -155,6 +157,9 @@ void UI::init(sfg::Desktop* d) {
 	UI_sprites = RESOURCE.sh("ui.sprites");
 	UI_texture = RESOURCE.tex(UI_sprites->getImageName());
 	UI_image = UI_texture->copyToImage();
+	hexSelector.setTexture(UI::texture());
+	hexSelector.setTextureRect((sf::IntRect)*UI::sprites().spr("/select/full"));
+	hexSelector.setColor(sf::Color::Red);
 }
 
 void UI::end() {
@@ -203,4 +208,8 @@ void UI::popLayout() {
 void UI::dropFocus() {
 	static auto UI_dummyWindow = sfg::Window::Create();
 	UI_dummyWindow->GrabFocus();
+}
+
+void UI::selectHex(sf::Vector2f& hexCoord) {
+	hexSelector.setPosition(HEXMAP.hexToPixel(hexCoord) - HEXMAP.getOrigin() - sf::Vector2f(1.0f, 1.0f));
 }

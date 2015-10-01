@@ -32,6 +32,7 @@ namespace UI {
 	extern sfg::Desktop* desktop;
 	extern sf::View view;
 	extern sf::Vector2i lastMousePos;
+	extern sf::Sprite hexSelector;
 	void init(sfg::Desktop* d);
 	void end();
 	void pushLayout(shared_ptr<UILayout> layout, bool replacePrevious = false);
@@ -61,6 +62,7 @@ namespace UI {
 	SpriteSheet& sprites();
 	// Lose focus on all windows and contained widgets
 	void dropFocus();
+	void selectHex(sf::Vector2f& hexCoord);
 };
 
 #endif
