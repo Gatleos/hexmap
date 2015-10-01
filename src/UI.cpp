@@ -14,6 +14,7 @@ static bool UI_gotKeyboardInput = false;
 static sf::Image UI_image;
 static const sf::Texture* UI_texture = nullptr;
 static SpriteSheet* UI_sprites = nullptr;
+static vector<shared_ptr<UILayout>> UI_layouts;
 
 /////////////////
 // UIAlign //////
@@ -96,15 +97,12 @@ void UILayout::bringToFront() {
 
 void UI::setAppSize(sf::Vector2f size) {
 	UI_appSize = size;
-	if (!UI_layoutStack.empty()) {
-		for (auto l = UI_layoutStack.rbegin(); l != UI_layoutStack.rend(); l++) {
-			for (auto w : l->first->windows) {
+	if (!UI_layouts.empty()) {
+		for (auto l = UI_layouts.rbegin(); l != UI_layouts.rend(); l++) {
+			for (auto w : l->get()->windows) {
 				if (w.second.autoResize_) {
 					w.second.resize(w.first);
 				}
-			}
-			if (l->second) {
-				break;
 			}
 		}
 	}
@@ -164,6 +162,7 @@ void UI::init(sfg::Desktop* d) {
 
 void UI::end() {
 	UI_layoutStack.clear();
+	UI_layouts.clear();
 }
 
 void UI::addWindow(shared_ptr<sfg::Window> newWin) {
@@ -178,6 +177,7 @@ void UI::addWindow(shared_ptr<sfg::Window> newWin, UIAlign a) {
 }
 
 void UI::addNewLayout(shared_ptr<UILayout> layout) {
+	UI_layouts.push_back(layout);
 	for (auto& w : layout->windows) {
 		desktop->Add(w.first);
 		connectMouseInputFlag(w.first);
