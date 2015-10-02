@@ -12,7 +12,11 @@ array<unique_ptr<SiteS>, SiteS::SITE_NUM> SiteS::site = { {
 		siteptr("si_null"), siteptr("si_city"), siteptr("si_town"), siteptr("si_village")
 	} };
 
-Site::Site(const SiteS* sSite, HexMap* hmSet, Faction* parent) : MapEntity(sSite, hmSet, parent), ss(sSite), parent(nullptr){}
+Site::Site(const SiteS* sSite, HexMap* hmSet, Faction* parent) : MapEntity(sSite, hmSet, parent), ss(sSite), parent(nullptr) {
+	for (auto& r : resources) {
+		r = 0.0f;
+	}
+}
 
 const SiteS* Site::sSite() {
 	return ss;
@@ -28,7 +32,11 @@ void Site::advanceTurn() {
 
 void Site::select() {
 	UIdef::SiteMenu::instance()->show(true);
-	UIdef::setEntity(*this);
+	UIdef::setSite(*this);
+}
+
+void Site::deselect() {
+	UIdef::SiteMenu::instance()->show(false);
 }
 
 void Site::setPath(sf::Vector2i dest) {
@@ -55,6 +63,10 @@ void Site::clearChildren(Site* s) {
 		ptr->parent = nullptr;
 	}
 	children.clear();
+}
+
+void Site::updateResources() {
+	resources[MapEntityS::WOOD] += pop.activities()[Population::GROUP_CIV][Population::CIV_WOOD] * pop.size(Population::GROUP_CIV);
 }
 
 SiteS::SiteS(string id) :

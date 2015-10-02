@@ -146,35 +146,35 @@ namespace UIdef {
 		window->Add(sWindow);
 		addWindow(window, UIAlign({ 1.0f, 1.0f, 250.0f, 300.0f }, UI::ALIGN_RIGHT | UI::ALIGN_FRAC_POSX | UI::ALIGN_FRAC_POSY | UI::ALIGN_BOTTOM));
 	}
-	void SiteMenu::setEntity(MapEntity& ent) {
-		ent_ = &ent;
-		for (int indexTab = 0; indexTab < ent.pop.activities().size(); indexTab++) {
-			int size = ent.pop.activities()[indexTab].size();
+	void SiteMenu::setSite(Site& site) {
+		site_ = &site;
+		for (int indexTab = 0; indexTab < site.pop.activities().size(); indexTab++) {
+			int size = site.pop.activities()[indexTab].size();
 			stringstream ss;
-			ss << "Pop: " << ent.pop.size(indexTab);
+			ss << "Pop: " << site.pop.size(indexTab);
 			population[indexTab]->SetText(ss.str());
 			ss.str(std::string());
-			ss << "Idle: " << ent.pop.activities()[indexTab][Population::IDLE] << "%";
+			ss << "Idle: " << site.pop.activities()[indexTab][Population::IDLE] << "%";
 			idlePercent[indexTab]->SetText(ss.str());
 			for (int index = 1; index < size; index++) {
 				// Link up the slider value to one of the population percentages
 				sliders[indexTab][index - 1]->GetSignal(sfg::Adjustment::OnChange).Connect(bind(&SiteMenu::adjust, this, indexTab, index));
-				sliders[indexTab][index - 1]->SetValue(ent.pop.activities()[indexTab][index]);
+				sliders[indexTab][index - 1]->SetValue(site.pop.activities()[indexTab][index]);
 			}
 		}
 	}
 	void SiteMenu::updateSitePop() {
 		stringstream ss;
-		for (int indexTab = 0; indexTab < ent_->pop.activities().size(); indexTab++) {
-			ss << "Pop: " << ent_->pop.size(indexTab);
+		for (int indexTab = 0; indexTab < site_->pop.activities().size(); indexTab++) {
+			ss << "Pop: " << site_->pop.size(indexTab);
 			population[indexTab]->SetText(ss.str());
 			ss.str(std::string());
 		}
 	}
 	void SiteMenu::adjust(int group, int act) {
-		sliders[group][act - 1]->SetValue(ent_->pop.set(group, act, sliders[group][act - 1]->GetValue()));
+		sliders[group][act - 1]->SetValue(site_->pop.set(group, act, sliders[group][act - 1]->GetValue()));
 		stringstream ss;
-		ss << "Idle: " << ent_->pop.activities()[group][Population::IDLE] << "%";
+		ss << "Idle: " << site_->pop.activities()[group][Population::IDLE] << "%";
 		idlePercent[group]->SetText(ss.str());
 	}
 
@@ -260,13 +260,13 @@ namespace UIdef {
 				deployed->setAnimationType(MapEntityS::anim::IDLE);
 				// Take pop values
 				for (int i = 0; i < Population::groupNames.size(); i++) {
-					deployed->pop.setSize(i, dMenu->popAdjust[i]->GetValue());
-					dMenu->ent->pop.addSize(i, -dMenu->popAdjust[i]->GetValue());
+					//deployed->pop.setSize(i, dMenu->popAdjust[i]->GetValue());
+					//dMenu->ent->pop.addSize(i, -dMenu->popAdjust[i]->GetValue());
 				}
 				// Take resource values
 				for (int i = 0; i < Population::groupNames.size(); i++) {
-					dMenu->ent->resources[i] -= dMenu->resAdjust[i]->GetValue();
-					deployed->resources[i] += dMenu->resAdjust[i]->GetValue();
+					//dMenu->ent->resources[i] -= dMenu->resAdjust[i]->GetValue();
+					//deployed->resources[i] += dMenu->resAdjust[i]->GetValue();
 				}
 				// Reset UI
 				dMenu->reset();
@@ -290,18 +290,18 @@ namespace UIdef {
 		addWindow(window, UIAlign({ 0.5f, 0.5f, 0.0f, 0.0f },
 			UI::ALIGN_CENTERX | UI::ALIGN_FRAC_POSX | UI::ALIGN_CENTERY | UI::ALIGN_FRAC_POSY, false));
 	}
-	void DeployGroupMenu::setEntity(MapEntity& s) {
-		ent = &s;
-		static auto createSelection = [](MapEntity* ent) {
+	void DeployGroupMenu::setSite(Site& site) {
+		site_ = &site;
+		static auto createSelection = [](Site* site) {
 			auto vs = make_shared<VectorSet>();
-			HexMap::neighbors(ent->getMapPos(), *vs);
+			HexMap::neighbors(site->getMapPos(), *vs);
 			SFMLEngine::instance().pushState(std::shared_ptr<GameState>(new SelectState(vs, setSelection)));
 		};
 		setCoord({ -1, -1 });
 		if (deploySignal_ >= 0) {
 			selectCoordButton_->GetSignal(sfg::Button::OnLeftClick).Disconnect(deploySignal_);
 		}
-		deploySignal_ = selectCoordButton_->GetSignal(sfg::Button::OnLeftClick).Connect(bind(createSelection, ent));
+		deploySignal_ = selectCoordButton_->GetSignal(sfg::Button::OnLeftClick).Connect(bind(createSelection, &site));
 		updateSitePop();
 		updateSiteResources();
 	}
@@ -320,20 +320,20 @@ namespace UIdef {
 		stringstream ss;
 		for (int i = 0; i < popLabel_.size(); i++) {
 			auto p = popLabel_[i];
-			ss << " / " << (int)ent->pop.size(i);
+			ss << " / " << (int)site_->pop.size(i);
 			p->SetText(ss.str());
 			ss.str(string());
-			popAdjust[i]->SetUpper((int)ent->pop.size(i));
+			popAdjust[i]->SetUpper((int)site_->pop.size(i));
 		}
 	}
 	void DeployGroupMenu::updateSiteResources() {
 		stringstream ss;
 		for (int i = 0; i < resLabel_.size(); i++) {
 			auto r = resLabel_[i];
-			ss << " / " << (int)ent->resources[i];
+			ss << " / " << (int)site_->resources[i];
 			r->SetText(ss.str());
 			ss.str(string());
-			resAdjust[i]->SetUpper((int)ent->resources[i]);
+			resAdjust[i]->SetUpper((int)site_->resources[i]);
 		}
 	}
 	void DeployGroupMenu::reset() {
@@ -358,12 +358,29 @@ namespace UIdef {
 		}
 		return validSize;
 	}
+	
+	shared_ptr<MapUnitInfo> MapUnitInfo::instance() {
+		static auto mui = make_shared<MapUnitInfo>(MapUnitInfo());
+		return mui;
+	}
+	MapUnitInfo::MapUnitInfo() {
+		auto window = sfg::Window::Create(sfg::Window::Style::TOPLEVEL | sfg::Window::Style::CLOSE);
+		auto mainBox = sfg::Box::Create();
+		window->Add(mainBox);
+		addWindow(window, UIAlign({ 1.0f, 1.0f, 250.0f, 300.0f }, UI::ALIGN_RIGHT | UI::ALIGN_FRAC_POSX | UI::ALIGN_FRAC_POSY | UI::ALIGN_BOTTOM));
+	}
+
+
 
 	MapEntity* selectedEnt = nullptr;
 
-	void setEntity(MapEntity& ent) {
-		SiteMenu::instance()->setEntity(ent);
-		DeployGroupMenu::instance()->setEntity(ent);
+	void setSite(Site& site) {
+		selectedEnt = &site;
+		SiteMenu::instance()->setSite(site);
+		DeployGroupMenu::instance()->setSite(site);
+	}
+	void setUnit(MapUnit& unit) {
+
 	}
 	void updateSitePop() {
 		SiteMenu::instance()->updateSitePop();
@@ -374,9 +391,5 @@ namespace UIdef {
 	}
 	void setSelection(const sf::Vector2i& selection) {
 		DeployGroupMenu::instance()->setCoord(selection);
-	}
-	void deselectEnt() {
-		selectedEnt = nullptr;
-		SiteMenu::instance()->show(false);
 	}
 }

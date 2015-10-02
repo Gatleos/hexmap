@@ -22,15 +22,19 @@ class Site : public MapEntity {
 	Site* parent;
 	std::vector<Site*> children;
 public:
+	Population pop;
+	array<float, MapEntityS::RESOURCE_NUM> resources;
 	Site(const SiteS* sSite, HexMap* hmSet, Faction* parent);
 	const SiteS* sSite();
 	void update(const sf::Time& timeElapsed);
 	void advanceTurn();
 	void select();
+	void deselect();
 	void setPath(sf::Vector2i dest);
 	void addChild(Site* s);
 	void removeChild(Site* s);
 	void clearChildren(Site* s);
+	void updateResources();
 };
 
 #endif

@@ -1,6 +1,7 @@
 #include <iostream>
 #include "MapUnit.h"
 #include "HexMap.h"
+#include "UIdef.h"
 
 using namespace std;
 
@@ -76,5 +77,10 @@ void MapUnit::advanceTurn() {
 }
 
 void MapUnit::select() {
+	UIdef::MapUnitInfo::instance()->show(true);
+	UIdef::setUnit(*this);
+}
 
+void MapUnit::deselect() {
+	UIdef::MapUnitInfo::instance()->show(false);
 }

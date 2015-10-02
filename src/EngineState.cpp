@@ -95,6 +95,7 @@ void EngineState::render(sf::RenderWindow &window) {
 		window.draw(HEXMAP);
 		HEXMAP.drawEnts(window);
 	}
+	window.draw(UI::hexSelector);
 	window.setView(UI::view);
 	ss << mtMilli;
 	UIdef::MapGenDebug::instance()->debugInfo[4]->SetText(ss.str());
@@ -108,8 +109,12 @@ void EngineState::input(sf::Event &e) {
 		auto& clicked = MapControlState::instance()->tilePos;
 		auto& hex = HEXMAP.getAxial(clicked.x, clicked.y);
 		if (e.mouseButton.button == sf::Mouse::Left) {
+			if (UIdef::selectedEnt != nullptr) {
+				UIdef::selectedEnt->deselect();
+			}
 			if (hex.ent != nullptr) {
 				UIdef::selectedEnt = hex.ent;
+				UI::selectHex((sf::Vector2f)clicked);
 				hex.ent->select();
 			}
 		}

@@ -72,8 +72,6 @@ public:
 	int id;
 	MapEntity(const MapEntityS* sEnt, HexMap* hmSet, Faction* parent);
 	void setAnimationType(MapEntityS::anim num);
-	Population pop;
-	array<float, MapEntityS::RESOURCE_NUM> resources;
 	bool initMapPos(sf::Vector2i axialCoord);
 	bool setMapPos(sf::Vector2i axialCoord);
 	const sf::Vector2i& getMapPos();
@@ -82,8 +80,8 @@ public:
 	// Runs once per map turn
 	virtual void advanceTurn() = 0;
 	virtual void select() = 0;
+	virtual void deselect() = 0;
 	virtual void setPath(sf::Vector2i dest) = 0;
-	void updateResources();
 	friend HexMap;
 };
 

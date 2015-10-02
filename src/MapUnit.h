@@ -29,6 +29,7 @@ public:
 	void update(const sf::Time& timeElapsed);
 	void advanceTurn();
 	void select();
+	void deselect();
 	void move();
 };
 

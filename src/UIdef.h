@@ -4,6 +4,7 @@
 #include "UI.h"
 #include <array>
 #include "Site.h"
+#include "MapUnit.h"
 
 namespace UIdef {
 	extern MapEntity* selectedEnt;
@@ -23,11 +24,11 @@ namespace UIdef {
 		vector<shared_ptr<sfg::Label>> idlePercent;
 		vector<shared_ptr<sfg::Label>> population;
 		void adjust(int group, int act);
-		MapEntity* ent_;
+		Site* site_;
 		SiteMenu();
 	public:
 		static shared_ptr<SiteMenu> instance();
-		void setEntity(MapEntity& ent);
+		void setSite(Site& ent);
 		void updateSitePop();
 		shared_ptr<sfg::Window> window;
 	};
@@ -40,11 +41,11 @@ namespace UIdef {
 		vector<shared_ptr<sfg::Label>> resLabel_;
 		int deploySignal_;
 	public:
-		MapEntity* ent;
+		Site* site_;
 		vector<shared_ptr<sfg::Adjustment>> popAdjust;
 		vector<shared_ptr<sfg::Adjustment>> resAdjust;
 		static shared_ptr<DeployGroupMenu> instance();
-		void setEntity(MapEntity& s);
+		void setSite(Site& site);
 		void setCoord(const sf::Vector2i& coord);
 		void updateSitePop();
 		void updateSiteResources();
@@ -52,7 +53,15 @@ namespace UIdef {
 		bool optionsValid();
 		shared_ptr<sfg::Window> window;
 	};
-	void setEntity(MapEntity& ent);
+	class MapUnitInfo : public UILayout {
+		MapUnitInfo();
+	public:
+		static shared_ptr<MapUnitInfo> instance();
+	};
+	// Set site-related UI elements to point to this site
+	void setSite(Site& site);
+	// Set unit-related UI elements to point to this unit
+	void setUnit(MapUnit& unit);
 	// Update all UI elements that refer to ent pop sizes
 	void updateSitePop();
 	// Update all UI elements that refer to ent resource amounts

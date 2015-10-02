@@ -177,9 +177,6 @@ MapEntity::MapEntity(const MapEntityS* sEnt, HexMap* hmSet, Faction* parent) {
 	for (int i = 0; i < ZOOM_LEVELS; i++) {
 		handlers_[i].setAnimationData(*mes->animData_[i]);
 	}
-	for (auto& r : resources) {
-		r = 0.0f;
-	}
 }
 
 void MapEntity::setAnimationType(MapEntityS::anim num) {	
@@ -187,8 +184,4 @@ void MapEntity::setAnimationType(MapEntityS::anim num) {
 		handlers_[i].setAnimation(mes->animNames_[i][num]);
 		handlers_[i].randomFrame(rng::r);
 	}
-}
-
-void MapEntity::updateResources() {
-	resources[MapEntityS::WOOD] += pop.activities()[Population::GROUP_CIV][Population::CIV_WOOD] * pop.size(Population::GROUP_CIV);
 }
