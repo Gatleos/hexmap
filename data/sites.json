@@ -33,7 +33,7 @@
 		"name": "Village",
 		"full": {
 			"animFile": "castle.anim",
-			"idle": "full"
+			"idle": "town"
 		},
 		"half": {
 			"animFile": "monsters.anim",

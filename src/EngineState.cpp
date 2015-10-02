@@ -14,8 +14,6 @@
 #include "MapEntity.h"
 #include <limits>
 
-AnimHandler ah;
-
 #define MAPX 128
 #define MAPY 128
 
@@ -65,15 +63,11 @@ void EngineState::init() {
 	//shader.setParameter("brightness", 0.9f);
 	//engine->window->setFramerateLimit(600);
 	engine->pushState(MapControlState::instance());
-	ah.setAnimationData(*RESOURCE.anim("castle.anim"));
-	ah.setAnimation("full");
-	ah.setPosition({30.0f, 30.0f});
 }
 void EngineState::end() {
 }
 void EngineState::update() {
 	HEXMAP.update(engine->getLastTick());
-	ah.updateAnimation(engine->getLastTick());
 }
 void EngineState::render(sf::RenderWindow &window) {
 	stringstream ss;
