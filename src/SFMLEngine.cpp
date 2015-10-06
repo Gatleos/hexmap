@@ -52,6 +52,7 @@ void SFMLEngine::start() {
 			//
 			lastFrame = fr.restart();
 			states.top()->update();
+			UI::updateLayouts();
 			desktop.Update(lastFrame.asSeconds());
 			//
 			window->clear(clearColor);

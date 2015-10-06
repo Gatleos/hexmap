@@ -17,11 +17,14 @@ struct UIAlign {
 };
 
 class UILayout {
+	bool visible;
 public:
 	vector<pair<shared_ptr<sfg::Widget>, UIAlign>> windows;
 	void show(bool show = true);
 	void addWindow(shared_ptr<sfg::Widget> newWin, UIAlign a);
 	void bringToFront();
+	virtual void update();
+	bool isVisible();
 };
 
 namespace UI {
@@ -37,6 +40,7 @@ namespace UI {
 	void end();
 	void pushLayout(shared_ptr<UILayout> layout, bool replacePrevious = false);
 	void popLayout();
+	void updateLayouts();
 	void addWindow(shared_ptr<sfg::Window> newWin);
 	void addWindow(shared_ptr<sfg::Window> newWin, UIAlign a);
 	// Add a layout to the desktop; layouts won't show up until you add them here

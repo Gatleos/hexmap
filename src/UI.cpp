@@ -78,6 +78,7 @@ void UILayout::show(bool show) {
 			w.first->Show(false);
 		}
 	}
+	visible = show;
 }
 
 void UILayout::addWindow(shared_ptr<sfg::Widget> newWin, UIAlign a) {
@@ -89,6 +90,14 @@ void UILayout::bringToFront() {
 	for (auto& w : windows) {
 		UI::desktop->BringToFront(w.first);
 	}
+}
+
+void UILayout::update() {
+
+}
+
+bool UILayout::isVisible() {
+	return visible;
 }
 
 /////////////////
@@ -202,6 +211,14 @@ void UI::popLayout() {
 	UI_layoutStack.pop_back();
 	if (replacePrevious) {
 		UI_layoutStack.back().first->show(true);
+	}
+}
+
+void UI::updateLayouts() {
+	for (auto l : UI_layouts) {
+		if (l->isVisible()) {
+			l->update();
+		}
 	}
 }
 
