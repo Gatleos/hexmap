@@ -92,7 +92,7 @@ void UILayout::bringToFront() {
 	}
 }
 
-void UILayout::update() {
+void UILayout::update(const sf::Time& timeElapsed) {
 
 }
 
@@ -214,10 +214,10 @@ void UI::popLayout() {
 	}
 }
 
-void UI::updateLayouts() {
+void UI::updateLayouts(const sf::Time& timeElapsed) {
 	for (auto l : UI_layouts) {
 		if (l->isVisible()) {
-			l->update();
+			l->update(timeElapsed);
 		}
 	}
 }

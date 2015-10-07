@@ -23,7 +23,7 @@ public:
 	void show(bool show = true);
 	void addWindow(shared_ptr<sfg::Widget> newWin, UIAlign a);
 	void bringToFront();
-	virtual void update();
+	virtual void update(const sf::Time& timeElapsed);
 	bool isVisible();
 };
 
@@ -40,7 +40,7 @@ namespace UI {
 	void end();
 	void pushLayout(shared_ptr<UILayout> layout, bool replacePrevious = false);
 	void popLayout();
-	void updateLayouts();
+	void updateLayouts(const sf::Time& timeElapsed);
 	void addWindow(shared_ptr<sfg::Window> newWin);
 	void addWindow(shared_ptr<sfg::Window> newWin, UIAlign a);
 	// Add a layout to the desktop; layouts won't show up until you add them here
