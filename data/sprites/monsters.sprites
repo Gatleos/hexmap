@@ -51,6 +51,9 @@
       <dir name="3">
         <spr name="0" x="218" y="127" w="25" h="48"/>
       </dir>
+      <dir name="4">
+        <spr name="0" x="180" y="118" w="16" h="16"/>
+      </dir>
     </dir>
   </definitions>
 </img>

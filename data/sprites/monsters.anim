@@ -162,4 +162,49 @@
       <spr name="/3/0" x="0" y="0" z="0"/>
     </cell>
   </anim>
+  <anim name="mon1" loops="0">
+    <cell index="0" delay="1">
+      <spr name="/4/0" x="0" y="0" z="0"/>
+    </cell>
+  </anim>
+  <anim name="mon2" loops="0">
+    <cell index="0" delay="1">
+      <spr name="/4/0" x="12" y="3" z="0"/>
+      <spr name="/4/0" x="-11" y="-2" z="0" flipH="1"/>
+    </cell>
+  </anim>
+  <anim name="mon3" loops="0">
+    <cell index="0" delay="1">
+      <spr name="/4/0" x="-9" y="8" z="0"/>
+      <spr name="/4/0" x="0" y="-13" z="0"/>
+      <spr name="/4/0" x="14" y="6" z="0" flipH="1"/>
+    </cell>
+  </anim>
+  <anim name="mon4" loops="0">
+    <cell index="0" delay="1">
+      <spr name="/4/0" x="-15" y="10" z="0"/>
+      <spr name="/4/0" x="-14" y="-12" z="0" flipH="1"/>
+      <spr name="/4/0" x="10" y="-15" z="0"/>
+      <spr name="/4/0" x="14" y="6" z="0" flipH="1"/>
+    </cell>
+  </anim>
+  <anim name="mon5" loops="0">
+    <cell index="0" delay="1">
+      <spr name="/4/0" x="9" y="12" z="0" flipH="1"/>
+      <spr name="/4/0" x="-25" y="-10" z="0"/>
+      <spr name="/4/0" x="-13" y="7" z="0" flipH="1"/>
+      <spr name="/4/0" x="0" y="-13" z="0" flipH="1"/>
+      <spr name="/4/0" x="23" y="-9" z="0"/>
+    </cell>
+  </anim>
+  <anim name="mon6" loops="0">
+    <cell index="0" delay="1">
+      <spr name="/4/0" x="-2" y="16" z="0"/>
+      <spr name="/4/0" x="19" y="-16" z="0" flipH="1"/>
+      <spr name="/4/0" x="-22" y="-16" z="0" flipH="1"/>
+      <spr name="/4/0" x="-17" y="2" z="0" flipH="1"/>
+      <spr name="/4/0" x="-1" y="-10" z="0"/>
+      <spr name="/4/0" x="16" y="1" z="0"/>
+    </cell>
+  </anim>
 </animations>
