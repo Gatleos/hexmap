@@ -3,6 +3,35 @@
 		"name": "Army",
 		"full": {
 			"animFile": "monsters.anim",
+			"idle": "mon6",
+			"wound1": "mon5",
+			"wound2": "mon4",
+			"wound3": "mon3"
+		},
+		"half": {
+			"animFile": "monsters.anim",
+			"idle": "mon6",
+			"wound1": "mon5",
+			"wound2": "mon4",
+			"wound3": "mon3",
+			"wound4": "mon2",
+			"wound5": "mon1"
+		},
+		"quarter": {
+			"animFile": "monsters.anim",
+			"idle": "mon6",
+			"wound1": "mon5",
+			"wound2": "mon4",
+			"wound3": "mon3",
+			"wound4": "mon2",
+			"wound5": "mon1"
+		},
+		"maxHitPoints": 100000
+	},
+	"un_caravan": {
+		"name": "Caravan",
+		"full": {
+			"animFile": "monsters.anim",
 			"idle": "Samus"
 		},
 		"half": {
@@ -12,6 +41,7 @@
 		"quarter": {
 			"animFile": "monsters.anim",
 			"idle": "Samus"
-		}
+		},
+		"maxHitPoints": 100
 	}
 }

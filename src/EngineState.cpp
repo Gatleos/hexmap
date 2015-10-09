@@ -14,6 +14,8 @@
 #include "MapEntity.h"
 #include <limits>
 
+#include "HealthBar.h"
+
 #define MAPX 128
 #define MAPY 128
 
@@ -46,6 +48,12 @@ void EngineState::init() {
 	siteMenu = UIdef::SiteMenu::instance();
 	UI::addNewLayout(siteMenu);
 	UI::addNewLayout(UIdef::DeployGroupMenu::instance());
+	auto site = HEXMAP.addSite(&SiteS::get(SiteS::CITY), HEXMAP.addFaction());
+	site->pop.addSize(Population::GROUP_MIL, 300.0f);
+	site->resources[SiteS::FOOD] = 800000;
+	site->setMapPos({ 1, 1 });
+	UIdef::setSite(*site);
+	UIdef::DeployGroupMenu::instance()->show();
 	// Entities
 	//auto* f = HEXMAP.addFaction();
 	//for (int x = 0; x < 16384; x++) {
@@ -63,6 +71,7 @@ void EngineState::init() {
 	//shader.setParameter("brightness", 0.9f);
 	//engine->window->setFramerateLimit(600);
 	engine->pushState(MapControlState::instance());
+	UI::desktop->LoadThemeFromFile("data/test.theme");
 }
 void EngineState::end() {
 }
