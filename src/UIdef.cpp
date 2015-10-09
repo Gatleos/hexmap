@@ -382,7 +382,6 @@ namespace UIdef {
 	void DeployGroupMenu::updateType() {
 		int index = typeList_->GetSelectedItem();
 		unit_.setStaticUnit(&MapUnitS::get(index + 1));
-		unit_.setAnimationType(MapEntityS::anim::IDLE);
 	}
 
 
