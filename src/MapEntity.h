@@ -43,7 +43,7 @@ public:
 
 class MapEntityS {
 public:
-	enum anim{ IDLE, ANIM_NUM };
+	enum anim{ IDLE, WOUND1, WOUND2, WOUND3, WOUND4, WOUND5, ANIM_NUM };
 	static const array<string, ANIM_NUM> animTypes;
 public:
 	enum res {
@@ -60,29 +60,34 @@ public:
 
 // Anything on a HexMap which has a hex position and is drawn along
 // with the map is derived from this
-class MapEntity {
+class MapEntity : public sf::Drawable, public sf::Transformable {
 	const MapEntityS* mes;
 protected:
+	static int zoomLevel;
 	// Current position
 	sf::Vector2i pos;
 	array<AnimHandler, ZOOM_LEVELS> handlers_;
 	HexMap* hm;
 	Faction* faction;
 public:
+	static void setZoomLevel(int zoom);
+	static int getZoomLevel();
 	int id;
 	MapEntity(const MapEntityS* sEnt, HexMap* hmSet, Faction* parent);
+	void setStaticEntity(const MapEntityS* sEnt);
 	void setAnimationType(MapEntityS::anim num);
 	bool initMapPos(sf::Vector2i axialCoord);
 	bool setMapPos(sf::Vector2i axialCoord);
 	const sf::Vector2i& getMapPos();
 	const MapEntityS* sMapEntity();
 	virtual void update(const sf::Time& timeElapsed) = 0;
+	void updateAnimation(const sf::Time& timeElapsed);
 	// Runs once per map turn
 	virtual void advanceTurn() = 0;
 	virtual void select() = 0;
 	virtual void deselect() = 0;
 	virtual void setPath(sf::Vector2i dest) = 0;
-	friend HexMap;
+	virtual void draw(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) const;
 };
 
 #endif

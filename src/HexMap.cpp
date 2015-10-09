@@ -505,6 +505,7 @@ void HexMap::setZoomLevel(int zoom) {
 	zoomLevel = clamp(zoom, 0, 2);
 	activeBgVertices_ = &bgVertices_[zoomLevel];
 	setOrigin(mapOrigin_[zoomLevel]);
+	MapEntity::setZoomLevel(zoom);
 }
 void HexMap::setAllTiles(const HexTileS& hts, mt19937& urng) {
 	sf::Vector2i chunkPos;
@@ -661,7 +662,7 @@ void HexMap::drawEnts(sf::RenderTarget& target, sf::RenderStates states) const {
 		for (int w = drawingBounds.left; w <= drawingBounds.width; w++) {
 			auto& hex = hexes_(w, h);
 			if (hex.ent != nullptr) {
-				hex.ent->handlers_[zoomLevel].draw(target, states);
+				target.draw(*hex.ent, states);
 			}
 			if (hex.spr[zoomLevel].getTextureRect().width != 0) {
 				target.draw(hex.spr[zoomLevel], states);
@@ -751,13 +752,13 @@ MapUnit* HexMap::addMapUnit(const MapUnitS* sEnt, Faction* parent) {
 void HexMap::clearEntities() {
 	factions.clear();
 	for (auto& s : sites) {
-		sf::Vector2i& pos = s.second.pos;
+		auto& pos = s.second.getMapPos();
 		getAxial(pos.x, pos.y).ent = nullptr;
 		setFeatureColor(axialToOffset(pos), sf::Color::White);
 	}
 	sites.clear();
 	for (auto& u : units) {
-		sf::Vector2i& pos = u.second.pos;
+		auto& pos = u.second.getMapPos();
 		getAxial(pos.x, pos.y).ent = nullptr;
 		setFeatureColor(axialToOffset(pos), sf::Color::White);
 	}
@@ -777,7 +778,7 @@ void HexMap::update(const sf::Time& timeElapsed) {
 		for (int w = drawingBounds.left; w <= drawingBounds.width; w++) {
 			auto& hex = hexes_(w, h);
 			if (hex.ent != nullptr) {
-				hex.ent->handlers_[zoomLevel].updateAnimation(timeElapsed);
+				hex.ent->updateAnimation(timeElapsed);
 			}
 		}
 	}

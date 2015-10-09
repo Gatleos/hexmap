@@ -6,9 +6,10 @@
 #include "HexMap.h"
 #include "clamp.h"
 #include "config.h"
+#include <assert.h>
 
 const array<string, MapEntityS::ANIM_NUM> MapEntityS::animTypes = { {
-		"idle"
+		"idle", "wound1", "wound2", "wound3", "wound4", "wound5"
 	} };
 const array<vector<std::string>, Population::GROUP_NUM> Population::activityNames = { { { "Idle", "Farm", "Wood", "Mine", "Enlist" }, { "Idle", "Guard" }, { "Idle", "Farm", "Wood", "Mine", "Breed" }
 	} };
@@ -136,8 +137,23 @@ const MapEntityS* MapEntity::sMapEntity() {
 	return mes;
 }
 
+void MapEntity::updateAnimation(const sf::Time& timeElapsed) {
+	handlers_[zoomLevel].updateAnimation(timeElapsed);
+}
+
+void MapEntity::draw(sf::RenderTarget& target, sf::RenderStates states) const {
+	states.transform *= this->getTransform();
+	handlers_[zoomLevel].draw(target, states);
+}
+
+
+
+
 MapEntityS::MapEntityS(string id) :
 id_(id) {
+	for (auto& ad : animData_) {
+		ad = &AnimationData::defaultAnim;
+	}
 }
 
 void MapEntityS::loadEntityJson(Json::Value& edata, string& element, string id) {
@@ -167,12 +183,28 @@ void MapEntityS::loadEntityJson(Json::Value& edata, string& element, string id) 
 			animNames_[i][s] = anims.get(*animName, Json::Value::null).asString();
 		}
 	}
+	// Make sure somebody messing with the animation type defs
+	// doesn't RUIN EVERYTHING
+	assert(anim::WOUND1 == anim::WOUND5 - 4);
+	// More advanced wound animations fall back to previous ones
+	// if not specified (idle<--wound1<--wound2...)
+	for (int i = 0; i < ZOOM_LEVELS; i++) {
+		for (int a = anim::WOUND1; a <= anim::WOUND5; a++) {
+			if (animNames_[i][a] == "") {
+				animNames_[i][a] = animNames_[i][a - 1];
+			}
+		}
+	}
 }
 
 MapEntity::MapEntity(const MapEntityS* sEnt, HexMap* hmSet, Faction* parent) {
-	mes = sEnt;
 	hm = hmSet;
 	faction = parent;
+	setStaticEntity(sEnt);
+}
+
+void MapEntity::setStaticEntity(const MapEntityS* sEnt) {
+	mes = sEnt;
 	// Get animation data from associated MapEntityS
 	for (int i = 0; i < ZOOM_LEVELS; i++) {
 		handlers_[i].setAnimationData(*mes->animData_[i]);
@@ -184,4 +216,14 @@ void MapEntity::setAnimationType(MapEntityS::anim num) {
 		handlers_[i].setAnimation(mes->animNames_[i][num]);
 		handlers_[i].randomFrame(rng::r);
 	}
+}
+
+int MapEntity::zoomLevel = 0;
+
+void MapEntity::setZoomLevel(int zoom) {
+	zoomLevel = zoom;
+}
+
+int MapEntity::getZoomLevel() {
+	return zoomLevel;
 }
