@@ -4,11 +4,9 @@
 #include <array>
 #include <SFML/Graphics.hpp>
 
-#define TIER_NUM 7
+#define HEALTH_TIER_NUM 7
 
 class HealthBar : public sf::Drawable, public sf::Transformable {
-	static std::array<int, TIER_NUM> tierValues;
-	static std::array<sf::Color, TIER_NUM> tierColors;
 	int health;
 	int healthTier;
 	sf::RectangleShape rectBottom;
@@ -16,6 +14,8 @@ class HealthBar : public sf::Drawable, public sf::Transformable {
 	sf::Vector2f size;
 	void setTier(int tier);
 public:
+	static const std::array<int, HEALTH_TIER_NUM> tierValues;
+	static const std::array<sf::Color, HEALTH_TIER_NUM> tierColors;
 	HealthBar();
 	void setSize(const sf::Vector2f& size);
 	void setHealth(int health);

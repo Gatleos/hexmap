@@ -1,9 +1,9 @@
 #include "clamp.h"
 #include "HealthBar.h"
 
-std::array<int, TIER_NUM> HealthBar::tierValues = { 0, 100, 500, 1500, 3000, 6000, 10000 };
-std::array<sf::Color, TIER_NUM> HealthBar::tierColors = { sf::Color(0, 0, 0), sf::Color(255, 0, 0), sf::Color(255, 127, 39), sf::Color(252, 241, 41),
-sf::Color(64, 251, 43), sf::Color(43, 163, 251), sf::Color(136, 45, 249) };
+const std::array<int, HEALTH_TIER_NUM> HealthBar::tierValues = { 0, 100, 500, 1500, 3000, 6000, 10000 };
+const std::array<sf::Color, HEALTH_TIER_NUM> HealthBar::tierColors = { sf::Color(0, 0, 0), sf::Color(255, 0, 0), sf::Color(255, 127, 39),
+sf::Color(252, 241, 41), sf::Color(64, 251, 43), sf::Color(43, 163, 251), sf::Color(136, 45, 249) };
 
 HealthBar::HealthBar() {
 	health = 0;
@@ -16,7 +16,7 @@ void HealthBar::setSize(const sf::Vector2f& size) {
 }
 
 void HealthBar::setHealth(int health) {
-	this->health = clamp(health, 0, tierValues[TIER_NUM - 1]);
+	this->health = clamp(health, 0, tierValues[HEALTH_TIER_NUM - 1]);
 }
 
 int HealthBar::getHealth() {
@@ -28,14 +28,14 @@ int HealthBar::getTier() {
 }
 
 void HealthBar::setTier(int tier) {
-	healthTier = clamp(tier, 0, TIER_NUM - 2);
+	healthTier = clamp(tier, 0, HEALTH_TIER_NUM - 2);
 	rectTop.setFillColor(tierColors[healthTier + 1]);
 	rectBottom.setFillColor(tierColors[healthTier]);
 }
 
 bool HealthBar::updateBars() {
 	int oldTier = healthTier;
-	setTier(TIER_NUM - 2);
+	setTier(HEALTH_TIER_NUM - 2);
 	for (int t = 0; t < tierValues.size(); t++) {
 		if (health < tierValues[t]) {
 			setTier(t - 1);
