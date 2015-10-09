@@ -1,6 +1,3 @@
-Label#good {
-	Color: #1df95bff;
-}
-Label#bad {
-	Color: #f9321dff;
+Label:INSENSITIVE {
+	Color: #ff0000ff;
 }
