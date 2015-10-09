@@ -22,6 +22,7 @@
     <ClInclude Include="..\src\Array2d.h" />
     <ClInclude Include="..\src\BezierCurve.h" />
     <ClInclude Include="..\src\compat.h" />
+    <ClInclude Include="..\src\HealthBar.h" />
     <ClInclude Include="..\src\HexMap.h" />
     <ClInclude Include="..\src\HexTile.h" />
     <ClInclude Include="..\src\config.h" />
@@ -49,6 +50,7 @@
     <ClCompile Include="..\pugixml\src\pugixml.cpp" />
     <ClCompile Include="..\src\AnimHandler.cpp" />
     <ClCompile Include="..\src\EngineState.cpp" />
+    <ClCompile Include="..\src\HealthBar.cpp" />
     <ClCompile Include="..\src\HexMapGen.cpp" />
     <ClCompile Include="..\src\HexTile.cpp" />
     <ClCompile Include="..\src\config.cpp" />
