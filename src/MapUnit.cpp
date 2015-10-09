@@ -50,13 +50,13 @@ MapEntity(sUnit, hmSet, parent) {
 	su = sUnit;
 	hp.setSize({ 50.0f, 10.0f });
 	hp.setPosition({ -25.0f, -50.0f });
-	hp.setHealth(0);
-	hp.updateBars();
+	setHealth(0);
 }
 
 void MapUnit::setStaticUnit(const MapUnitS* sUnit) {
 	su = sUnit;
 	setStaticEntity(sUnit);
+	setHealth(getHealth());
 }
 
 bool MapUnit::walkPath() {
