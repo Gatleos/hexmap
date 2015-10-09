@@ -75,8 +75,8 @@ void MapUnit::setPath(sf::Vector2i dest) {
 }
 
 void MapUnit::setHealth(int health) {
-	hitPoints = health;
 	health = clamp(health, 0, HealthBar::tierValues[HEALTH_TIER_NUM - 1]);
+	hitPoints = health;
 	hp.setHealth(health);
 	hp.updateBars();
 	switch (hp.getTier()) {
