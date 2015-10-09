@@ -61,6 +61,7 @@ namespace UI {
 	// This widget will set the keyboard input flag for this loop when it receives
 	// keystrokes, "consuming" the input; should be added to any text input widget
 	void connectKeyboardInputFlag(shared_ptr<sfg::Widget> w);
+	void setMouseFlag();
 	const sf::Image& image();
 	const sf::Texture& texture();
 	SpriteSheet& sprites();

@@ -135,7 +135,6 @@ bool UI::gotInput() {
 }
 
 void UI::connectMouseInputFlag(shared_ptr<sfg::Widget> w) {
-	static auto setMouseFlag = [](){UI_gotMouseInput = true; };
 	w->GetSignal(sfg::Window::OnMouseLeftPress).Connect(setMouseFlag);
 	w->GetSignal(sfg::Window::OnMouseRightPress).Connect(setMouseFlag);
 }
@@ -143,7 +142,10 @@ void UI::connectMouseInputFlag(shared_ptr<sfg::Widget> w) {
 void UI::connectKeyboardInputFlag(shared_ptr<sfg::Widget> w) {
 	static auto setKeyboardFlag = [](){UI_gotKeyboardInput = true; };
 	w->GetSignal(sfg::Window::OnKeyPress).Connect(setKeyboardFlag);
-	w->GetSignal(sfg::Window::OnKeyPress).Connect(setKeyboardFlag);
+}
+
+void UI::setMouseFlag() {
+	UI_gotMouseInput = true;
 }
 
 const sf::Image& UI::image() {

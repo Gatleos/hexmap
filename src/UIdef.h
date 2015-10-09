@@ -34,16 +34,20 @@ namespace UIdef {
 	};
 	class DeployGroupMenu : public UILayout {
 		DeployGroupMenu();
+		// UI elements
 		shared_ptr<sfg::Label> coordLabel_;
 		shared_ptr<sfg::Button> selectCoordButton_;
+		shared_ptr<sfg::Canvas> preview_;
+		vector<shared_ptr<sfg::Label>> armyLabel_;
+		shared_ptr<sfg::ComboBox> typeList_;
+		//
 		sf::Vector2i deployTo_;
-		vector<shared_ptr<sfg::Label>> popLabel_;
-		vector<shared_ptr<sfg::Label>> resLabel_;
 		int deploySignal_;
+		MapUnit unit_;
+		sf::View previewView_;
 	public:
 		Site* site_;
-		vector<shared_ptr<sfg::Adjustment>> popAdjust;
-		vector<shared_ptr<sfg::Adjustment>> resAdjust;
+		vector<shared_ptr<sfg::Adjustment>> armyAdjust;
 		static shared_ptr<DeployGroupMenu> instance();
 		void setSite(Site& site);
 		void setCoord(const sf::Vector2i& coord);
@@ -51,6 +55,9 @@ namespace UIdef {
 		void updateSiteResources();
 		void reset();
 		bool optionsValid();
+		void update(const sf::Time& timeElapsed);
+		void recenterPreview();
+		void updateType();
 		shared_ptr<sfg::Window> window;
 	};
 	class MapUnitInfo : public UILayout {

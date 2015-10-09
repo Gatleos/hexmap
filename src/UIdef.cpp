@@ -178,15 +178,50 @@ namespace UIdef {
 		idlePercent[group]->SetText(ss.str());
 	}
 
+
+
 	shared_ptr<DeployGroupMenu> DeployGroupMenu::instance() {
 		static auto dgm = make_shared<DeployGroupMenu>(DeployGroupMenu());
 		return dgm;
 	}
-	DeployGroupMenu::DeployGroupMenu() {
+	DeployGroupMenu::DeployGroupMenu() :
+		unit_(&MapUnitS::get(MapUnitS::NONE), nullptr, nullptr)
+	{
 		deploySignal_ = -1;
-		window = sfg::Window::Create(sfg::Window::Style::TOPLEVEL | sfg::Window::Style::CLOSE);
+		window = sfg::Window::Create(sfg::Window::Style::BACKGROUND | sfg::Window::Style::TITLEBAR | sfg::Window::Style::CLOSE);
 		window->GetSignal(sfg::Window::OnCloseButton).Connect(bind([](shared_ptr<sfg::Window> win) {win->Show(false); }, window));
-		auto mainBox = sfg::Box::Create(sfg::Box::Orientation::VERTICAL);
+		// displays confirmation buttons below main ui
+		auto mainBox = sfg::Box::Create(sfg::Box::Orientation::VERTICAL, 8.0f);
+		// displays type selection to left of details
+		auto typeBox = sfg::Box::Create();
+		// position and entity options
+		auto detailsBox = sfg::Box::Create(sfg::Box::Orientation::VERTICAL);
+		// places preview of entity sprite below type selection combobox
+		auto previewBox = sfg::Box::Create(sfg::Box::Orientation::VERTICAL);
+		// Type Select
+		//////////////
+		auto typeFrame = sfg::Frame::Create("Type");
+		typeList_ = sfg::ComboBox::Create();
+		typeList_->GetSignal(sfg::ComboBox::OnSelect).Connect([](){
+			DeployGroupMenu::instance()->updateType();
+		});
+		typeList_->GetSignal(sfg::ComboBox::OnSelect).Connect(&UI::setMouseFlag);
+		UI::connectMouseInputFlag(typeList_);
+		for (int u = 1; u < MapUnitS::UNIT_NUM; u++) {
+			typeList_->AppendItem(MapUnitS::get(u).name_);
+		}
+		typeList_->SelectItem(0);
+		this->updateType();
+		// Preview
+		//////////
+		preview_ = sfg::Canvas::Create();
+		preview_->GetSignal(sfg::Canvas::OnSizeAllocate).Connect(std::bind(&DeployGroupMenu::recenterPreview, this));
+		preview_->SetRequisition({ 1.0f, 1.0f });
+		previewView_.setCenter({ 0.0f, 0.0f });
+		previewBox->Pack(typeList_, false);
+		previewBox->Pack(preview_);
+		typeFrame->Add(previewBox);
+		typeBox->Pack(typeFrame);
 		// Position
 		///////////
 		auto posFrame = sfg::Frame::Create("Position");
@@ -198,76 +233,55 @@ namespace UIdef {
 		UI::connectMouseInputFlag(selectCoordButton_);
 		posBox->Pack(selectCoordButton_);
 		posFrame->Add(posBox);
-		mainBox->Pack(posFrame);
-		// People
-		/////////
-		auto peopleBox = sfg::Box::Create(sfg::Box::Orientation::VERTICAL);
-		auto peopleFrame = sfg::Frame::Create("People");
-		for (auto& g : Population::groupNames) {
-			auto boxH = sfg::Box::Create();
-			// Group name
-			auto label = sfg::Label::Create(g);
-			label->SetAlignment({ 0.0f, 0.0f });
-			boxH->Pack(label, false);
+		detailsBox->Pack(posFrame);
+		// Settings
+		///////////
+		auto soldierBox = sfg::Box::Create(sfg::Box::Orientation::VERTICAL, 4.0f);
+		auto settingFrame = sfg::Frame::Create("Settings");
+		std::array<std::string, 2> aLabel = {"Soldiers: ", "Days of rations: "};
+		for (int a = 0; a < 2; a++) {
+			auto lBox = sfg::Box::Create();
+			lBox->Pack(sfg::Label::Create(aLabel[a]), false);
+			soldierBox->Pack(lBox);
+			sfg::Box::Create()->Pack(sfg::Label::Create(), false);
+			auto boxS = sfg::Box::Create();
 			// Spin button for adjustment
 			auto spin = sfg::SpinButton::Create(0.0f, 100.0f, 1.0f);
-			popAdjust.push_back(spin->GetAdjustment());
-			boxH->Pack(spin, false);
-			label->SetRequisition({ 60.0f, 20.0f });
-			spin->SetRequisition({ 80.0f, 20.0f });
-			// Pop total label
-			popLabel_.emplace_back(sfg::Label::Create());
-			popLabel_.back()->SetRequisition({ 60.0f, 20.0f });
-			boxH->Pack(popLabel_.back(), false);
-			peopleBox->Pack(boxH, true, false);
+			armyAdjust.push_back(spin->GetAdjustment());
+			spin->GetSignal(sfg::SpinButton::OnValueChanged).Connect([]() {
+				DeployGroupMenu::instance()->updateSiteResources();
+			});
+			UI::connectKeyboardInputFlag(spin);
+			UI::connectMouseInputFlag(spin);
+			boxS->Pack(spin, false);
+			spin->SetRequisition({ 140.0f, 20.0f });
+			// Label
+			auto l = sfg::Label::Create();
+			armyLabel_.emplace_back(l);
+			boxS->Pack(armyLabel_.back(), false);
+			soldierBox->Pack(boxS, true, false);
 		}
-		peopleFrame->Add(peopleBox);
-		mainBox->Pack(peopleFrame);
-		// Resources
-		////////////
-		auto resourceBox = sfg::Box::Create(sfg::Box::Orientation::VERTICAL);
-		auto resourceFrame = sfg::Frame::Create("Resources");
-		for (auto& r : MapEntityS::resourceNames) {
-			auto boxH = sfg::Box::Create();
-			// Resource name
-			auto label = sfg::Label::Create(r);
-			label->SetAlignment({ 0.0f, 0.0f });
-			boxH->Pack(label, false);
-			// Spin button for adjustment
-			auto spin = sfg::SpinButton::Create(0.0f, 100.0f, 1.0f);
-			resAdjust.push_back(spin->GetAdjustment());
-			boxH->Pack(spin, false);
-			label->SetRequisition({ 60.0f, 20.0f });
-			spin->SetRequisition({ 80.0f, 20.0f });
-			// Pop total label
-			resLabel_.emplace_back(sfg::Label::Create());
-			resLabel_.back()->SetRequisition({ 60.0f, 20.0f });
-			boxH->Pack(resLabel_.back(), false);
-			resourceBox->Pack(boxH, true, false);
-		}
-		resourceFrame->Add(resourceBox);
-		mainBox->Pack(resourceFrame);
+		settingFrame->Add(soldierBox);
+		detailsBox->Pack(settingFrame);
+		typeBox->Pack(detailsBox);
+		mainBox->Pack(typeBox);
 		// Options
 		//////////
-		auto boxH = sfg::Box::Create();
+		// arranges confirmation buttons horizontally
+		auto optionBox = sfg::Box::Create(sfg::Box::Orientation::HORIZONTAL, 10.0f);
 		// Deploy
 		auto deployButton = sfg::Button::Create("Deploy");
 		deployButton->GetSignal(sfg::Button::OnLeftClick).Connect([]() {
 			auto dMenu = DeployGroupMenu::instance();
 			if (dMenu->optionsValid()) {
-				auto* deployed = HEXMAP.addMapUnit(&MapUnitS::get(MapUnitS::ARMY), HEXMAP.playerFaction());
+				int choice = 0;
+				auto* deployed = HEXMAP.addMapUnit(&MapUnitS::get(choice), HEXMAP.playerFaction());
+				switch (choice) {
+				case MapUnitS::UNIT_ARMY:
+					break;
+				}
 				deployed->initMapPos(dMenu->deployTo_);
 				deployed->setAnimationType(MapEntityS::anim::IDLE);
-				// Take pop values
-				for (int i = 0; i < Population::groupNames.size(); i++) {
-					//deployed->pop.setSize(i, dMenu->popAdjust[i]->GetValue());
-					//dMenu->ent->pop.addSize(i, -dMenu->popAdjust[i]->GetValue());
-				}
-				// Take resource values
-				for (int i = 0; i < Population::groupNames.size(); i++) {
-					//dMenu->ent->resources[i] -= dMenu->resAdjust[i]->GetValue();
-					//deployed->resources[i] += dMenu->resAdjust[i]->GetValue();
-				}
 				// Reset UI
 				dMenu->reset();
 				UIdef::updateSitePop();
@@ -275,15 +289,15 @@ namespace UIdef {
 				dMenu->window->Show(false);
 			}
 		});
-		boxH->Pack(deployButton, true, false);
+		optionBox->Pack(deployButton, false, false);
 		UI::connectMouseInputFlag(deployButton);
 		// Cancel
 		auto cancelButton = sfg::Button::Create("Cancel");
 		//addTooltip(cancelButton)->Add(sfg::Label::Create("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."));
 		cancelButton->GetSignal(sfg::Button::OnLeftClick).Connect(bind([](shared_ptr<sfg::Window> win) {win->Show(false); }, window));
 		UI::connectMouseInputFlag(cancelButton);
-		boxH->Pack(cancelButton, true, false);
-		mainBox->Pack(boxH, true, false);
+		optionBox->Pack(cancelButton, false, false);
+		mainBox->Pack(optionBox, true, false);
 		// Alignment
 		////////////
 		window->Add(mainBox);
@@ -318,30 +332,30 @@ namespace UIdef {
 	}
 	void DeployGroupMenu::updateSitePop() {
 		stringstream ss;
-		for (int i = 0; i < popLabel_.size(); i++) {
-			auto p = popLabel_[i];
-			ss << " / " << (int)site_->pop.size(i);
-			p->SetText(ss.str());
-			ss.str(string());
-			popAdjust[i]->SetUpper((int)site_->pop.size(i));
-		}
+		// soldier population
+		armyAdjust[0]->SetUpper((int)site_->pop.size(Population::GROUP_MIL));
+		ss << " / " << (int)site_->pop.size(Population::GROUP_MIL);
+		armyLabel_[0]->SetText(ss.str());
+		//ss.str(string());
 	}
 	void DeployGroupMenu::updateSiteResources() {
 		stringstream ss;
-		for (int i = 0; i < resLabel_.size(); i++) {
-			auto r = resLabel_[i];
-			ss << " / " << (int)site_->resources[i];
-			r->SetText(ss.str());
-			ss.str(string());
-			resAdjust[i]->SetUpper((int)site_->resources[i]);
+		// food stocks
+		int totalFood = (int)armyAdjust[1]->GetValue() * (int)armyAdjust[0]->GetValue();
+		ss << " (" << totalFood << " / " << (int)site_->resources[SiteS::FOOD] << " food)";
+		if ((int)armyAdjust[0]->GetValue() < 1) {
+			armyAdjust[1]->SetUpper(0.0f);
 		}
+		else {
+			armyAdjust[1]->SetUpper((int)site_->resources[SiteS::FOOD] / (int)armyAdjust[0]->GetValue());
+		}
+		armyLabel_[1]->SetText(ss.str());
+		unit_.setHealth(armyAdjust[0]->GetValue());
+		//ss.str(string());
 	}
 	void DeployGroupMenu::reset() {
-		for (int i = 0; i < Population::groupNames.size(); i++) {
-			popAdjust[i]->SetValue(0.0f);
-		}
-		for (int i = 0; i < Population::groupNames.size(); i++) {
-			resAdjust[i]->SetValue(0.0f);
+		for (auto a : armyAdjust) {
+			a->SetValue(0.0f);
 		}
 		setCoord({ -1, -1 });
 	}
@@ -349,15 +363,29 @@ namespace UIdef {
 		if (deployTo_ == sf::Vector2i(-1, -1)) {
 			return false;
 		}
-		bool validSize = false;
-		// Check if at least one category has at least one person selected
-		for (int i = 0; i < Population::groupNames.size(); i++) {
-			if (popAdjust[i]->GetValue() > 0.0f) {
-				validSize = true;
-			}
-		}
-		return validSize;
+		return true;
 	}
+	void DeployGroupMenu::update(const sf::Time& timeElapsed) {
+		MapEntity::setZoomLevel(0);
+		unit_.updateAnimation(timeElapsed);
+		preview_->SetView(previewView_);
+		preview_->Bind();
+		preview_->Clear(sf::Color::Transparent);
+		preview_->Draw(unit_);
+		preview_->Display();
+		preview_->Unbind();
+	}
+	void DeployGroupMenu::recenterPreview() {
+		auto alloc = preview_->GetAllocation();
+		previewView_.setSize({alloc.width, alloc.height});
+	}
+	void DeployGroupMenu::updateType() {
+		int index = typeList_->GetSelectedItem();
+		unit_.setStaticUnit(&MapUnitS::get(index + 1));
+		unit_.setAnimationType(MapEntityS::anim::IDLE);
+	}
+
+
 	
 	shared_ptr<MapUnitInfo> MapUnitInfo::instance() {
 		static auto mui = make_shared<MapUnitInfo>(MapUnitInfo());
