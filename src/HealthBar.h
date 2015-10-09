@@ -1,3 +1,6 @@
+#ifndef HEALTHBAR_H
+#define HEALTHBAR_H
+
 #include <array>
 #include <SFML/Graphics.hpp>
 
@@ -14,10 +17,13 @@ class HealthBar : public sf::Drawable, public sf::Transformable {
 	void setTier(int tier);
 public:
 	HealthBar();
-	void setSize(sf::Vector2f& size);
+	void setSize(const sf::Vector2f& size);
 	void setHealth(int health);
 	int getHealth();
 	int getTier();
+	// Returns true if the healthTier has changed
 	bool updateBars();
 	virtual void draw(sf::RenderTarget &target, sf::RenderStates states = sf::RenderStates::Default) const;
 };
+
+#endif

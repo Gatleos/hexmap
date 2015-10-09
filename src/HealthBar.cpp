@@ -1,7 +1,7 @@
 #include "clamp.h"
 #include "HealthBar.h"
 
-std::array<int, TIER_NUM> HealthBar::tierValues = { 0, 100, 500, 2000, 10000, 20000, 50000 };
+std::array<int, TIER_NUM> HealthBar::tierValues = { 0, 100, 500, 1500, 3000, 6000, 10000 };
 std::array<sf::Color, TIER_NUM> HealthBar::tierColors = { sf::Color(0, 0, 0), sf::Color(255, 0, 0), sf::Color(255, 127, 39), sf::Color(252, 241, 41),
 sf::Color(64, 251, 43), sf::Color(43, 163, 251), sf::Color(136, 45, 249) };
 
@@ -10,7 +10,7 @@ HealthBar::HealthBar() {
 	healthTier = 0;
 }
 
-void HealthBar::setSize(sf::Vector2f& size) {
+void HealthBar::setSize(const sf::Vector2f& size) {
 	this->size = size;
 	rectBottom.setSize(size);
 }
