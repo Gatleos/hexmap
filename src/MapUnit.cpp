@@ -13,7 +13,8 @@ std::array<std::unique_ptr<MapUnitS>, MapUnitS::UNIT_NUM> MapUnitS::unit = { {
 	} };
 
 MapUnitS::MapUnitS(std::string id) :
-MapEntityS(id) {
+MapEntityS(id),
+maxHitPoints(0) {
 }
 
 void MapUnitS::loadJson(std::string filename) {
@@ -74,7 +75,8 @@ void MapUnit::setPath(sf::Vector2i dest) {
 }
 
 void MapUnit::setHealth(int health) {
-	health = clamp(health, 0, su->maxHitPoints);
+	hitPoints = health;
+	health = clamp(health, 0, HealthBar::tierValues[HEALTH_TIER_NUM - 1]);
 	hp.setHealth(health);
 	hp.updateBars();
 	switch (hp.getTier()) {
