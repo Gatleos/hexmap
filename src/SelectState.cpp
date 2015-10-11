@@ -31,10 +31,12 @@ void SelectState::init() {
 	if (selectableCoords_ != nullptr) {
 		for (auto& v : *selectableCoords_) {
 			selectable_.push_back(sf::Sprite());
-			setupSprite(selectable_.back(), (sf::Vector2f)v);
+			sf::Vector2f vf = (sf::Vector2f)v;
+			setupSprite(selectable_.back(), vf);
 		}
 	}
-	setupSprite(selected_, sf::Vector2f(0.0f, 0.0f));
+	sf::Vector2f vf(0.0f, 0.0f);
+	setupSprite(selected_, vf);
 }
 void SelectState::end() {
 }

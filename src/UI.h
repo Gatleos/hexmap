@@ -67,7 +67,7 @@ namespace UI {
 	SpriteSheet& sprites();
 	// Lose focus on all windows and contained widgets
 	void dropFocus();
-	void selectHex(sf::Vector2f& hexCoord);
+	void selectHex(const sf::Vector2f& hexCoord);
 };
 
 #endif

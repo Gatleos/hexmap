@@ -48,7 +48,7 @@ namespace UIdef {
 		window1->Add(box1);
 		addWindow(window1, UIAlign({ 1.0f, 0.0f, 210.0f, 120.0f }, UI::ALIGN_RIGHT | UI::ALIGN_FRAC_POSX));
 	}
-	void MapGenDebug::updateDebugInfo(sf::Vector2i& mousePos, sf::Vector2i& tilePos, sf::Vector2i& camPos) {
+	void MapGenDebug::updateDebugInfo(const sf::Vector2i& mousePos, const sf::Vector2i& tilePos, const sf::Vector2i& camPos) {
 		stringstream ss;
 		// camPos
 		ss << camPos.x << "," << camPos.y;
