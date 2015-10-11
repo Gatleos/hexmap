@@ -229,6 +229,6 @@ void UI::dropFocus() {
 	UI_dummyWindow->GrabFocus();
 }
 
-void UI::selectHex(sf::Vector2f& hexCoord) {
+void UI::selectHex(const sf::Vector2f& hexCoord) {
 	hexSelector.setPosition(HEXMAP.hexToPixel(hexCoord) - HEXMAP.getOrigin() - sf::Vector2f(1.0f, 1.0f));
 }

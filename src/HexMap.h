@@ -3,6 +3,7 @@
 
 #include <deque>
 #include <set>
+#include <list>
 #include <functional>
 #include "Compare.h"
 #include "Site.h"
@@ -93,7 +94,7 @@ private:
 	// Currently used vertices
 	Array2D<sf::VertexArray>* activeBgVertices_;
 	std::deque<sf::Vector2f> land;
-	list<Faction> factions;
+	std::list<Faction> factions;
 	unsigned int nextSiteId;
 	map<int, Site> sites;
 	unsigned int nextUnitId;

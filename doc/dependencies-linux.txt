@@ -12,4 +12,4 @@ To gather the dependencies:
 If the executable can't find the shared libraries:
 --------------------------------------------------
 1.) Add "/usr/local/lib" to the file "/etc/ld.so.conf"
-2.) Run "ldconfig -v"
+2.) Run "sudo ldconfig -v"

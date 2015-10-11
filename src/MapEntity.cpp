@@ -95,10 +95,10 @@ float Population::size(unsigned int group) const {
 
 void Population::popGrowth(int turns) {
 	// P = P_0 * e ^ (r * t)
-	setSize(GROUP_CIV, sizes_[GROUP_CIV] * std::powf(2.71828f, (float)turns * growthRate[GROUP_CIV]));
+	setSize(GROUP_CIV, sizes_[GROUP_CIV] * std::pow(2.71828f, (float)turns * growthRate[GROUP_CIV]));
 	// Prisoners will not breed unless told
 	float rate = activities_[GROUP_PR][PR_BREED] * growthRate[GROUP_PR] * 0.01f - deathRate;
-	setSize(GROUP_PR, sizes_[GROUP_PR] * std::powf(2.71828f, (float)turns * rate));
+	setSize(GROUP_PR, sizes_[GROUP_PR] * std::pow(2.71828f, (float)turns * rate));
 }
 
 bool MapEntity::initMapPos(sf::Vector2i axialCoord) {
