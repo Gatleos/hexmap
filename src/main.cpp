@@ -8,7 +8,13 @@ int main(int argc, char* argv[]) {
 	try {
 		if (argc == 2) {
 			if (!std::strcmp(argv[1], "-v")) {
-				std::cout << PROG_VERSION << " compiled " << __DATE__ << " " << __TIME__;
+				std::cout << PROG_VERSION << " compiled " << __DATE__ << " " << __TIME__ << " (";
+				#ifdef NDEBUG
+                std::cout << "Release";
+				#else
+				std::cout << "Debug";
+                #endif
+				std::cout << " build)\n";
 			}
 		}
 		else {
