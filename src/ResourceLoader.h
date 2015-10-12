@@ -30,6 +30,10 @@ public:
 	string getRoot();
 };
 
+void setQuad(sf::VertexArray& vArray, int index, const sf::FloatRect& pos, const sf::FloatRect& tex);
+void setPosQuad(sf::VertexArray& vArray, int index, const sf::FloatRect& pos);
+void setTexQuad(sf::VertexArray& vArray, int index, const sf::FloatRect& tex);
+
 #define RESOURCE ResourceLoader::instance()
 
 #endif

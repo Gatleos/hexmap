@@ -197,3 +197,51 @@ bool ResourceLoader::loadAnimData(AnimationData& aData, const pugi::xml_document
 	}
 	return true;
 }
+
+void setQuad(sf::VertexArray& vArray, int index, const sf::FloatRect& pos, const sf::FloatRect& tex) {
+	vArray[index].position.x = pos.left;
+	vArray[index].position.y = pos.top;
+	vArray[index].texCoords.x = tex.left;
+	vArray[index].texCoords.y = tex.top;
+	index++;
+	vArray[index].position.x = pos.left + pos.width;
+	vArray[index].position.y = pos.top;
+	vArray[index].texCoords.x = tex.left + tex.width;
+	vArray[index].texCoords.y = tex.top;
+	index++;
+	vArray[index].position.x = pos.left + pos.width;
+	vArray[index].position.y = pos.top + pos.height;
+	vArray[index].texCoords.x = tex.left + tex.width;
+	vArray[index].texCoords.y = tex.top + tex.height;
+	index++;
+	vArray[index].position.x = pos.left;
+	vArray[index].position.y = pos.top + pos.height;
+	vArray[index].texCoords.x = tex.left;
+	vArray[index].texCoords.y = tex.top + tex.height;
+}
+void setPosQuad(sf::VertexArray& vArray, int index, const sf::FloatRect& pos) {
+	vArray[index].position.x = pos.left;
+	vArray[index].position.y = pos.top;
+	index++;
+	vArray[index].position.x = pos.left + pos.width;
+	vArray[index].position.y = pos.top;
+	index++;
+	vArray[index].position.x = pos.left + pos.width;
+	vArray[index].position.y = pos.top + pos.height;
+	index++;
+	vArray[index].position.x = pos.left;
+	vArray[index].position.y = pos.top + pos.height;
+}
+void setTexQuad(sf::VertexArray& vArray, int index, const sf::FloatRect& tex) {
+	vArray[index].texCoords.x = tex.left;
+	vArray[index].texCoords.y = tex.top;
+	index++;
+	vArray[index].texCoords.x = tex.left + tex.width;
+	vArray[index].texCoords.y = tex.top;
+	index++;
+	vArray[index].texCoords.x = tex.left + tex.width;
+	vArray[index].texCoords.y = tex.top + tex.height;
+	index++;
+	vArray[index].texCoords.x = tex.left;
+	vArray[index].texCoords.y = tex.top + tex.height;
+}
