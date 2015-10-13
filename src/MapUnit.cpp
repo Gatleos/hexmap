@@ -49,8 +49,6 @@ MapUnit::MapUnit(const MapUnitS* sUnit, HexMap* hmSet, Faction* parent) :
 moveTimer(0),
 MapEntity(sUnit, hmSet, parent) {
 	su = sUnit;
-	hp.setSize({ 50.0f, 10.0f });
-	hp.setPosition({ -25.0f, -50.0f });
 	setHealth(0);
 }
 
@@ -103,6 +101,15 @@ void MapUnit::setHealth(int health) {
 
 int MapUnit::getHealth() {
 	return hitPoints;
+}
+
+void MapUnit::setFood(int foodAmount) {
+	hp.setFood(foodAmount);
+	hp.updateBars();
+}
+
+int MapUnit::getFood() {
+	return hp.getFood();
 }
 
 void MapUnit::appendPath(sf::Vector2i dest) {

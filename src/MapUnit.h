@@ -34,6 +34,8 @@ public:
 	void setPath(sf::Vector2i dest);
 	void setHealth(int health);
 	int getHealth();
+	void setFood(int foodAmount);
+	int getFood();
 	void appendPath(sf::Vector2i dest);
 	void update(const sf::Time& timeElapsed);
 	void advanceTurn();

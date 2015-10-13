@@ -1,0 +1,22 @@
+{
+	"spriteSheet": "ui.sprites",
+	
+	"unitStatus": {
+		"healthBar": {
+			"barPos": [-30, -50],
+			"barSize": [60, 10],
+			"barPadding": 4
+		},
+		"foodOrbs": {
+			"fullSprite": "/food/full",
+			"halfSprite": "/food/half",
+			"emptySprite": "/food/empty",
+			"amount": 6,
+			"spacing": 2
+		},
+		"frame": {
+			"sprite": "frame/health",
+			"framePos": [-4, -4]
+		}
+	}
+}

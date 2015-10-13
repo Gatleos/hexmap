@@ -1,18 +1,102 @@
+#include <iostream>
 #include "clamp.h"
 #include "HealthBar.h"
+#include "ResourceLoader.h"
+#include "config.h"
 
 const std::array<int, HEALTH_TIER_NUM> HealthBar::tierValues = { 0, 100, 500, 1500, 3000, 6000, 10000 };
 const std::array<sf::Color, HEALTH_TIER_NUM> HealthBar::tierColors = { sf::Color(0, 0, 0), sf::Color(255, 0, 0), sf::Color(255, 127, 39),
 sf::Color(252, 241, 41), sf::Color(64, 251, 43), sf::Color(43, 163, 251), sf::Color(136, 45, 249) };
 
+sf::Vector2f HealthBar::barPos;
+sf::Vector2f HealthBar::barSize;
+int HealthBar::barPadding;
+
+SpriteSheet* HealthBar::sheet = nullptr;
+const sf::Texture* HealthBar::tex = nullptr;
+const sf::FloatRect* HealthBar::fullRect = nullptr;
+const sf::FloatRect* HealthBar::halfRect = nullptr;
+const sf::FloatRect* HealthBar::emptyRect = nullptr;
+int HealthBar::orbAmount = 0;
+sf::VertexArray HealthBar::foodOrbsDefault;
+
+void HealthBar::loadJson(std::string filename) {
+	Json::Value root = config::openJson(filename);
+	if (root.begin() == root.end()) {
+		std::cerr << "ERROR: couldn't open file \"" << filename << "\"\n";
+		return;
+	}
+	string spriteSheet = root.get("spriteSheet", "").asString();
+	/*SpriteSheet* */sheet = RESOURCE.sh(spriteSheet);
+	if (sheet == nullptr) {
+		std::cerr << "\t(requested by \"" << filename << "\")\n";
+		return;
+	}
+	tex = RESOURCE.tex(sheet->getImageName());
+	if (tex == nullptr) {
+		std::cerr << "\t(requested by \"" << filename << "\")\n";
+		return;
+	}
+	try {
+		// Unit Status
+		Json::Value uidata = root.get("unitStatus", Json::Value::null);
+		if (uidata.isNull()) {
+
+		}
+		else {
+			Json::Value sdata = uidata.get("healthBar", Json::Value::null);
+			if (sdata.isNull()) {
+
+			}
+			else {
+				// Load health bar template data
+				Json::Value arr = sdata.get("barPos", Json::Value::null);
+				barPos.x = arr[0].asInt(); barPos.y = arr[1].asInt();
+				arr = sdata.get("barSize", Json::Value::null);
+				barSize.x = arr[0].asInt(); barSize.y = arr[1].asInt();
+				barPadding = sdata.get("barPadding", Json::Value::null).asInt();
+			}
+			sdata = uidata.get("foodOrbs", Json::Value::null);
+			if (sdata.isNull()) {
+
+			}
+			else {
+				// Load food orb template data
+				fullRect = sheet->spr(sdata.get("fullSprite", Json::Value::null).asString());
+				halfRect = sheet->spr(sdata.get("halfSprite", Json::Value::null).asString());
+				emptyRect = sheet->spr(sdata.get("emptySprite", Json::Value::null).asString());
+				orbAmount = sdata.get("amount", Json::Value::null).asInt();
+				// Construct the vertex array
+				foodOrbsDefault.setPrimitiveType(sf::PrimitiveType::Quads);
+				foodOrbsDefault.resize((size_t)(orbAmount * 4));
+				float advance = std::round((barSize.x - emptyRect->width) / std::max(orbAmount - 1, 1));
+				sf::FloatRect posRect;
+				posRect.left = barPos.x;
+				posRect.top = barPos.y + barSize.y + barPadding;
+				posRect.width = emptyRect->width;
+				posRect.height = emptyRect->height;
+				for (int o = 0; o < orbAmount; o++) {
+					int indexOffset = o * 4;
+					setQuad(foodOrbsDefault, indexOffset, posRect, *emptyRect);
+					posRect.left += advance;
+				}
+			}
+		}
+	}
+	catch (std::runtime_error e) {
+		std::cerr << "";
+	}
+}
+
 HealthBar::HealthBar() {
 	health = 0;
 	healthTier = 0;
-}
-
-void HealthBar::setSize(const sf::Vector2f& size) {
-	this->size = size;
-	rectBottom.setSize(size);
+	rectTop.setPosition(barPos);
+	rectTop.setSize(barSize);
+	rectBottom.setPosition(barPos);
+	rectBottom.setSize(barSize);
+	foodOrbs = foodOrbsDefault;
+	oldFoodTurns = foodTurns = 0;
 }
 
 void HealthBar::setHealth(int health) {
@@ -33,7 +117,22 @@ void HealthBar::setTier(int tier) {
 	rectBottom.setFillColor(tierColors[healthTier]);
 }
 
+void HealthBar::setFood(int foodAmount) {
+	food = clamp(foodAmount, 0, 1000000000);
+	oldFoodTurns = foodTurns;
+	foodTurns = food / std::max(health, 1);
+}
+
+int HealthBar::getFood() {
+	return food;
+}
+
+int HealthBar::getFoodTurns() {
+	return foodTurns;
+}
+
 bool HealthBar::updateBars() {
+	// Health
 	int oldTier = healthTier;
 	setTier(HEALTH_TIER_NUM - 2);
 	for (int t = 0; t < tierValues.size(); t++) {
@@ -43,7 +142,24 @@ bool HealthBar::updateBars() {
 		}
 	}
 	float ratio = (float)(health - tierValues[healthTier]) / (float)(tierValues[healthTier + 1] - tierValues[healthTier]);
-	rectTop.setSize({ size.x * ratio, size.y });
+	rectTop.setSize({ barSize.x * ratio, barSize.y });
+	// Food
+	if (oldFoodTurns != foodTurns && isInRange(foodTurns, 0, orbAmount * 2)) {
+		int foodCounter = 0;
+		for (int o = 0; o < orbAmount; o++, foodCounter += 2) {
+			if (foodTurns <= foodCounter) {
+				setTexQuad(foodOrbs, o * 4, *emptyRect);
+			}
+			else if (foodTurns == foodCounter + 1) {
+				setTexQuad(foodOrbs, o * 4, *halfRect);
+			}
+			else {
+				setTexQuad(foodOrbs, o * 4, *fullRect);
+			}
+		}
+		oldFoodTurns = foodTurns;
+	}
+	// Return true if tier changed
 	return (oldTier != healthTier);
 }
 
@@ -51,4 +167,6 @@ void HealthBar::draw(sf::RenderTarget &target, sf::RenderStates states) const {
 	states.transform *= this->getTransform();
 	target.draw(rectBottom, states);
 	target.draw(rectTop, states);
+	states.texture = tex;
+	target.draw(foodOrbs, states);
 }
