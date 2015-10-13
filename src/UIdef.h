@@ -58,6 +58,8 @@ namespace UIdef {
 		void update(const sf::Time& timeElapsed);
 		void recenterPreview();
 		void updateType();
+		int getType();
+		void deployUnit();
 		shared_ptr<sfg::Window> window;
 	};
 	class MapUnitInfo : public UILayout {

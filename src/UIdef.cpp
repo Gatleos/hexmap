@@ -216,6 +216,10 @@ namespace UIdef {
 		//////////
 		preview_ = sfg::Canvas::Create();
 		preview_->GetSignal(sfg::Canvas::OnSizeAllocate).Connect(std::bind(&DeployGroupMenu::recenterPreview, this));
+		//preview_->GetSignal(sfg::Canvas::OnSizeAllocate).Connect([=]() mutable {
+		//	auto alloc = preview_->GetAllocation();
+		//	previewView_.setSize({ alloc.width, alloc.height });
+		//});
 		preview_->SetRequisition({ 1.0f, 1.0f });
 		previewView_.setCenter({ 0.0f, 0.0f });
 		previewBox->Pack(typeList_, false);
@@ -257,8 +261,10 @@ namespace UIdef {
 			spin->SetRequisition({ 140.0f, 20.0f });
 			// Label
 			auto l = sfg::Label::Create();
+			//l->SetRequisition({50.0f, 10.0f});
 			armyLabel_.emplace_back(l);
 			boxS->Pack(armyLabel_.back(), false);
+			boxS->SetRequisition({ 300.0f, 5.0f });
 			soldierBox->Pack(boxS, true, false);
 		}
 		settingFrame->Add(soldierBox);
@@ -271,24 +277,7 @@ namespace UIdef {
 		auto optionBox = sfg::Box::Create(sfg::Box::Orientation::HORIZONTAL, 10.0f);
 		// Deploy
 		auto deployButton = sfg::Button::Create("Deploy");
-		deployButton->GetSignal(sfg::Button::OnLeftClick).Connect([]() {
-			auto dMenu = DeployGroupMenu::instance();
-			if (dMenu->optionsValid()) {
-				int choice = 0;
-				auto* deployed = HEXMAP.addMapUnit(&MapUnitS::get(choice), HEXMAP.playerFaction());
-				switch (choice) {
-				case MapUnitS::UNIT_ARMY:
-					break;
-				}
-				deployed->initMapPos(dMenu->deployTo_);
-				deployed->setAnimationType(MapEntityS::anim::IDLE);
-				// Reset UI
-				dMenu->reset();
-				UIdef::updateSitePop();
-				UIdef::updateSiteResources();
-				dMenu->window->Show(false);
-			}
-		});
+		deployButton->GetSignal(sfg::Button::OnLeftClick).Connect(std::bind(&DeployGroupMenu::deployUnit, this));
 		optionBox->Pack(deployButton, false, false);
 		UI::connectMouseInputFlag(deployButton);
 		// Cancel
@@ -339,6 +328,9 @@ namespace UIdef {
 		//ss.str(string());
 	}
 	void DeployGroupMenu::updateSiteResources() {
+		if (armyAdjust[1]->GetValue() == 1) {
+			int x = 0;
+		}
 		stringstream ss;
 		// food stocks
 		int totalFood = (int)armyAdjust[1]->GetValue() * (int)armyAdjust[0]->GetValue();
@@ -351,6 +343,7 @@ namespace UIdef {
 		}
 		armyLabel_[1]->SetText(ss.str());
 		unit_.setHealth(armyAdjust[0]->GetValue());
+		unit_.setFood(totalFood);
 		//ss.str(string());
 	}
 	void DeployGroupMenu::reset() {
@@ -382,6 +375,23 @@ namespace UIdef {
 	void DeployGroupMenu::updateType() {
 		int index = typeList_->GetSelectedItem();
 		unit_.setStaticUnit(&MapUnitS::get(index + 1));
+	}
+	int DeployGroupMenu::getType() {
+		return typeList_->GetSelectedItem() + 1;
+	}
+	void DeployGroupMenu::deployUnit() {
+		if (optionsValid()) {
+			int choice = getType();
+			auto* deployed = HEXMAP.addMapUnit(&MapUnitS::get(choice), HEXMAP.playerFaction());
+			deployed->initMapPos(deployTo_);
+			deployed->setHealth(armyAdjust[0]->GetValue());
+			deployed->setHealth(armyAdjust[1]->GetValue());
+			// Reset UI
+			reset();
+			UIdef::updateSitePop();
+			UIdef::updateSiteResources();
+			window->Show(false);
+		}
 	}
 
 

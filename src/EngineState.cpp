@@ -51,7 +51,7 @@ void EngineState::init() {
 	auto site = HEXMAP.addSite(&SiteS::get(SiteS::CITY), HEXMAP.addFaction());
 	site->pop.addSize(Population::GROUP_MIL, 300.0f);
 	site->resources[SiteS::FOOD] = 800000;
-	site->setMapPos({ 1, 1 });
+	site->initMapPos({ 1, 1 });
 	UIdef::setSite(*site);
 	UIdef::DeployGroupMenu::instance()->show();
 	// Entities
