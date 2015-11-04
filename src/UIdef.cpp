@@ -277,7 +277,9 @@ namespace UIdef {
 		auto optionBox = sfg::Box::Create(sfg::Box::Orientation::HORIZONTAL, 10.0f);
 		// Deploy
 		auto deployButton = sfg::Button::Create("Deploy");
-		deployButton->GetSignal(sfg::Button::OnLeftClick).Connect(std::bind(&DeployGroupMenu::deployUnit, this));
+		deployButton->GetSignal(sfg::Button::OnLeftClick).Connect([]() {
+			DeployGroupMenu::instance()->deployUnit();
+		});
 		optionBox->Pack(deployButton, false, false);
 		UI::connectMouseInputFlag(deployButton);
 		// Cancel
