@@ -724,6 +724,12 @@ void HexMap::constrainView(sf::View& view) {
 	view.setCenter(upper);
 }
 
+void HexMap::centerOnTile(const sf::Vector2f& centerAxial) {
+	view.setCenter(hexToPixel(centerAxial));
+	constrainView(HEXMAP.view);
+	calculateViewArea(HEXMAP.view);
+}
+
 Faction* HexMap::playerFaction() {
 	return &factions.front();
 }
@@ -747,6 +753,21 @@ MapUnit* HexMap::addMapUnit(const MapUnitS* sEnt, Faction* parent) {
 	u.id = nextUnitId;
 	nextUnitId++;
 	return &u;
+}
+
+MapEntity* HexMap::getEntity(int id) {
+	MapEntity* ent = nullptr;
+	auto s = sites.find(id);
+	if (s == sites.end()) {
+		auto u = units.find(id);
+		if (u != units.end()) {
+			ent = &u->second;
+		}
+	}
+	else {
+		ent = &s->second;
+	}
+	return ent;
 }
 
 void HexMap::clearEntities() {

@@ -225,6 +225,8 @@ public:
 	const sf::IntRect& getChunkViewArea() const;
 	// Keep a view from moving too far outside the map boundaries
 	void constrainView(sf::View& view);
+	// Center the map view on the hex with the given axial coordinate
+	void centerOnTile(const sf::Vector2f& centerAxial);
 
 	/////////////////
 	// MapEntities //
@@ -234,6 +236,7 @@ public:
 	Faction* addFaction();
 	Site* addSite(const SiteS* sSite, Faction* parent);
 	MapUnit* addMapUnit(const MapUnitS* sEnt, Faction* parent);
+	MapEntity* getEntity(int id);
 	void clearEntities();
 	void setEntity(sf::Vector2i posOffset, MapEntity* ent);
 	void update(const sf::Time& timeElapsed);
