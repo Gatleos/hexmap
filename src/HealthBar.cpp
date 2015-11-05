@@ -20,6 +20,9 @@ const sf::FloatRect* HealthBar::emptyRect = nullptr;
 int HealthBar::orbAmount = 0;
 sf::VertexArray HealthBar::foodOrbsDefault;
 
+const sf::FloatRect* HealthBar::frameRect;
+sf::Sprite HealthBar::frameSprite;
+
 void HealthBar::loadJson(std::string filename) {
 	Json::Value root = config::openJson(filename);
 	if (root.begin() == root.end()) {
@@ -81,10 +84,26 @@ void HealthBar::loadJson(std::string filename) {
 					posRect.left += advance;
 				}
 			}
+			sdata = uidata.get("frame", Json::Value::null);
+			if (sdata.isNull()) {
+
+			}
+			else {
+				// frame sprite
+				frameRect = sheet->spr(sdata.get("sprite", Json::Value::null).asString());
+				if (frameRect != nullptr) {
+					frameSprite.setTextureRect((sf::IntRect)*frameRect);
+				}
+				frameSprite.setTexture(*tex);
+				// frame offset
+				Json::Value offsetArr = sdata.get("framePos", Json::Value::null);
+				sf::Vector2f offset = { offsetArr[0].asFloat(), offsetArr[1].asFloat() };
+				frameSprite.setPosition(barPos + offset);
+			}
 		}
 	}
 	catch (std::runtime_error e) {
-		std::cerr << "";
+		std::cerr << e.what();
 	}
 }
 
@@ -144,7 +163,7 @@ bool HealthBar::updateBars() {
 	float ratio = (float)(health - tierValues[healthTier]) / (float)(tierValues[healthTier + 1] - tierValues[healthTier]);
 	rectTop.setSize({ barSize.x * ratio, barSize.y });
 	// Food
-	if (oldFoodTurns != foodTurns && isInRange(foodTurns, 0, orbAmount * 2)) {
+	if (oldFoodTurns != foodTurns) {
 		int foodCounter = 0;
 		for (int o = 0; o < orbAmount; o++, foodCounter += 2) {
 			if (foodTurns <= foodCounter) {
@@ -165,6 +184,7 @@ bool HealthBar::updateBars() {
 
 void HealthBar::draw(sf::RenderTarget &target, sf::RenderStates states) const {
 	states.transform *= this->getTransform();
+	target.draw(frameSprite, states);
 	target.draw(rectBottom, states);
 	target.draw(rectTop, states);
 	states.texture = tex;

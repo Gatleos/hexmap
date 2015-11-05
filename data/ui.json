@@ -4,7 +4,7 @@
 	"unitStatus": {
 		"healthBar": {
 			"barPos": [-30, -50],
-			"barSize": [60, 10],
+			"barSize": [62, 10],
 			"barPadding": 4
 		},
 		"foodOrbs": {
@@ -15,7 +15,7 @@
 			"spacing": 2
 		},
 		"frame": {
-			"sprite": "frame/health",
+			"sprite": "/frame/health",
 			"framePos": [-4, -4]
 		}
 	}

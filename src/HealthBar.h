@@ -20,6 +20,9 @@ class HealthBar : public sf::Drawable, public sf::Transformable {
 	static const sf::FloatRect* emptyRect;
 	static int orbAmount;
 	static sf::VertexArray foodOrbsDefault;
+	// Frame template
+	static const sf::FloatRect* frameRect;
+	static sf::Sprite frameSprite;
 	// Health info
 	sf::VertexArray foodOrbs;
 	int health;
