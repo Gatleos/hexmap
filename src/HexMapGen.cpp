@@ -267,7 +267,6 @@ void HexMap::placeSites(mt19937& urng) {
 	sf::Color::Red, sf::Color::White, sf::Color::Yellow, lerp::brown, lerp::limeGreen, lerp::orange, lerp::purple, lerp::turquoise};
 	static function<bool(HexTile&)> condition = [](HexTile& hex){ return hex.hts->FLAGS[HexTileS::WALKABLE] && !hex.FLAGS[HexTile::MOUNTAINS]; };
 	clearEntities();
-	auto* fac = addFaction();
 	std::uniform_int_distribution<int> landChance(0, land.size() - 1);
 	std::vector<sf::Vector2i> territories;
 	for (int a = 0; a < 20; a++) {
@@ -279,31 +278,43 @@ void HexMap::placeSites(mt19937& urng) {
 	floodSelectParallel(fill, territories, 91, condition);
 	int index = 0;
 	std::vector<sf::Vector2i> output;
-	for (auto& f : fill) {
-		if (f.empty()) {
+	// cycle through the flood-filled territories, populating them with sites
+	for (auto f = fill.begin(); f != fill.end(); f++) {
+		if (f->empty()) {
 			index++;
 			continue;
 		}
-		//for (auto& h : f) {
-		//	sf::Vector2i oPos = axialToOffset(h);
-		//	pushTileColor(oPos, tColors[index%tColors.size()]);
-		//	setTile(oPos, HexTileS::get(HexTileS::TUNDRA_SNOW), urng);
-		//}
-		auto t = f.find(territories[index]);
-		if (t == f.end()) {
+		auto t = f->find(territories[index]);
+		if (t == f->end()) {
 			index++;
 			continue;
 		}
-		f.erase(t);
-		int size = (int)(0.1 * f.size());
+		f->erase(t);
+		int size = (int)(0.1 * f->size());
 		for (int a = 0; a < size; a++) {
-			std::uniform_int_distribution<int> range(0, f.size() - 1);
-			auto it = f.begin();
+			std::uniform_int_distribution<int> range(0, f->size() - 1);
+			auto it = f->begin();
 			std::advance(it, range(urng));
 			output.push_back(*it);
-			f.erase(it);
+			f->erase(it);
 		}
-		auto* c = addSite(&SiteS::get(SiteS::CITY), fac);
+		if (f == fill.begin()) {
+
+		}
+		// create a faction and place sites
+		Faction* fac = nullptr;
+		Site* c = nullptr;
+		if (f == fill.begin()) {
+			fac = playerFaction();
+			c = addSite(&SiteS::get(SiteS::CITY), fac);
+			c->pop.setSize(Population::GROUP_MIL, 1000.0f);
+			c->resources[MapEntityS::FOOD] = 800000;
+		}
+		else {
+			fac = addFaction();
+			c = addSite(&SiteS::get(SiteS::CITY), fac);
+		}
+		fac->capitol = c->id;
 		c->setAnimationType(MapEntityS::anim::IDLE);
 		c->initMapPos(territories[index]);
 		for (auto& o : output) {

@@ -146,6 +146,9 @@ void MapEntity::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 	handlers_[zoomLevel].draw(target, states);
 }
 
+void MapEntity::drawUI(sf::RenderTarget& target, sf::RenderStates states) const {
+}
+
 
 
 

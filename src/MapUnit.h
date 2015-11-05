@@ -43,6 +43,7 @@ public:
 	void deselect();
 	void move();
 	void draw(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) const;
+	void drawUI(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) const;
 };
 
 #endif

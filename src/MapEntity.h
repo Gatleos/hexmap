@@ -88,6 +88,7 @@ public:
 	virtual void deselect() = 0;
 	virtual void setPath(sf::Vector2i dest) = 0;
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) const;
+	virtual void drawUI(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) const;
 };
 
 #endif

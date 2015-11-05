@@ -140,5 +140,13 @@ void MapUnit::deselect() {
 void MapUnit::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 	states.transform *= this->getTransform();
 	handlers_[zoomLevel].draw(target, states);
+}
+
+void MapUnit::drawUI(sf::RenderTarget& target, sf::RenderStates states) const {
+	states.transform *= this->getTransform();
+	states.transform *= handlers_[zoomLevel].getTransform();
 	hp.draw(target, states);
+	if (!path.empty()) {
+		UI::drawHexSelector((sf::Vector2f)path.back(), sf::Color::Green, target);
+	}
 }

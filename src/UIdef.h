@@ -8,6 +8,8 @@
 
 namespace UIdef {
 	extern MapEntity* selectedEnt;
+	void deselectEnt();
+	void selectEnt(MapEntity& ent);
 	class MapGenDebug : public UILayout {
 		MapGenDebug();
 	public:

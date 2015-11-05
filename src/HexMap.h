@@ -218,6 +218,7 @@ public:
 	void clearTileFeatures();
 	void draw(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) const;
 	void drawEnts(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) const;
+	void drawUI(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) const;
 	// Determine which map chunks to draw based on a view, culling the rest
 	void calculateViewArea(const sf::View& view);
 	const sf::IntRect& getViewArea() const;

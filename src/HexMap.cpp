@@ -671,6 +671,13 @@ void HexMap::drawEnts(sf::RenderTarget& target, sf::RenderStates states) const {
 	}
 }
 
+void HexMap::drawUI(sf::RenderTarget& target, sf::RenderStates states) const {
+	states.transform *= getTransform();
+	if (UIdef::selectedEnt != nullptr) {
+		UIdef::selectedEnt->drawUI(target, states);
+	}
+}
+
 void HexMap::calculateViewArea(const sf::View& view) {
 	const sf::Vector2f& center = view.getCenter();
 	sf::Vector2f size = view.getSize();

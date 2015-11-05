@@ -4,6 +4,18 @@
 #include "States.h"
 
 namespace UIdef {
+	void deselectEnt() {
+		if (selectedEnt != nullptr) {
+			selectedEnt->deselect();
+			selectedEnt = nullptr;
+		}
+	}
+
+	void selectEnt(MapEntity& ent) {
+		selectedEnt = &ent;
+		ent.select();
+	}
+
 	shared_ptr<MapGenDebug> MapGenDebug::instance() {
 		static auto mgd = make_shared<MapGenDebug>(MapGenDebug());
 		return mgd;
@@ -387,11 +399,11 @@ namespace UIdef {
 			auto* deployed = HEXMAP.addMapUnit(&MapUnitS::get(choice), HEXMAP.playerFaction());
 			deployed->initMapPos(deployTo_);
 			deployed->setHealth(armyAdjust[0]->GetValue());
-			deployed->setHealth(armyAdjust[1]->GetValue());
+			deployed->setFood(armyAdjust[1]->GetValue() * armyAdjust[0]->GetValue());
 			// Reset UI
 			reset();
-			UIdef::updateSitePop();
-			UIdef::updateSiteResources();
+			//UIdef::updateSitePop();
+			//UIdef::updateSiteResources();
 			window->Show(false);
 		}
 	}

@@ -48,12 +48,6 @@ void EngineState::init() {
 	siteMenu = UIdef::SiteMenu::instance();
 	UI::addNewLayout(siteMenu);
 	UI::addNewLayout(UIdef::DeployGroupMenu::instance());
-	auto site = HEXMAP.addSite(&SiteS::get(SiteS::CITY), HEXMAP.addFaction());
-	site->pop.addSize(Population::GROUP_MIL, 300.0f);
-	site->resources[SiteS::FOOD] = 800000;
-	site->initMapPos({ 1, 1 });
-	UIdef::setSite(*site);
-	UIdef::DeployGroupMenu::instance()->show();
 	// Entities
 	//auto* f = HEXMAP.addFaction();
 	//for (int x = 0; x < 16384; x++) {
@@ -72,6 +66,7 @@ void EngineState::init() {
 	//engine->window->setFramerateLimit(600);
 	engine->pushState(MapControlState::instance());
 	UI::desktop->LoadThemeFromFile("data/test.theme");
+	generate();
 }
 void EngineState::end() {
 }
@@ -96,9 +91,10 @@ void EngineState::render(sf::RenderWindow &window) {
 	window.setView(HEXMAP.view);
 	for (int a = 0; a < 1; a++) {
 		window.draw(HEXMAP);
+		UI::drawHexSelector(UI::selectedHex, sf::Color::Red, window);
 		HEXMAP.drawEnts(window);
+		HEXMAP.drawUI(window);
 	}
-	window.draw(UI::hexSelector);
 	window.setView(UI::view);
 	ss << mtMilli;
 	UIdef::MapGenDebug::instance()->debugInfo[4]->SetText(ss.str());
@@ -112,13 +108,11 @@ void EngineState::input(sf::Event &e) {
 		auto& clicked = MapControlState::instance()->tilePos;
 		auto& hex = HEXMAP.getAxial(clicked.x, clicked.y);
 		if (e.mouseButton.button == sf::Mouse::Left) {
-			if (UIdef::selectedEnt != nullptr) {
-				UIdef::selectedEnt->deselect();
-			}
-			if (hex.ent != nullptr) {
-				UIdef::selectedEnt = hex.ent;
-				UI::selectHex((sf::Vector2f)clicked);
-				hex.ent->select();
+			UIdef::deselectEnt();
+			UI::selectedHex = { -1.0f, -1.0f };
+			if (HEXMAP.isAxialInBounds(clicked) && hex.ent != nullptr) {
+				UIdef::selectEnt(*hex.ent);
+				UI::selectedHex = (sf::Vector2f)clicked;
 			}
 		}
 		else if (e.mouseButton.button == sf::Mouse::Right) {
@@ -132,6 +126,7 @@ void EngineState::input(sf::Event &e) {
 			timeDisplay = !timeDisplay;
 		}
 		else if (config::pressed(e, "generate")) {
+			UIdef::deselectEnt();
 			generate();
 		}
 		else if (config::pressed(e, "debug")) {
@@ -160,6 +155,10 @@ void EngineState::generate() {
 		HEXMAP.generateMountainRange(customSeed);
 	}
 	HEXMAP.placeSites(customSeed);
+	auto* playerCapitol = HEXMAP.getEntity(HEXMAP.playerFaction()->capitol);
+	if (playerCapitol != nullptr) {
+		HEXMAP.centerOnTile((sf::Vector2f)playerCapitol->getMapPos());
+	}
 	sf::Time mtTime = mtClock.getElapsedTime();
 	mtMilli = mtTime.asMilliseconds();
 	stringstream ss;

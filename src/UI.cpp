@@ -6,7 +6,8 @@
 sfg::Desktop* UI::desktop = nullptr;
 sf::View UI::view;
 sf::Vector2i UI::lastMousePos(0, 0);
-sf::Sprite UI::hexSelector;
+sf::Sprite hexSelector;
+sf::Vector2f UI::selectedHex(-1.0f, -1.0f);
 static vector<pair<shared_ptr<UILayout>, bool>> UI_layoutStack;
 static sf::Vector2f UI_appSize;
 static bool UI_gotMouseInput = false;
@@ -158,6 +159,7 @@ SpriteSheet& UI::sprites() {
 	return *UI_sprites;
 }
 
+
 void UI::init(sfg::Desktop* d) {
 	desktop = d;
 	auto renderer = sfg::VertexBufferRenderer::Create(); // Fix a NonLegacyRenderer-related text bug
@@ -229,6 +231,15 @@ void UI::dropFocus() {
 	UI_dummyWindow->GrabFocus();
 }
 
-void UI::selectHex(const sf::Vector2f& hexCoord) {
+void UI::drawHexSelector(const sf::Vector2f& hexCoord, const sf::Color& color, sf::RenderTarget& target, sf::RenderStates states) {
+	if (hexCoord.x == -1.0f && hexCoord.y == -1.0f) {
+		return;
+	}
 	hexSelector.setPosition(HEXMAP.hexToPixel(hexCoord) - HEXMAP.getOrigin() - sf::Vector2f(1.0f, 1.0f));
+	hexSelector.setColor(color);
+	target.draw(hexSelector, states);
+}
+
+const sf::Sprite& UI::getHexSelector() {
+	return hexSelector;
 }
