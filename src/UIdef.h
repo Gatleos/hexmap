@@ -10,6 +10,7 @@ namespace UIdef {
 	extern MapEntity* selectedEnt;
 	void deselectEnt();
 	void selectEnt(MapEntity& ent);
+
 	class MapGenDebug : public UILayout {
 		MapGenDebug();
 	public:
@@ -21,19 +22,20 @@ namespace UIdef {
 		shared_ptr<sfg::CheckButton> randomSeed;
 		void updateDebugInfo(const sf::Vector2i& mousePos, const sf::Vector2i& tilePos, const sf::Vector2i& camPos);
 	};
+
 	class SiteMenu : public UILayout {
 		vector<vector<shared_ptr<sfg::Adjustment>>> sliders;
 		vector<shared_ptr<sfg::Label>> idlePercent;
 		vector<shared_ptr<sfg::Label>> population;
 		void adjust(int group, int act);
-		Site* site_;
 		SiteMenu();
 	public:
 		static shared_ptr<SiteMenu> instance();
-		void setSite(Site& ent);
+		void updateSiteInfo();
 		void updateSitePop();
 		shared_ptr<sfg::Window> window;
 	};
+
 	class DeployGroupMenu : public UILayout {
 		DeployGroupMenu();
 		// UI elements
@@ -48,10 +50,9 @@ namespace UIdef {
 		MapUnit unit_;
 		sf::View previewView_;
 	public:
-		Site* site_;
 		vector<shared_ptr<sfg::Adjustment>> armyAdjust;
 		static shared_ptr<DeployGroupMenu> instance();
-		void setSite(Site& site);
+		void updateSiteInfo();
 		void setCoord(const sf::Vector2i& coord);
 		void updateSitePop();
 		void updateSiteResources();
@@ -64,11 +65,13 @@ namespace UIdef {
 		void deployUnit();
 		shared_ptr<sfg::Window> window;
 	};
+
 	class MapUnitInfo : public UILayout {
 		MapUnitInfo();
 	public:
 		static shared_ptr<MapUnitInfo> instance();
 	};
+
 	// Set site-related UI elements to point to this site
 	void setSite(Site& site);
 	// Set unit-related UI elements to point to this unit

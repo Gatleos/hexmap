@@ -1,20 +1,13 @@
+#include <assert.h>
 #include "UIdef.h"
 #include "HexTile.h"
 #include "MapEntity.h"
 #include "States.h"
 
 namespace UIdef {
-	void deselectEnt() {
-		if (selectedEnt != nullptr) {
-			selectedEnt->deselect();
-			selectedEnt = nullptr;
-		}
-	}
-
-	void selectEnt(MapEntity& ent) {
-		selectedEnt = &ent;
-		ent.select();
-	}
+	MapEntity* selectedEnt = nullptr;
+	MapUnit* selectedUnit = nullptr;
+	Site* selectedSite = nullptr;
 
 	shared_ptr<MapGenDebug> MapGenDebug::instance() {
 		static auto mgd = make_shared<MapGenDebug>(MapGenDebug());
@@ -158,35 +151,35 @@ namespace UIdef {
 		window->Add(sWindow);
 		addWindow(window, UIAlign({ 1.0f, 1.0f, 250.0f, 300.0f }, UI::ALIGN_RIGHT | UI::ALIGN_FRAC_POSX | UI::ALIGN_FRAC_POSY | UI::ALIGN_BOTTOM));
 	}
-	void SiteMenu::setSite(Site& site) {
-		site_ = &site;
-		for (int indexTab = 0; indexTab < site.pop.activities().size(); indexTab++) {
-			int size = site.pop.activities()[indexTab].size();
+	void SiteMenu::updateSiteInfo() {
+		assert(selectedSite != nullptr);
+		for (int indexTab = 0; indexTab < selectedSite->pop.activities().size(); indexTab++) {
+			int size = selectedSite->pop.activities()[indexTab].size();
 			stringstream ss;
-			ss << "Pop: " << site.pop.size(indexTab);
+			ss << "Pop: " << selectedSite->pop.size(indexTab);
 			population[indexTab]->SetText(ss.str());
 			ss.str(std::string());
-			ss << "Idle: " << site.pop.activities()[indexTab][Population::IDLE] << "%";
+			ss << "Idle: " << selectedSite->pop.activities()[indexTab][Population::IDLE] << "%";
 			idlePercent[indexTab]->SetText(ss.str());
 			for (int index = 1; index < size; index++) {
 				// Link up the slider value to one of the population percentages
 				sliders[indexTab][index - 1]->GetSignal(sfg::Adjustment::OnChange).Connect(bind(&SiteMenu::adjust, this, indexTab, index));
-				sliders[indexTab][index - 1]->SetValue(site.pop.activities()[indexTab][index]);
+				sliders[indexTab][index - 1]->SetValue(selectedSite->pop.activities()[indexTab][index]);
 			}
 		}
 	}
 	void SiteMenu::updateSitePop() {
 		stringstream ss;
-		for (int indexTab = 0; indexTab < site_->pop.activities().size(); indexTab++) {
-			ss << "Pop: " << site_->pop.size(indexTab);
+		for (int indexTab = 0; indexTab < selectedSite->pop.activities().size(); indexTab++) {
+			ss << "Pop: " << selectedSite->pop.size(indexTab);
 			population[indexTab]->SetText(ss.str());
 			ss.str(std::string());
 		}
 	}
 	void SiteMenu::adjust(int group, int act) {
-		sliders[group][act - 1]->SetValue(site_->pop.set(group, act, sliders[group][act - 1]->GetValue()));
+		sliders[group][act - 1]->SetValue(selectedSite->pop.set(group, act, sliders[group][act - 1]->GetValue()));
 		stringstream ss;
-		ss << "Idle: " << site_->pop.activities()[group][Population::IDLE] << "%";
+		ss << "Idle: " << selectedSite->pop.activities()[group][Population::IDLE] << "%";
 		idlePercent[group]->SetText(ss.str());
 	}
 
@@ -307,8 +300,8 @@ namespace UIdef {
 		addWindow(window, UIAlign({ 0.5f, 0.5f, 0.0f, 0.0f },
 			UI::ALIGN_CENTERX | UI::ALIGN_FRAC_POSX | UI::ALIGN_CENTERY | UI::ALIGN_FRAC_POSY, false));
 	}
-	void DeployGroupMenu::setSite(Site& site) {
-		site_ = &site;
+	void DeployGroupMenu::updateSiteInfo() {
+		assert(selectedSite != nullptr);
 		static auto createSelection = [](Site* site) {
 			auto vs = make_shared<VectorSet>();
 			HexMap::neighbors(site->getMapPos(), *vs);
@@ -318,7 +311,7 @@ namespace UIdef {
 		if (deploySignal_ >= 0) {
 			selectCoordButton_->GetSignal(sfg::Button::OnLeftClick).Disconnect(deploySignal_);
 		}
-		deploySignal_ = selectCoordButton_->GetSignal(sfg::Button::OnLeftClick).Connect(bind(createSelection, &site));
+		deploySignal_ = selectCoordButton_->GetSignal(sfg::Button::OnLeftClick).Connect(bind(createSelection, selectedSite));
 		updateSitePop();
 		updateSiteResources();
 	}
@@ -336,8 +329,8 @@ namespace UIdef {
 	void DeployGroupMenu::updateSitePop() {
 		stringstream ss;
 		// soldier population
-		armyAdjust[0]->SetUpper((int)site_->pop.size(Population::GROUP_MIL));
-		ss << " / " << (int)site_->pop.size(Population::GROUP_MIL);
+		armyAdjust[0]->SetUpper((int)selectedSite->pop.size(Population::GROUP_MIL));
+		ss << " / " << (int)selectedSite->pop.size(Population::GROUP_MIL);
 		armyLabel_[0]->SetText(ss.str());
 		//ss.str(string());
 	}
@@ -348,12 +341,12 @@ namespace UIdef {
 		stringstream ss;
 		// food stocks
 		int totalFood = (int)armyAdjust[1]->GetValue() * (int)armyAdjust[0]->GetValue();
-		ss << " (" << totalFood << " / " << (int)site_->resources[SiteS::FOOD] << " food)";
+		ss << " (" << totalFood << " / " << (int)selectedSite->resources[SiteS::FOOD] << " food)";
 		if ((int)armyAdjust[0]->GetValue() < 1) {
 			armyAdjust[1]->SetUpper(0.0f);
 		}
 		else {
-			armyAdjust[1]->SetUpper((int)site_->resources[SiteS::FOOD] / (int)armyAdjust[0]->GetValue());
+			armyAdjust[1]->SetUpper((int)selectedSite->resources[SiteS::FOOD] / (int)armyAdjust[0]->GetValue());
 		}
 		armyLabel_[1]->SetText(ss.str());
 		unit_.setHealth(armyAdjust[0]->GetValue());
@@ -423,21 +416,39 @@ namespace UIdef {
 
 
 
-	MapEntity* selectedEnt = nullptr;
-
+	void deselectEnt() {
+		if (selectedEnt != nullptr) {
+			selectedEnt->deselect();
+			selectedEnt = nullptr;
+		}
+	}
+	void selectEnt(MapEntity& ent) {
+		selectedEnt = &ent;
+		ent.select();
+	}
 	void setSite(Site& site) {
 		selectedEnt = &site;
-		SiteMenu::instance()->setSite(site);
-		DeployGroupMenu::instance()->setSite(site);
+		selectedSite = &site;
+		selectedUnit = nullptr;
+		SiteMenu::instance()->updateSiteInfo();
+		DeployGroupMenu::instance()->updateSiteInfo();
 	}
 	void setUnit(MapUnit& unit) {
-
+		selectedEnt = &unit;
+		selectedSite = nullptr;
+		selectedUnit = &unit;
 	}
 	void updateSitePop() {
+		if (selectedSite == nullptr) {
+			return;
+		}
 		SiteMenu::instance()->updateSitePop();
 		DeployGroupMenu::instance()->updateSitePop();
 	}
 	void updateSiteResources() {
+		if (selectedSite == nullptr) {
+			return;
+		}
 		DeployGroupMenu::instance()->updateSiteResources();
 	}
 	void setSelection(const sf::Vector2i& selection) {
