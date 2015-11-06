@@ -420,6 +420,8 @@ namespace UIdef {
 		if (selectedEnt != nullptr) {
 			selectedEnt->deselect();
 			selectedEnt = nullptr;
+			selectedSite = nullptr;
+			selectedUnit = nullptr;
 		}
 	}
 	void selectEnt(MapEntity& ent) {
