@@ -122,11 +122,11 @@ void HealthBar::setHealth(int health) {
 	this->health = clamp(health, 0, tierValues[HEALTH_TIER_NUM - 1]);
 }
 
-int HealthBar::getHealth() {
+int HealthBar::getHealth() const {
 	return health;
 }
 
-int HealthBar::getTier() {
+int HealthBar::getTier() const {
 	return healthTier;
 }
 
@@ -142,7 +142,7 @@ void HealthBar::setFood(int foodAmount) {
 	foodTurns = food / std::max(health, 1);
 }
 
-int HealthBar::getFood() {
+int HealthBar::getFood() const {
 	return food;
 }
 

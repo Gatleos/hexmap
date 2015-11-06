@@ -39,10 +39,10 @@ public:
 	static void loadJson(std::string filename);
 	HealthBar();
 	void setHealth(int health);
-	int getHealth();
-	int getTier();
+	int getHealth() const;
+	int getTier() const;
 	void setFood(int foodAmount);
-	int getFood();
+	int getFood() const;
 	int getFoodTurns();
 	// Returns true if the healthTier has changed
 	bool updateBars();
