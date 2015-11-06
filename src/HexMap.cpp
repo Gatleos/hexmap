@@ -113,13 +113,19 @@ int HexMap::heuristic(sf::Vector2i& a, sf::Vector2i& b) {
 	//return abs(a.x - b.x) + abs(a.y - b.y);
 }
 
+#define BIG_COST 1000000000
+
 int HexMap::moveCost(sf::Vector2i& current, sf::Vector2i& next) {
 	auto& h = getAxial(next.x, next.y);
-	return h.hts->moveCost + (h.tfs == nullptr ? 0 : h.tfs->moveCost);
+	if (h.ent == nullptr) {
+		return h.hts->moveCost + (h.tfs == nullptr ? 0 : h.tfs->moveCost);
+	}
+	// impassable
+	return BIG_COST;
 }
 
 std::deque<sf::Vector2i>& HexMap::getPath(std::deque<sf::Vector2i>& path, sf::Vector2i startAxial, sf::Vector2i goalAxial) {
-	if (!isAxialInBounds(startAxial) || !getAxial(startAxial.x, startAxial.y).hts->FLAGS[HexTileS::WALKABLE] || !isAxialInBounds(goalAxial) || !getAxial(goalAxial.x, goalAxial.y).hts->FLAGS[HexTileS::WALKABLE]) {
+	if (!isAxialInBounds(startAxial) || !getAxial(startAxial.x, startAxial.y).hts->FLAGS[HexTileS::WALKABLE] || moveCost(startAxial, goalAxial) >= BIG_COST || !isAxialInBounds(goalAxial) || !getAxial(goalAxial.x, goalAxial.y).hts->FLAGS[HexTileS::WALKABLE]) {
 		return path;
 	}
 	// traceback
@@ -674,7 +680,8 @@ void HexMap::drawEnts(sf::RenderTarget& target, sf::RenderStates states) const {
 void HexMap::drawUI(sf::RenderTarget& target, sf::RenderStates states) const {
 	states.transform *= getTransform();
 	if (UIdef::selectedEnt != nullptr) {
-		UIdef::selectedEnt->drawUI(target, states);
+		UIdef::selectedEnt->drawSelectors(target, states);
+		UIdef::selectedEnt->drawHUD(target, states);
 	}
 }
 
