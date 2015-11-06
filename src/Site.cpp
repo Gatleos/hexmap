@@ -73,7 +73,7 @@ void Site::deployUnit(const MapUnit& u) {
 	assert(pop.size(u.getMemberType()) >= u.getHealth());
 	// subtract it all out
 	resources[MapEntityS::FOOD] -= u.getFood();
-	pop.addSize(u.getMemberType(), u.getHealth());
+	pop.addSize(u.getMemberType(), -u.getHealth());
 }
 
 void Site::updateResources() {
