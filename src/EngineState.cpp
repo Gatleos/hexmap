@@ -91,7 +91,6 @@ void EngineState::render(sf::RenderWindow &window) {
 	window.setView(HEXMAP.view);
 	for (int a = 0; a < 1; a++) {
 		window.draw(HEXMAP);
-		UI::drawHexSelector(UI::selectedHex, sf::Color::Red, window);
 		HEXMAP.drawEnts(window);
 		HEXMAP.drawUI(window);
 	}
@@ -136,6 +135,7 @@ void EngineState::input(sf::Event &e) {
 }
 
 void EngineState::generate() {
+	UIdef::deselectEnt();
 	HEXMAP.clearTileFeatures();
 	unsigned long hexSeed = 0;
 	if (UIdef::MapGenDebug::instance()->randomSeed->IsActive()) {
@@ -157,7 +157,15 @@ void EngineState::generate() {
 	HEXMAP.placeSites(customSeed);
 	auto* playerCapitol = HEXMAP.getEntity(HEXMAP.playerFaction()->capitol);
 	if (playerCapitol != nullptr) {
-		HEXMAP.centerOnTile((sf::Vector2f)playerCapitol->getMapPos());
+		auto capitolPos = playerCapitol->getMapPos();
+		HEXMAP.centerOnTile((sf::Vector2f)capitolPos);
+		auto deployTo = HexMap::neighbor(capitolPos, HexMap::dir::NORTHEAST);
+		if (HEXMAP.isAxialInBounds(deployTo)) {
+			auto u = HEXMAP.addMapUnit(&MapUnitS::get(MapUnitS::UNIT_ARMY), HEXMAP.playerFaction());
+			u->initMapPos(deployTo);
+			u->setHealth(20);
+			u->setFood(1800);
+		}
 	}
 	sf::Time mtTime = mtClock.getElapsedTime();
 	mtMilli = mtTime.asMilliseconds();
