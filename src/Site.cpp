@@ -1,8 +1,10 @@
 #include <iostream>
+#include <assert.h>
 #include "Site.h"
 #include "config.h"
 #include "ResourceLoader.h"
 #include "UIdef.h"
+#include "HexMap.h"
 
 using namespace std;
 
@@ -65,8 +67,24 @@ void Site::clearChildren(Site* s) {
 	children.clear();
 }
 
+void Site::deployUnit(const MapUnit& u) {
+	// there's a problem if we're trying to create a group larger than our total population
+	assert(resources[MapEntityS::FOOD] >= u.getFood());
+	assert(pop.size(u.getMemberType()) >= u.getHealth());
+	// subtract it all out
+	resources[MapEntityS::FOOD] -= u.getFood();
+	pop.addSize(u.getMemberType(), u.getHealth());
+}
+
 void Site::updateResources() {
 	resources[MapEntityS::WOOD] += pop.activities()[Population::GROUP_CIV][Population::CIV_WOOD] * pop.size(Population::GROUP_CIV);
+}
+
+void Site::drawSelectors(sf::RenderTarget& target, sf::RenderStates states) const {
+	UI::drawHexSelector((sf::Vector2f)pos, sf::Color::Red, target);
+}
+
+void Site::drawHUD(sf::RenderTarget& target, sf::RenderStates states) const {
 }
 
 SiteS::SiteS(string id) :

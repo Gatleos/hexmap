@@ -12,6 +12,11 @@ class HexMap;
 
 class Population {
 public:
+	struct GroupType {
+		std::string id;
+		std::string name;
+		float growthRate;
+	};
 	enum {
 		GROUP_CIV, GROUP_MIL, GROUP_PR, GROUP_NUM,
 		IDLE = 0, CIV_FARM, CIV_WOOD, CIV_MINE, CIV_ENLIST, CIV_ACTIVITY_NUM,
@@ -24,9 +29,8 @@ private:
 	array<vector<float>, GROUP_NUM> activities_;
 public:
 	static const array<vector<std::string>, GROUP_NUM> activityNames;
-	static const array<std::string, GROUP_NUM> groupNames;
+	static const array<GroupType, GROUP_NUM> groups;
 	static const unsigned int POP_LIMIT;
-	static const array<float, GROUP_NUM> growthRate;
 	static const float deathRate;
 	Population();
 	// Set the amount for a specific activity group, drawing from idle amount; returns
@@ -87,8 +91,12 @@ public:
 	virtual void select() = 0;
 	virtual void deselect() = 0;
 	virtual void setPath(sf::Vector2i dest) = 0;
+	// Draw the entity itself
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) const;
-	virtual void drawUI(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) const;
+	// Draw selection indicators on the map which are relevant to this entity
+	virtual void drawSelectors(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) const;
+	// Draw the entity's HUD
+	virtual void drawHUD(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) const;
 };
 
 #endif

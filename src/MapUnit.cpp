@@ -14,7 +14,8 @@ std::array<std::unique_ptr<MapUnitS>, MapUnitS::UNIT_NUM> MapUnitS::unit = { {
 
 MapUnitS::MapUnitS(std::string id) :
 MapEntityS(id),
-maxHitPoints(0) {
+maxHitPoints(1),
+type(Population::GROUP_CIV) {
 }
 
 void MapUnitS::loadJson(std::string filename) {
@@ -30,8 +31,22 @@ void MapUnitS::loadJson(std::string filename) {
 		string element;
 		try {
 			un->loadEntityJson(udata, element, un->id_);
+			element = "type";
+			std::string typeName = udata.get(element, "").asString();
+			bool foundType = false;
+			for (int g = 0; g < Population::groups.size(); g++) {
+				if (Population::groups[g].id == typeName) {
+					un->type = g;
+					foundType = true;
+				}
+			}
+			if (!foundType) {
+				cerr << "[" << filename << ", " << un->id_ << ", " << element << "] " <<
+					"WARNING: group type \"" << typeName << "\" not found; using \"" <<
+					Population::groups[Population::GROUP_CIV].id << "\" instead" << "\n";
+			}
 			element = "maxHitPoints";
-			un->maxHitPoints = std::max(1, udata.get(element, "maxHitPoints").asInt());
+			un->maxHitPoints = std::max(1, udata.get(element, 1).asInt());
 		}
 		catch (runtime_error e) { // report the error with the name of the object and member
 			cerr << "[" << filename << ", " << un->id_ << ", " << element << "] " << e.what() << "\n";
@@ -74,7 +89,6 @@ void MapUnit::setPath(sf::Vector2i dest) {
 
 void MapUnit::setHealth(int health) {
 	health = clamp(health, 0, HealthBar::tierValues[HEALTH_TIER_NUM - 1]);
-	hitPoints = health;
 	hp.setHealth(health);
 	hp.updateBars();
 	switch (hp.getTier()) {
@@ -99,8 +113,8 @@ void MapUnit::setHealth(int health) {
 	}
 }
 
-int MapUnit::getHealth() {
-	return hitPoints;
+int MapUnit::getHealth() const {
+	return hp.getHealth();
 }
 
 void MapUnit::setFood(int foodAmount) {
@@ -108,8 +122,12 @@ void MapUnit::setFood(int foodAmount) {
 	hp.updateBars();
 }
 
-int MapUnit::getFood() {
+int MapUnit::getFood() const {
 	return hp.getFood();
+}
+
+int MapUnit::getMemberType() const {
+	return su->type;
 }
 
 void MapUnit::appendPath(sf::Vector2i dest) {
@@ -142,11 +160,15 @@ void MapUnit::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 	handlers_[zoomLevel].draw(target, states);
 }
 
-void MapUnit::drawUI(sf::RenderTarget& target, sf::RenderStates states) const {
-	states.transform *= this->getTransform();
-	states.transform *= handlers_[zoomLevel].getTransform();
-	hp.draw(target, states);
+void MapUnit::drawSelectors(sf::RenderTarget& target, sf::RenderStates states) const {
+	UI::drawHexSelector((sf::Vector2f)pos, sf::Color::Red, target);
 	if (!path.empty()) {
 		UI::drawHexSelector((sf::Vector2f)path.back(), sf::Color::Green, target);
 	}
+}
+
+void MapUnit::drawHUD(sf::RenderTarget& target, sf::RenderStates states) const {
+	states.transform *= this->getTransform();
+	states.transform *= handlers_[zoomLevel].getTransform();
+	hp.draw(target, states);
 }

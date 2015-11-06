@@ -3,6 +3,7 @@
 
 #include "MapEntity.h"
 #include "Species.h"
+#include "MapUnit.h"
 
 class SiteS : public MapEntityS {
 public:
@@ -34,7 +35,10 @@ public:
 	void addChild(Site* s);
 	void removeChild(Site* s);
 	void clearChildren(Site* s);
+	void deployUnit(const MapUnit& u);
 	void updateResources();
+	void drawSelectors(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) const;
+	void drawHUD(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) const;
 };
 
 #endif

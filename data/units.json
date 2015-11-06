@@ -1,6 +1,7 @@
 {
 	"un_army": {
 		"name": "Army",
+		"type": "military",
 		"full": {
 			"animFile": "monsters.anim",
 			"idle": "mon6",
@@ -30,6 +31,7 @@
 	},
 	"un_caravan": {
 		"name": "Caravan",
+		"type": "civilian",
 		"full": {
 			"animFile": "monsters.anim",
 			"idle": "Samus"

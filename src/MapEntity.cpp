@@ -13,11 +13,10 @@ const array<string, MapEntityS::ANIM_NUM> MapEntityS::animTypes = { {
 	} };
 const array<vector<std::string>, Population::GROUP_NUM> Population::activityNames = { { { "Idle", "Farm", "Wood", "Mine", "Enlist" }, { "Idle", "Guard" }, { "Idle", "Farm", "Wood", "Mine", "Breed" }
 	} };
-const array<std::string, Population::GROUP_NUM> Population::groupNames = { {
-		"Civilian", "Military", "Prisoner"
-	} };
-const array<float, Population::GROUP_NUM> Population::growthRate = { {
-		0.0168f, 0.0f, 0.0336f
+const array<Population::GroupType, Population::GROUP_NUM> Population::groups = { {
+		{ "civilian", "Civilian", 0.0168f },
+		{ "military", "Military", 0.0f },
+		{ "prisoner", "Prisoner", 0.0336f }
 	} };
 const float Population::deathRate = 0.0003f;
 const unsigned int Population::POP_LIMIT = 100000u;
@@ -95,9 +94,9 @@ float Population::size(unsigned int group) const {
 
 void Population::popGrowth(int turns) {
 	// P = P_0 * e ^ (r * t)
-	setSize(GROUP_CIV, sizes_[GROUP_CIV] * std::pow(2.71828f, (float)turns * growthRate[GROUP_CIV]));
+	setSize(GROUP_CIV, sizes_[GROUP_CIV] * std::pow(2.71828f, (float)turns * groups[GROUP_CIV].growthRate));
 	// Prisoners will not breed unless told
-	float rate = activities_[GROUP_PR][PR_BREED] * growthRate[GROUP_PR] * 0.01f - deathRate;
+	float rate = activities_[GROUP_PR][PR_BREED] * groups[GROUP_PR].growthRate * 0.01f - deathRate;
 	setSize(GROUP_PR, sizes_[GROUP_PR] * std::pow(2.71828f, (float)turns * rate));
 }
 
@@ -146,7 +145,10 @@ void MapEntity::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 	handlers_[zoomLevel].draw(target, states);
 }
 
-void MapEntity::drawUI(sf::RenderTarget& target, sf::RenderStates states) const {
+void MapEntity::drawSelectors(sf::RenderTarget& target, sf::RenderStates states) const {
+}
+
+void MapEntity::drawHUD(sf::RenderTarget& target, sf::RenderStates states) const {
 }
 
 

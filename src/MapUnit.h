@@ -14,6 +14,7 @@ private:
 	static std::array<std::unique_ptr<MapUnitS>, UNIT_NUM> unit;
 public:
 	int maxHitPoints;
+	int type;
 	static void loadJson(std::string filename);
 	static const MapUnitS& get(int id);
 };
@@ -25,17 +26,16 @@ class MapUnit : public MapEntity {
 	std::deque<sf::Vector2i> path;
 	int moveTimer;
 	HealthBar hp;
-	int hitPoints;
-	int rations;
 public:
 	MapUnit(const MapUnitS* sUnit, HexMap* hmSet, Faction* parent);
 	void setStaticUnit(const MapUnitS* sUnit);
 	bool walkPath();
 	void setPath(sf::Vector2i dest);
 	void setHealth(int health);
-	int getHealth();
+	int getHealth() const;
 	void setFood(int foodAmount);
-	int getFood();
+	int getFood() const;
+	int getMemberType() const;
 	void appendPath(sf::Vector2i dest);
 	void update(const sf::Time& timeElapsed);
 	void advanceTurn();
@@ -43,7 +43,8 @@ public:
 	void deselect();
 	void move();
 	void draw(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) const;
-	void drawUI(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) const;
+	void drawSelectors(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) const;
+	void drawHUD(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) const;
 };
 
 #endif

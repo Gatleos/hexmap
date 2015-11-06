@@ -106,7 +106,7 @@ namespace UIdef {
 		////////////////////////
 		int indexTab = 0;
 		auto notebook = sfg::Notebook::Create();
-		for (const auto& t : Population::groupNames) {
+		for (const auto& t : Population::groups) {
 			sliders.push_back({});
 			auto& group = Population::activityNames[indexTab];
 			auto& sliderBack = sliders.back();
@@ -140,7 +140,7 @@ namespace UIdef {
 				spin->SetRequisition({ 50.0f, 20.0f });
 				boxV->Pack(boxH, false);
 			}
-			notebook->AppendPage(boxV, sfg::Label::Create(t));
+			notebook->AppendPage(boxV, sfg::Label::Create(t.name));
 			indexTab++;
 		}
 		//auto boxH = sfg::Box::Create();
@@ -216,7 +216,6 @@ namespace UIdef {
 			typeList_->AppendItem(MapUnitS::get(u).name_);
 		}
 		typeList_->SelectItem(0);
-		this->updateType();
 		// Preview
 		//////////
 		preview_ = sfg::Canvas::Create();
@@ -312,7 +311,7 @@ namespace UIdef {
 			selectCoordButton_->GetSignal(sfg::Button::OnLeftClick).Disconnect(deploySignal_);
 		}
 		deploySignal_ = selectCoordButton_->GetSignal(sfg::Button::OnLeftClick).Connect(bind(createSelection, selectedSite));
-		updateSitePop();
+		updateType();
 		updateSiteResources();
 	}
 	void DeployGroupMenu::setCoord(const sf::Vector2i& coord) {
@@ -328,11 +327,10 @@ namespace UIdef {
 	}
 	void DeployGroupMenu::updateSitePop() {
 		stringstream ss;
-		// soldier population
-		armyAdjust[0]->SetUpper((int)selectedSite->pop.size(Population::GROUP_MIL));
-		ss << " / " << (int)selectedSite->pop.size(Population::GROUP_MIL);
+		// population related to currently selected unit type
+		armyAdjust[0]->SetUpper((int)selectedSite->pop.size(unit_.getMemberType()));
+		ss << " / " << (int)selectedSite->pop.size(unit_.getMemberType());
 		armyLabel_[0]->SetText(ss.str());
-		//ss.str(string());
 	}
 	void DeployGroupMenu::updateSiteResources() {
 		if (armyAdjust[1]->GetValue() == 1) {
@@ -382,6 +380,7 @@ namespace UIdef {
 	void DeployGroupMenu::updateType() {
 		int index = typeList_->GetSelectedItem();
 		unit_.setStaticUnit(&MapUnitS::get(index + 1));
+		updateSitePop();
 	}
 	int DeployGroupMenu::getType() {
 		return typeList_->GetSelectedItem() + 1;
@@ -393,6 +392,7 @@ namespace UIdef {
 			deployed->initMapPos(deployTo_);
 			deployed->setHealth(armyAdjust[0]->GetValue());
 			deployed->setFood(armyAdjust[1]->GetValue() * armyAdjust[0]->GetValue());
+			selectedSite->deployUnit(*deployed);
 			// Reset UI
 			reset();
 			//UIdef::updateSitePop();
