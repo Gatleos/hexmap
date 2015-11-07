@@ -10,14 +10,14 @@ const sf::Color SelectState::invalidCol{ 255, 100, 100 };
 
 SelectState::SelectState(std::function<void(const sf::Vector2i&)> selectCallback) :
 selectableCoords_(nullptr),
-tilePos_(-1.0f, -1.0f),
+tilePos_(UI::invalidHex),
 inBounds_(false),
 selectCallback_(selectCallback) {
 
 }
 SelectState::SelectState(shared_ptr<VectorSet> selectable, std::function<void(const sf::Vector2i&)> selectCallback) :
 selectableCoords_(selectable),
-tilePos_(-1.0f, -1.0f),
+tilePos_(UI::invalidHex),
 inBounds_(false),
 selectCallback_(selectCallback) {
 }
@@ -91,7 +91,7 @@ void SelectState::input(sf::Event &e) {
 				inBounds_ = true;
 			}
 			else {
-				tilePos_ = { -1.0f, -1.0f };
+				tilePos_ = UI::invalidHex;
 				inBounds_ = false;
 			}
 		}

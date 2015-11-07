@@ -7,7 +7,8 @@ sfg::Desktop* UI::desktop = nullptr;
 sf::View UI::view;
 sf::Vector2i UI::lastMousePos(0, 0);
 sf::Sprite hexSelector[ZOOM_LEVELS];
-sf::Vector2f UI::selectedHex(-1.0f, -1.0f);
+const sf::Vector2f UI::invalidHex(-1.0f, -1.0f);
+static sf::Vector2f UI_selectedHex(UI::invalidHex);
 static vector<pair<shared_ptr<UILayout>, bool>> UI_layoutStack;
 static sf::Vector2f UI_appSize;
 static bool UI_gotMouseInput = false;
@@ -258,11 +259,24 @@ void UI::dropFocus() {
 }
 
 void UI::drawHexSelector(const sf::Vector2f& hexCoord, const sf::Color& color, sf::RenderTarget& target, sf::RenderStates states) {
-	if (hexCoord.x == -1.0f && hexCoord.y == -1.0f) {
+	if (hexCoord == invalidHex) {
 		return;
 	}
 	int a = HEXMAP.getZoomLevel();
 	hexSelector[a].setPosition(HEXMAP.hexToPixel(hexCoord));
 	hexSelector[a].setColor(color);
 	target.draw(hexSelector[a], states);
+}
+
+const sf::Vector2f& UI::getSelectedHex() {
+	return UI_selectedHex;
+}
+
+void UI::setSelectedHex(const sf::Vector2f& selectedAxial) {
+	if (HEXMAP.isAxialInBounds((sf::Vector2i)selectedAxial)) {
+		UI_selectedHex = selectedAxial;
+	}
+	else {
+		UI_selectedHex = invalidHex;
+	}
 }

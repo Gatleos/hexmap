@@ -108,12 +108,12 @@ void EngineState::input(sf::Event &e) {
 		auto& hex = HEXMAP.getAxial(clicked.x, clicked.y);
 		if (e.mouseButton.button == sf::Mouse::Left) {
 			UIdef::deselectEnt();
-			UI::selectedHex = { -1.0f, -1.0f };
+			UI::setSelectedHex(UI::invalidHex);
 			if (HEXMAP.isAxialInBounds(clicked)) {
 				if (hex.ent != nullptr) {
 					UIdef::selectEnt(*hex.ent);
 				}
-				UI::selectedHex = (sf::Vector2f)clicked;
+				UI::setSelectedHex((sf::Vector2f)clicked);
 			}
 		}
 		else if (e.mouseButton.button == sf::Mouse::Right) {

@@ -680,7 +680,7 @@ void HexMap::drawEnts(sf::RenderTarget& target, sf::RenderStates states) const {
 void HexMap::drawUI(sf::RenderTarget& target, sf::RenderStates states) const {
 	states.transform *= getTransform();
 	if (UIdef::selectedEnt == nullptr) {
-		UI::drawHexSelector(UI::selectedHex, lerp::brown, target);
+		UI::drawHexSelector(UI::getSelectedHex(), lerp::brown, target);
 	}
 	else {
 		UIdef::selectedEnt->drawSelectors(target);
