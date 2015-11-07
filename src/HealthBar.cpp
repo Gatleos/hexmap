@@ -23,21 +23,16 @@ sf::VertexArray HealthBar::foodOrbsDefault;
 const sf::FloatRect* HealthBar::frameRect;
 sf::Sprite HealthBar::frameSprite;
 
-void HealthBar::loadJson(std::string filename) {
-	Json::Value root = config::openJson(filename);
-	if (root.begin() == root.end()) {
-		std::cerr << "ERROR: couldn't open file \"" << filename << "\"\n";
-		return;
-	}
+void HealthBar::loadJson(Json::Value& root) {
 	string spriteSheet = root.get("spriteSheet", "").asString();
-	/*SpriteSheet* */sheet = RESOURCE.sh(spriteSheet);
+	sheet = RESOURCE.sh(spriteSheet);
 	if (sheet == nullptr) {
-		std::cerr << "\t(requested by \"" << filename << "\")\n";
+		std::cerr << "\t(requested by \"unitStatus\")\n";
 		return;
 	}
 	tex = RESOURCE.tex(sheet->getImageName());
 	if (tex == nullptr) {
-		std::cerr << "\t(requested by \"" << filename << "\")\n";
+		std::cerr << "\t(requested by \"ui/unitStatus\")\n";
 		return;
 	}
 	try {
@@ -108,6 +103,7 @@ void HealthBar::loadJson(std::string filename) {
 }
 
 HealthBar::HealthBar() {
+	deathRate = 0.0f;
 	health = 0;
 	healthTier = 0;
 	rectTop.setPosition(barPos);
@@ -148,6 +144,16 @@ int HealthBar::getFood() const {
 
 int HealthBar::getFoodTurns() {
 	return foodTurns;
+}
+
+void HealthBar::consumeFood() {
+	if (foodTurns > 0) {
+		setFood(food - health);
+	}
+	else {
+		deathRate += 0.01f;
+	}
+	setHealth(health - (int)(1000.0f * deathRate));
 }
 
 bool HealthBar::updateBars() {

@@ -109,8 +109,10 @@ void EngineState::input(sf::Event &e) {
 		if (e.mouseButton.button == sf::Mouse::Left) {
 			UIdef::deselectEnt();
 			UI::selectedHex = { -1.0f, -1.0f };
-			if (HEXMAP.isAxialInBounds(clicked) && hex.ent != nullptr) {
-				UIdef::selectEnt(*hex.ent);
+			if (HEXMAP.isAxialInBounds(clicked)) {
+				if (hex.ent != nullptr) {
+					UIdef::selectEnt(*hex.ent);
+				}
 				UI::selectedHex = (sf::Vector2f)clicked;
 			}
 		}

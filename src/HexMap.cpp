@@ -679,8 +679,11 @@ void HexMap::drawEnts(sf::RenderTarget& target, sf::RenderStates states) const {
 
 void HexMap::drawUI(sf::RenderTarget& target, sf::RenderStates states) const {
 	states.transform *= getTransform();
-	if (UIdef::selectedEnt != nullptr) {
-		UIdef::selectedEnt->drawSelectors(target, states);
+	if (UIdef::selectedEnt == nullptr) {
+		UI::drawHexSelector(UI::selectedHex, lerp::brown, target);
+	}
+	else {
+		UIdef::selectedEnt->drawSelectors(target);
 		UIdef::selectedEnt->drawHUD(target, states);
 	}
 }

@@ -1,6 +1,12 @@
 {
 	"spriteSheet": "ui.sprites",
 	
+	"hexSelector": {
+		"full": ["/select/full", -1, -1],
+		"half": ["/select/half", -1, -1],
+		"quarter": ["/select/quarter", -1, -1]
+	},
+	
 	"unitStatus": {
 		"healthBar": {
 			"barPos": [-30, -50],

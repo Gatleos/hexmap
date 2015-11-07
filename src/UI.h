@@ -37,6 +37,7 @@ namespace UI {
 	extern sf::Vector2i lastMousePos;
 	extern sf::Vector2f selectedHex;
 	void init(sfg::Desktop* d);
+	void loadJson(std::string filename);
 	void end();
 	void pushLayout(shared_ptr<UILayout> layout, bool replacePrevious = false);
 	void popLayout();
@@ -68,7 +69,6 @@ namespace UI {
 	// Lose focus on all windows and contained widgets
 	void dropFocus();
 	void drawHexSelector(const sf::Vector2f& hexCoord, const sf::Color& color, sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default);
-	const sf::Sprite& getHexSelector();
 };
 
 #endif

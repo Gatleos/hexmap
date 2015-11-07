@@ -144,6 +144,11 @@ void MapUnit::update(const sf::Time& timeElapsed) {
 
 void MapUnit::advanceTurn() {
 	walkPath();
+	hp.consumeFood();
+	hp.updateBars();
+	if (hp.getHealth() <= 0) {
+		// dead
+	}
 }
 
 void MapUnit::select() {
@@ -161,6 +166,7 @@ void MapUnit::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 }
 
 void MapUnit::drawSelectors(sf::RenderTarget& target, sf::RenderStates states) const {
+	states.transform *= this->getTransform();
 	UI::drawHexSelector((sf::Vector2f)pos, sf::Color::Red, target);
 	if (!path.empty()) {
 		UI::drawHexSelector((sf::Vector2f)path.back(), sf::Color::Green, target);

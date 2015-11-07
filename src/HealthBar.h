@@ -4,6 +4,7 @@
 #include <array>
 #include <SFML/Graphics.hpp>
 #include "ResourceLoader.h"
+#include <json/json.h>
 
 #define HEALTH_TIER_NUM 7
 
@@ -24,9 +25,11 @@ class HealthBar : public sf::Drawable, public sf::Transformable {
 	static const sf::FloatRect* frameRect;
 	static sf::Sprite frameSprite;
 	// Health info
-	sf::VertexArray foodOrbs;
 	int health;
 	int healthTier;
+	float deathRate;
+	// Food info
+	sf::VertexArray foodOrbs;
 	int food;
 	int foodTurns;
 	int oldFoodTurns;
@@ -36,7 +39,7 @@ class HealthBar : public sf::Drawable, public sf::Transformable {
 public:
 	static const std::array<int, HEALTH_TIER_NUM> tierValues;
 	static const std::array<sf::Color, HEALTH_TIER_NUM> tierColors;
-	static void loadJson(std::string filename);
+	static void loadJson(Json::Value& root);
 	HealthBar();
 	void setHealth(int health);
 	int getHealth() const;
@@ -44,6 +47,7 @@ public:
 	void setFood(int foodAmount);
 	int getFood() const;
 	int getFoodTurns();
+	void consumeFood();
 	// Returns true if the healthTier has changed
 	bool updateBars();
 	virtual void draw(sf::RenderTarget &target, sf::RenderStates states = sf::RenderStates::Default) const;

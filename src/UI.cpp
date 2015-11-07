@@ -6,13 +6,12 @@
 sfg::Desktop* UI::desktop = nullptr;
 sf::View UI::view;
 sf::Vector2i UI::lastMousePos(0, 0);
-sf::Sprite hexSelector;
+sf::Sprite hexSelector[ZOOM_LEVELS];
 sf::Vector2f UI::selectedHex(-1.0f, -1.0f);
 static vector<pair<shared_ptr<UILayout>, bool>> UI_layoutStack;
 static sf::Vector2f UI_appSize;
 static bool UI_gotMouseInput = false;
 static bool UI_gotKeyboardInput = false;
-static sf::Image UI_image;
 static const sf::Texture* UI_texture = nullptr;
 static SpriteSheet* UI_sprites = nullptr;
 static vector<shared_ptr<UILayout>> UI_layouts;
@@ -149,9 +148,6 @@ void UI::setMouseFlag() {
 	UI_gotMouseInput = true;
 }
 
-const sf::Image& UI::image() {
-	return UI_image;
-}
 const sf::Texture& UI::texture() {
 	return *UI_texture;
 }
@@ -165,12 +161,42 @@ void UI::init(sfg::Desktop* d) {
 	auto renderer = sfg::VertexBufferRenderer::Create(); // Fix a NonLegacyRenderer-related text bug
 	sfg::Renderer::Set(renderer);
 	UI_layoutStack.reserve(100);
-	UI_sprites = RESOURCE.sh("ui.sprites");
+}
+
+void UI::loadJson(std::string filename) {
+	Json::Value root = config::openJson(filename);
+	string spriteSheet = root.get("spriteSheet", "").asString();
+	UI_sprites = RESOURCE.sh(spriteSheet);
+	if (UI_sprites == nullptr) {
+		std::cerr << "\t(requested by \"" << filename << "\")\n";
+		return;
+	}
 	UI_texture = RESOURCE.tex(UI_sprites->getImageName());
-	UI_image = UI_texture->copyToImage();
-	hexSelector.setTexture(UI::texture());
-	hexSelector.setTextureRect((sf::IntRect)*UI::sprites().spr("/select/full"));
-	hexSelector.setColor(sf::Color::Red);
+	if (UI_texture == nullptr) {
+		std::cerr << "\t(requested by \"" << filename << "\")\n";
+		return;
+	}
+	try {
+		// hexSelector
+		Json::Value hdata = root.get("hexSelector", Json::Value::null);
+		if (hdata.isNull()) {
+
+		}
+		else {
+			// sprites
+			for (int a = 0; a < ZOOM_LEVELS; a++) {
+				Json::Value sp = hdata.get(config::rectNames[a], Json::Value::null);
+				hexSelector[a].setTexture(*UI_texture);
+				hexSelector[a].setTextureRect((sf::IntRect)*UI_sprites->spr(sp[0].asString()));
+				hexSelector[a].setOrigin(HEXMAP.getMapOrigin(a).x - sp[1].asFloat(), HEXMAP.getMapOrigin(a).y - sp[2].asFloat());
+			}
+		}
+	}
+	catch (std::runtime_error e) {
+		std::cerr << e.what();
+	}
+
+	HealthBar::loadJson(root);
 }
 
 void UI::end() {
@@ -235,11 +261,8 @@ void UI::drawHexSelector(const sf::Vector2f& hexCoord, const sf::Color& color, s
 	if (hexCoord.x == -1.0f && hexCoord.y == -1.0f) {
 		return;
 	}
-	hexSelector.setPosition(HEXMAP.hexToPixel(hexCoord) - HEXMAP.getOrigin() - sf::Vector2f(1.0f, 1.0f));
-	hexSelector.setColor(color);
-	target.draw(hexSelector, states);
-}
-
-const sf::Sprite& UI::getHexSelector() {
-	return hexSelector;
+	int a = HEXMAP.getZoomLevel();
+	hexSelector[a].setPosition(HEXMAP.hexToPixel(hexCoord));
+	hexSelector[a].setColor(color);
+	target.draw(hexSelector[a], states);
 }

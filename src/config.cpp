@@ -5,7 +5,7 @@
 #include "lerp.h"
 #include "Species.h"
 #include "ResourceLoader.h"
-#include "HealthBar.h"
+#include "UI.h"
 
 array<const char*, 6> config::roadTypes = { "r_e", "r_ne", "r_nw", "r_w", "r_sw", "r_se" };
 const array<const char*, ZOOM_LEVELS> config::rectNames = { "full", "half", "quarter" };
@@ -32,7 +32,7 @@ void config::loadAllJson() {
 	Species::loadJson("data/species.json");
 	SiteS::loadJson("data/sites.json");
 	MapUnitS::loadJson("data/units.json");
-	HealthBar::loadJson("data/ui.json");
+	UI::loadJson("data/ui.json");
 	config::loadKeyJson("data/keybindings.json");
 	cerr << "------------\nParsing Done\n\n";
 }
