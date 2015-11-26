@@ -310,10 +310,10 @@ void HexMap::updateCursorPos(sf::Vector2i cursorPos) {
 	}
 }
 
-float HexMap::distAxial(sf::Vector2f& a, sf::Vector2f& b) {
+float HexMap::distAxial(const sf::Vector2f& a, const sf::Vector2f& b) {
 	return (abs(a.x - b.x) + abs(a.x + a.y - b.x - b.y) + abs(a.y - b.y)) / 2;
 }
-float HexMap::distAxial(sf::Vector2i& a, sf::Vector2i& b) {
+float HexMap::distAxial(const sf::Vector2i& a, const sf::Vector2i& b) {
 	return (float)((abs(a.x - b.x) + abs(a.x + a.y - b.x - b.y) + abs(a.y - b.y)) / 2);
 }
 sf::Vector2f HexMap::roundHex(sf::Vector2f hex) {

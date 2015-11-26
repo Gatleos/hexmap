@@ -91,6 +91,7 @@ public:
 	virtual void select() = 0;
 	virtual void deselect() = 0;
 	virtual void setPath(sf::Vector2i dest) = 0;
+	virtual void setGoal(sf::Vector2i dest) = 0;
 	// Draw the entity itself
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) const;
 	// Draw selection indicators on the map which are relevant to this entity

@@ -134,9 +134,9 @@ public:
 	/////////////////
 
 	// Get exact distance between axial coordinates
-	static float distAxial(sf::Vector2f& a, sf::Vector2f& b);
+	static float distAxial(const sf::Vector2f& a, const sf::Vector2f& b);
 	// Get exact distance between axial coordinates
-	static float distAxial(sf::Vector2i& a, sf::Vector2i& b);
+	static float distAxial(const sf::Vector2i& a, const sf::Vector2i& b);
 	// Round a floating point axial coordinate to the nearest hex
 	static sf::Vector2f roundHex(sf::Vector2f hex);
 	// odd-r offset -> axial coordinate

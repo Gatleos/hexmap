@@ -118,7 +118,7 @@ void EngineState::input(sf::Event &e) {
 		}
 		else if (e.mouseButton.button == sf::Mouse::Right) {
 			if (UIdef::selectedEnt != nullptr) {
-				UIdef::selectedEnt->setPath(clicked);
+				UIdef::selectedEnt->setGoal(clicked);
 			}
 		}
 	}

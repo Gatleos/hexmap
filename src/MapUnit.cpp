@@ -65,6 +65,7 @@ moveTimer(0),
 MapEntity(sUnit, hmSet, parent) {
 	su = sUnit;
 	setHealth(0);
+	tasks.emplace_back(AI_IDLE, nullptr);
 }
 
 void MapUnit::setStaticUnit(const MapUnitS* sUnit) {
@@ -130,6 +131,32 @@ int MapUnit::getMemberType() const {
 	return su->type;
 }
 
+void MapUnit::pushTask(const task& t) {
+	tasks.push_back(t);
+	switch (t.getType()) {
+	case AI_MOVE:
+		path.clear();
+		hm->getPath(path, getMapPos(), tasks.back().getMapPos());
+		if (path.empty()) {
+			tasks.pop_back();
+		}
+		break;
+	case AI_ATTACK:
+		if (HexMap::distAxial(pos, t.getMapPos()) > 1.0f) {
+			pushTask(task(AI_MOVE, t.getMapPos()));
+		}
+		break;
+	}
+}
+
+void MapUnit::setAiType(const task& t) {
+	aiType = t.getType();
+	switch(aiType) {
+	default:
+		pushTask(t);
+	}
+}
+
 void MapUnit::appendPath(sf::Vector2i dest) {
 	hm->getPath(path, pos, dest);
 }
@@ -143,7 +170,20 @@ void MapUnit::update(const sf::Time& timeElapsed) {
 }
 
 void MapUnit::advanceTurn() {
-	walkPath();
+	// update actions based on current ai state
+	switch (tasks.back().getType()) {
+	case AI_MOVE:
+		if (!walkPath()) {
+			// either we reached the destination, or there is no viable path
+			tasks.pop_back();
+		}
+		break;
+	case AI_ATTACK:
+		if (HexMap::distAxial(pos, tasks.back().getMapPos()) > 1.0f) {
+			pushTask(task(AI_MOVE, tasks.back().getMapPos()));
+		}
+		break;
+	}
 	hp.consumeFood();
 	hp.updateBars();
 	if (hp.getHealth() <= 0) {
@@ -158,6 +198,16 @@ void MapUnit::select() {
 
 void MapUnit::deselect() {
 	UIdef::MapUnitInfo::instance()->show(false);
+}
+
+void MapUnit::setGoal(sf::Vector2i dest) {
+	MapEntity* ent = hm->getAxial(dest.x, dest.y).ent;
+	if (ent == nullptr) {
+		setAiType(task(AI_MOVE, dest));
+	}
+	else {
+		setAiType(task(AI_ATTACK, ent));
+	}
 }
 
 void MapUnit::draw(sf::RenderTarget& target, sf::RenderStates states) const {

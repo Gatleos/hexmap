@@ -80,6 +80,10 @@ void Site::updateResources() {
 	resources[MapEntityS::WOOD] += pop.activities()[Population::GROUP_CIV][Population::CIV_WOOD] * pop.size(Population::GROUP_CIV);
 }
 
+void Site::setGoal(sf::Vector2i dest) {
+
+}
+
 void Site::drawSelectors(sf::RenderTarget& target, sf::RenderStates states) const {
 	UI::drawHexSelector((sf::Vector2f)pos, sf::Color::Red, target);
 }
