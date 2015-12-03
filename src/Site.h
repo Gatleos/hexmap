@@ -28,7 +28,9 @@ public:
 	Site(const SiteS* sSite, HexMap* hmSet, Faction* parent);
 	const SiteS* sSite();
 	void update(const sf::Time& timeElapsed);
+	void preTurn();
 	void advanceTurn();
+	void postTurn();
 	void select();
 	void deselect();
 	void setPath(sf::Vector2i dest);
@@ -37,6 +39,9 @@ public:
 	void clearChildren(Site* s);
 	void deployUnit(const MapUnit& u);
 	void updateResources();
+	void takeDamage(double proportion);
+	int getAttackStrength();
+	int getDefenseStrength();
 	void setGoal(sf::Vector2i dest);
 	void drawSelectors(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) const;
 	void drawHUD(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) const;

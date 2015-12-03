@@ -45,6 +45,9 @@ public:
 				return ent->getMapPos();
 			}
 		}
+		MapEntity* getEntity() const {
+			return ent;
+		}
 		int getType() const {
 			return t;
 		}
@@ -65,13 +68,19 @@ public:
 	void setPath(sf::Vector2i dest);
 	void setHealth(int health);
 	int getHealth() const;
+	int getOldHealth() const;
 	void setFood(int foodAmount);
 	int getFood() const;
 	int getMemberType() const;
 	void setAiType(const task& t);
 	void appendPath(sf::Vector2i dest);
 	void update(const sf::Time& timeElapsed);
+	void takeDamage(double proportion);
+	int getAttackStrength();
+	int getDefenseStrength();
+	void preTurn();
 	void advanceTurn();
+	void postTurn();
 	void select();
 	void deselect();
 	void setGoal(sf::Vector2i dest);

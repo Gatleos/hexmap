@@ -48,6 +48,22 @@ void EngineState::init() {
 	siteMenu = UIdef::SiteMenu::instance();
 	UI::addNewLayout(siteMenu);
 	UI::addNewLayout(UIdef::DeployGroupMenu::instance());
+	MapUnit u(&MapUnitS::get(MapUnitS::UNIT_ARMY), &HEXMAP, HEXMAP.playerFaction());
+	u.setHealth(4000);
+	u.setFood(3000);
+	u.advanceTurn();
+	Site s(&SiteS::get(SiteS::CITY), &HEXMAP, HEXMAP.playerFaction());
+	s.pop.addSize(Population::GROUP_MIL, 2000.0f);
+	s.advanceTurn();
+	while (u.getHealth() > 0) {
+		u.preTurn();
+		s.preTurn();
+		u.attack(&s, rng::r);
+		s.attack(&u, rng::r);
+		u.advanceTurn();
+		s.advanceTurn();
+	}
+	int x = 0;
 	// Entities
 	//auto* f = HEXMAP.addFaction();
 	//for (int x = 0; x < 16384; x++) {

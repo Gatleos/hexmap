@@ -126,7 +126,7 @@ private:
 	int heuristic(sf::Vector2i& a, sf::Vector2i& b);
 	int moveCost(sf::Vector2i& current, sf::Vector2i& next);
 public:
-	deque<sf::Vector2i>& getPath(deque<sf::Vector2i>& path, sf::Vector2i startAxial, sf::Vector2i goalAxial);
+	deque<sf::Vector2i>& getPath(deque<sf::Vector2i>& path, sf::Vector2i startAxial, sf::Vector2i goalAxial, bool permitEntityOverlap = false);
 	int getPathCost(sf::Vector2i startAxial, sf::Vector2i goalAxial);
 
 	/////////////////

@@ -28,8 +28,16 @@ void Site::update(const sf::Time& timeElapsed) {
 
 }
 
+void Site::preTurn() {
+
+}
+
 void Site::advanceTurn() {
 	pop.popGrowth(1);
+}
+
+void Site::postTurn() {
+
 }
 
 void Site::select() {
@@ -78,6 +86,17 @@ void Site::deployUnit(const MapUnit& u) {
 
 void Site::updateResources() {
 	resources[MapEntityS::WOOD] += pop.activities()[Population::GROUP_CIV][Population::CIV_WOOD] * pop.size(Population::GROUP_CIV);
+}
+
+void Site::takeDamage(double proportion) {
+}
+
+int Site::getAttackStrength() {
+	return 1;
+}
+
+int Site::getDefenseStrength() {
+	return 1;
 }
 
 void Site::setGoal(sf::Vector2i dest) {

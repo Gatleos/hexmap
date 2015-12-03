@@ -26,6 +26,7 @@ class HealthBar : public sf::Drawable, public sf::Transformable {
 	static sf::Sprite frameSprite;
 	// Health info
 	int health;
+	int oldHealth;
 	int healthTier;
 	float deathRate;
 	// Food info
@@ -42,7 +43,9 @@ public:
 	static void loadJson(Json::Value& root);
 	HealthBar();
 	void setHealth(int health);
+	void updateOldHealth();
 	int getHealth() const;
+	int getOldHealth() const;
 	int getTier() const;
 	void setFood(int foodAmount);
 	int getFood() const;

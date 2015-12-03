@@ -104,7 +104,7 @@ void HealthBar::loadJson(Json::Value& root) {
 
 HealthBar::HealthBar() {
 	deathRate = 0.0f;
-	health = 0;
+	oldHealth = health = 0;
 	healthTier = 0;
 	rectTop.setPosition(barPos);
 	rectTop.setSize(barSize);
@@ -118,8 +118,16 @@ void HealthBar::setHealth(int health) {
 	this->health = clamp(health, 0, tierValues[HEALTH_TIER_NUM - 1]);
 }
 
+void HealthBar::updateOldHealth() {
+	oldHealth = this->health;
+}
+
 int HealthBar::getHealth() const {
 	return health;
+}
+
+int HealthBar::getOldHealth() const {
+	return oldHealth;
 }
 
 int HealthBar::getTier() const {

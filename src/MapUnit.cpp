@@ -118,6 +118,10 @@ int MapUnit::getHealth() const {
 	return hp.getHealth();
 }
 
+int MapUnit::getOldHealth() const {
+	return hp.getOldHealth();
+}
+
 void MapUnit::setFood(int foodAmount) {
 	hp.setFood(foodAmount);
 	hp.updateBars();
@@ -133,17 +137,25 @@ int MapUnit::getMemberType() const {
 
 void MapUnit::pushTask(const task& t) {
 	tasks.push_back(t);
+	path.clear();
 	switch (t.getType()) {
 	case AI_MOVE:
-		path.clear();
-		hm->getPath(path, getMapPos(), tasks.back().getMapPos());
+		if (t.getEntity() == nullptr) {
+			hm->getPath(path, getMapPos(), tasks.back().getMapPos());
+		}
+		else {
+			hm->getPath(path, getMapPos(), tasks.back().getMapPos(), true);
+			if (!path.empty()) {
+				path.pop_back();
+			}
+		}
 		if (path.empty()) {
 			tasks.pop_back();
 		}
 		break;
 	case AI_ATTACK:
 		if (HexMap::distAxial(pos, t.getMapPos()) > 1.0f) {
-			pushTask(task(AI_MOVE, t.getMapPos()));
+			pushTask(task(AI_MOVE, t.getEntity()));
 		}
 		break;
 	}
@@ -151,6 +163,9 @@ void MapUnit::pushTask(const task& t) {
 
 void MapUnit::setAiType(const task& t) {
 	aiType = t.getType();
+	while (tasks.size() > 1) {
+		tasks.pop_back();
+	}
 	switch(aiType) {
 	default:
 		pushTask(t);
@@ -169,6 +184,33 @@ void MapUnit::update(const sf::Time& timeElapsed) {
 	}
 }
 
+void MapUnit::takeDamage(double proportion) {
+	proportion = clamp(proportion, 0.0, 1.0);
+	int damage = hp.getHealth() * proportion;
+	hp.setHealth(hp.getHealth() - damage);
+}
+
+int MapUnit::getAttackStrength() {
+	int forceMult = 0;
+	switch (su->type) {
+	case MapUnitS::UNIT_CARAVAN:
+		forceMult = 1;
+		break;
+	case MapUnitS::UNIT_ARMY:
+		forceMult = 8;
+		break;
+	}
+	return hp.getOldHealth() * forceMult;
+}
+
+int MapUnit::getDefenseStrength() {
+	return getAttackStrength();
+}
+
+void MapUnit::preTurn() {
+	hp.updateOldHealth();
+}
+
 void MapUnit::advanceTurn() {
 	// update actions based on current ai state
 	switch (tasks.back().getType()) {
@@ -180,12 +222,18 @@ void MapUnit::advanceTurn() {
 		break;
 	case AI_ATTACK:
 		if (HexMap::distAxial(pos, tasks.back().getMapPos()) > 1.0f) {
-			pushTask(task(AI_MOVE, tasks.back().getMapPos()));
+			pushTask(task(AI_MOVE, tasks.back().getEntity()));
+		}
+		else {
+			attack(tasks.back().getEntity(), rng::r);
 		}
 		break;
 	}
 	hp.consumeFood();
 	hp.updateBars();
+}
+
+void MapUnit::postTurn() {
 	if (hp.getHealth() <= 0) {
 		// dead
 	}

@@ -223,6 +223,12 @@ void MapEntity::setAnimationType(MapEntityS::anim num) {
 	}
 }
 
+void MapEntity::attack(MapEntity* ent, mt19937& urng) {
+	static normal_distribution<double> combatRoll(1.0, 0.1);
+	double lossProp = (getAttackStrength() * combatRoll(urng)) / (ent->getDefenseStrength() * combatRoll(urng));
+	ent->takeDamage(lossProp / 5.0);
+}
+
 int MapEntity::zoomLevel = 0;
 
 void MapEntity::setZoomLevel(int zoom) {

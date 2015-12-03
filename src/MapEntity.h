@@ -86,8 +86,16 @@ public:
 	const MapEntityS* sMapEntity();
 	virtual void update(const sf::Time& timeElapsed) = 0;
 	void updateAnimation(const sf::Time& timeElapsed);
+	// Actions to be taken before any units act
+	virtual void preTurn() = 0;
 	// Runs once per map turn
 	virtual void advanceTurn() = 0;
+	// Actions to be taken after all units act
+	virtual void postTurn() = 0;
+	virtual int getAttackStrength() = 0;
+	virtual int getDefenseStrength() = 0;
+	virtual void attack(MapEntity* ent, mt19937& urng);
+	virtual void takeDamage(double proportion) = 0;
 	virtual void select() = 0;
 	virtual void deselect() = 0;
 	virtual void setPath(sf::Vector2i dest) = 0;

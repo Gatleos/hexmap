@@ -124,8 +124,11 @@ int HexMap::moveCost(sf::Vector2i& current, sf::Vector2i& next) {
 	return BIG_COST;
 }
 
-std::deque<sf::Vector2i>& HexMap::getPath(std::deque<sf::Vector2i>& path, sf::Vector2i startAxial, sf::Vector2i goalAxial) {
-	if (!isAxialInBounds(startAxial) || !getAxial(startAxial.x, startAxial.y).hts->FLAGS[HexTileS::WALKABLE] || moveCost(startAxial, goalAxial) >= BIG_COST || !isAxialInBounds(goalAxial) || !getAxial(goalAxial.x, goalAxial.y).hts->FLAGS[HexTileS::WALKABLE]) {
+std::deque<sf::Vector2i>& HexMap::getPath(std::deque<sf::Vector2i>& path, sf::Vector2i startAxial, sf::Vector2i goalAxial, bool permitEntityOverlap) {
+	if (!isAxialInBounds(startAxial) || !getAxial(startAxial.x, startAxial.y).hts->FLAGS[HexTileS::WALKABLE] || !isAxialInBounds(goalAxial) || !getAxial(goalAxial.x, goalAxial.y).hts->FLAGS[HexTileS::WALKABLE]) {
+		return path;
+	}
+	if (!permitEntityOverlap && moveCost(startAxial, goalAxial) >= BIG_COST) {
 		return path;
 	}
 	// traceback
@@ -151,7 +154,7 @@ std::deque<sf::Vector2i>& HexMap::getPath(std::deque<sf::Vector2i>& path, sf::Ve
 			if (!isAxialInBounds(next) || !getAxial(next.x, next.y).hts->FLAGS[HexTileS::WALKABLE]) {
 				continue;
 			}
-			int newCost = costSoFar[current] + moveCost(current, next);
+			int newCost = costSoFar[current] + (next == goal ? 0 : moveCost(current, next));
 			if (!costSoFar.count(next) || newCost < costSoFar[next]) {
 				costSoFar[next] = newCost;
 				int priority = newCost + heuristic(next, goal);
@@ -824,10 +827,22 @@ void HexMap::update(const sf::Time& timeElapsed) {
 
 void HexMap::advanceTurn() {
 	for (auto& s : sites) {
+		s.second.preTurn();
+	}
+	for (auto& u : units) {
+		u.second.preTurn();
+	}
+	for (auto& s : sites) {
 		s.second.advanceTurn();
 	}
 	for (auto& u : units) {
 		u.second.advanceTurn();
+	}
+	for (auto& s : sites) {
+		s.second.postTurn();
+	}
+	for (auto& u : units) {
+		u.second.postTurn();
 	}
 	UIdef::updateSitePop();
 	UIdef::updateSiteResources();
