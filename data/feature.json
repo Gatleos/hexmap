@@ -7,7 +7,8 @@
 		"half": [
 			[1, "/mountains/half/1", 1, -6]],
 		"quarter": [
-			[1, "/mountains/quarter/1", 1, -2]]
+			[1, "/mountains/quarter/1", 1, -2]],
+		"moveCost": 6
 	},
 	"f_forest_s": {
 		"name": "Forest S",
