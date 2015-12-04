@@ -53,6 +53,7 @@ public:
 		}
 	};
 	std::deque<task> tasks;
+	sf::VertexArray pathLine;
 private:
 	const MapUnitS* su;
 	// The unit's current movement path
@@ -66,6 +67,8 @@ public:
 	void setStaticUnit(const MapUnitS* sUnit);
 	bool walkPath();
 	void setPath(sf::Vector2i dest);
+	void appendPath(sf::Vector2i dest);
+	void recalcPath();
 	void setHealth(int health);
 	int getHealth() const;
 	int getOldHealth() const;
@@ -73,7 +76,6 @@ public:
 	int getFood() const;
 	int getMemberType() const;
 	void setAiType(const task& t);
-	void appendPath(sf::Vector2i dest);
 	void update(const sf::Time& timeElapsed);
 	void takeDamage(double proportion);
 	int getAttackStrength();

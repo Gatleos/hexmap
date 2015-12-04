@@ -66,6 +66,7 @@ MapEntity(sUnit, hmSet, parent) {
 	su = sUnit;
 	setHealth(0);
 	tasks.emplace_back(AI_IDLE, nullptr);
+	pathLine.setPrimitiveType(sf::PrimitiveType::LinesStrip);
 }
 
 void MapUnit::setStaticUnit(const MapUnitS* sUnit) {
@@ -78,6 +79,12 @@ bool MapUnit::walkPath() {
 	if (path.empty()) {
 		return false;
 	}
+	if (hm->moveCost(pos, *path.begin()) >= HexMap::BIG_COST) {
+		recalcPath();
+		if (path.empty()) {
+			return false;
+		}
+	}
 	setMapPos(*path.begin());
 	path.erase(path.begin());
 	return true;
@@ -85,7 +92,23 @@ bool MapUnit::walkPath() {
 
 void MapUnit::setPath(sf::Vector2i dest) {
 	path.clear();
+	pathLine.clear();
+	hm->getPath(path, pos, dest, true);
+	for (auto p : path) {
+		sf::Vector2f tilePos = (sf::Vector2f)hm->hexToPixel(p);
+		pathLine.append(sf::Vertex(tilePos));
+	}
+}
+
+void MapUnit::appendPath(sf::Vector2i dest) {
 	hm->getPath(path, pos, dest);
+}
+
+void MapUnit::recalcPath() {
+	if (path.empty()) {
+		return;
+	}
+	setPath(path.back());
 }
 
 void MapUnit::setHealth(int health) {
@@ -141,10 +164,11 @@ void MapUnit::pushTask(const task& t) {
 	switch (t.getType()) {
 	case AI_MOVE:
 		if (t.getEntity() == nullptr) {
-			hm->getPath(path, getMapPos(), tasks.back().getMapPos());
+			setPath(tasks.back().getMapPos());
 		}
 		else {
-			hm->getPath(path, getMapPos(), tasks.back().getMapPos(), true);
+			setPath(tasks.back().getMapPos());
+			//hm->getPath(path, getMapPos(), tasks.back().getMapPos(), true);
 			if (!path.empty()) {
 				path.pop_back();
 			}
@@ -170,10 +194,6 @@ void MapUnit::setAiType(const task& t) {
 	default:
 		pushTask(t);
 	}
-}
-
-void MapUnit::appendPath(sf::Vector2i dest) {
-	hm->getPath(path, pos, dest);
 }
 
 void MapUnit::update(const sf::Time& timeElapsed) {
@@ -268,6 +288,7 @@ void MapUnit::drawSelectors(sf::RenderTarget& target, sf::RenderStates states) c
 	UI::drawHexSelector((sf::Vector2f)pos, sf::Color::Red, target);
 	if (!path.empty()) {
 		UI::drawHexSelector((sf::Vector2f)path.back(), sf::Color::Green, target);
+		target.draw(pathLine, states);
 	}
 }
 

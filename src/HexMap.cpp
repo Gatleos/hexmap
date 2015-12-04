@@ -113,7 +113,7 @@ int HexMap::heuristic(sf::Vector2i& a, sf::Vector2i& b) {
 	//return abs(a.x - b.x) + abs(a.y - b.y);
 }
 
-#define BIG_COST 1000000000
+const int HexMap::BIG_COST = 1000000000;
 
 int HexMap::moveCost(sf::Vector2i& current, sf::Vector2i& next) {
 	auto& h = getAxial(next.x, next.y);

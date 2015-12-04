@@ -39,39 +39,14 @@ void EngineState::init() {
 	UI::view = HEXMAP.view;
 	// Set up map
 	HEXMAP.init(MAPX, MAPY);
-	HEXMAP.setAllTiles(HexTileS::get(HexTileS::OCEAN), rng::r);
+	HEXMAP.setAllTiles(HexTileS::get(HexTileS::GRASSLAND), rng::r);
 	HEXMAP.calculateViewArea(HEXMAP.view);
 	// GUI construction
 	UI::addNewLayout(UIdef::MapGenDebug::instance());
 	UI::pushLayout(UIdef::MapGenDebug::instance());
-	auto* f = HEXMAP.addFaction();
 	siteMenu = UIdef::SiteMenu::instance();
 	UI::addNewLayout(siteMenu);
 	UI::addNewLayout(UIdef::DeployGroupMenu::instance());
-	MapUnit u(&MapUnitS::get(MapUnitS::UNIT_ARMY), &HEXMAP, HEXMAP.playerFaction());
-	u.setHealth(4000);
-	u.setFood(3000);
-	u.advanceTurn();
-	Site s(&SiteS::get(SiteS::CITY), &HEXMAP, HEXMAP.playerFaction());
-	s.pop.addSize(Population::GROUP_MIL, 2000.0f);
-	s.advanceTurn();
-	while (u.getHealth() > 0) {
-		u.preTurn();
-		s.preTurn();
-		u.attack(&s, rng::r);
-		s.attack(&u, rng::r);
-		u.advanceTurn();
-		s.advanceTurn();
-	}
-	int x = 0;
-	// Entities
-	//auto* f = HEXMAP.addFaction();
-	//for (int x = 0; x < 16384; x++) {
-	//	sf::Vector2i pos = { x % 128, x / 128 };
-	//	auto* s = HEXMAP.addSite(SiteS::get("si_castle"), f);
-	//	s->initMapPos(HexMap::offsetToAxial(pos));
-	//	s->setAnimationType(MapEntityS::anim::IDLE);
-	//}
 	// Shader
 	//shader.loadFromFile("data/simplex.glsl", sf::Shader::Type::Fragment);
 	//shader.setParameter("offset", HEXMAP.view.getCenter());
@@ -82,7 +57,18 @@ void EngineState::init() {
 	//engine->window->setFramerateLimit(600);
 	engine->pushState(MapControlState::instance());
 	UI::desktop->LoadThemeFromFile("data/test.theme");
-	generate();
+	//generate();
+	// Entities
+	auto* f = HEXMAP.playerFaction();
+	std::array<sf::Vector2i, 2> pos = { { { 2, 2 }, { 2, 6 } } };
+	std::array<sf::Vector2i, 2> dest = { { { 2, 4 }, { 2, 3 } } };
+	std::array<MapEntityS::anim, 2> anim = { { MapEntityS::anim::IDLE, MapEntityS::anim::WOUND3 } };
+	for (int a = 0; a < pos.size(); a++) {
+		auto* s = HEXMAP.addMapUnit(&MapUnitS::get(MapUnitS::UNIT_ARMY), f);
+		s->initMapPos(pos[a]);
+		s->setAnimationType(anim[a]);
+		s->setAiType(MapUnit::task(MapUnit::AI_MOVE, dest[a]));
+	}
 }
 void EngineState::end() {
 }
