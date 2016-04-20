@@ -42,6 +42,7 @@ public:
 	void takeDamage(double proportion);
 	int getAttackStrength();
 	int getDefenseStrength();
+	bool isInMotion();
 	void setGoal(sf::Vector2i dest);
 	void drawSelectors(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) const;
 	void drawHUD(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) const;

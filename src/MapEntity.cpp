@@ -104,6 +104,7 @@ bool MapEntity::initMapPos(sf::Vector2i axialCoord) {
 	if (!hm->isAxialInBounds(axialCoord)) {
 		return false;
 	}
+	lastPos = axialCoord;
 	pos = axialCoord;
 	sf::Vector2i offset = HexMap::axialToOffset(pos);
 	hm->setEntity(offset, this);
@@ -113,12 +114,15 @@ bool MapEntity::initMapPos(sf::Vector2i axialCoord) {
 	return true;
 }
 
-bool MapEntity::setMapPos(sf::Vector2i axialCoord) {
+bool MapEntity::setMapPos(sf::Vector2i axialCoord, bool clearPrevious) {
 	if (!hm->isAxialInBounds(axialCoord)) {
 		return false;
 	}
 	sf::Vector2i offset = HexMap::axialToOffset(pos);
-	hm->setEntity(offset, nullptr);
+	if (clearPrevious && hm->getOffset(offset.x, offset.y).ent == this) {
+		hm->setEntity(offset, nullptr);
+	}
+	lastPos = pos;
 	pos = axialCoord;
 	offset = HexMap::axialToOffset(pos);
 	hm->setEntity(offset, this);
@@ -126,6 +130,18 @@ bool MapEntity::setMapPos(sf::Vector2i axialCoord) {
 		handlers_[a].setPosition((sf::Vector2f)hm->hexToPixel(pos, a) + HexMap::getMapOrigin(a));
 	}
 	return true;
+}
+
+void MapEntity::undoMapMove() {
+	auto& lastHex = hm->getAxial(lastPos.x, lastPos.y);
+	if (lastHex.ent != nullptr) {
+		MapEntity* ent = lastHex.ent;
+		setMapPos(lastPos, false);
+		ent->undoMapMove();
+	}
+	else {
+		setMapPos(lastPos, false);
+	}
 }
 
 const sf::Vector2i& MapEntity::getMapPos() {
@@ -206,6 +222,7 @@ MapEntity::MapEntity(const MapEntityS* sEnt, HexMap* hmSet, Faction* parent) {
 	hm = hmSet;
 	faction = parent;
 	setStaticEntity(sEnt);
+	acted = false;
 }
 
 void MapEntity::setStaticEntity(const MapEntityS* sEnt) {
@@ -237,4 +254,8 @@ void MapEntity::setZoomLevel(int zoom) {
 
 int MapEntity::getZoomLevel() {
 	return zoomLevel;
+}
+
+bool MapEntity::hasActed() {
+	return acted;
 }

@@ -61,6 +61,7 @@ private:
 	int aiType;
 	int moveTimer;
 	HealthBar hp;
+	bool blockedLastTurn;
 	void pushTask(const task& t);
 public:
 	MapUnit(const MapUnitS* sUnit, HexMap* hmSet, Faction* parent);
@@ -80,6 +81,7 @@ public:
 	void takeDamage(double proportion);
 	int getAttackStrength();
 	int getDefenseStrength();
+	bool isInMotion();
 	void preTurn();
 	void advanceTurn();
 	void postTurn();

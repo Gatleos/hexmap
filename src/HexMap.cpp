@@ -117,7 +117,7 @@ const int HexMap::BIG_COST = 1000000000;
 
 int HexMap::moveCost(sf::Vector2i& current, sf::Vector2i& next) {
 	auto& h = getAxial(next.x, next.y);
-	if (h.ent == nullptr) {
+	if (h.ent == nullptr || h.ent->isInMotion() && !h.ent->hasActed()) {
 		return h.hts->moveCost + (h.tfs == nullptr ? 0 : h.tfs->moveCost);
 	}
 	// impassable
@@ -687,7 +687,7 @@ void HexMap::drawUI(sf::RenderTarget& target, sf::RenderStates states) const {
 	}
 	else {
 		UIdef::selectedEnt->drawSelectors(target);
-		UIdef::selectedEnt->drawHUD(target, states);
+		//UIdef::selectedEnt->drawHUD(target, states);
 	}
 }
 
@@ -833,10 +833,14 @@ void HexMap::advanceTurn() {
 		u.second.preTurn();
 	}
 	for (auto& s : sites) {
-		s.second.advanceTurn();
+		if (!s.second.hasActed()) {
+			s.second.advanceTurn();
+		}
 	}
 	for (auto& u : units) {
-		u.second.advanceTurn();
+		if (!u.second.hasActed()) {
+			u.second.advanceTurn();
+		}
 	}
 	for (auto& s : sites) {
 		s.second.postTurn();

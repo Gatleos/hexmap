@@ -67,6 +67,7 @@ MapEntity(sUnit, hmSet, parent) {
 	setHealth(0);
 	tasks.emplace_back(AI_IDLE, nullptr);
 	pathLine.setPrimitiveType(sf::PrimitiveType::LinesStrip);
+	blockedLastTurn = false;
 }
 
 void MapUnit::setStaticUnit(const MapUnitS* sUnit) {
@@ -77,16 +78,37 @@ void MapUnit::setStaticUnit(const MapUnitS* sUnit) {
 
 bool MapUnit::walkPath() {
 	if (path.empty()) {
+		hm->getAxial(pos.x, pos.y).FLAGS[HexTile::OCCUPIED_NEXT_TURN] = true;
 		return false;
 	}
-	if (hm->moveCost(pos, *path.begin()) >= HexMap::BIG_COST) {
-		recalcPath();
+	if (hm->moveCost(pos, *path.begin()) >= HexMap::BIG_COST) { // impassable
+		if (blockedLastTurn) {
+			recalcPath();
+		}
+		blockedLastTurn = !blockedLastTurn;
 		if (path.empty()) {
 			return false;
 		}
 	}
-	setMapPos(*path.begin());
-	path.erase(path.begin());
+	auto& curHex = hm->getAxial(pos.x, pos.y);
+	auto& nextHex = hm->getAxial(path.begin()->x, path.begin()->y);
+	if (nextHex.ent == nullptr || nextHex.ent->isInMotion() && !nextHex.ent->hasActed()) {
+		// move
+		setMapPos(*path.begin());
+		path.erase(path.begin());
+		// set occupied flags
+		if (!path.empty()) {
+			curHex.FLAGS[HexTile::OCCUPIED_NEXT_TURN] = false;
+			nextHex.FLAGS[HexTile::OCCUPIED_NEXT_TURN] = true;
+		}
+	}
+	else {
+		// uh-oh, we need to roll back some moves
+		if (curHex.ent != this) {
+			curHex.ent->undoMapMove();
+			curHex.ent = this;
+		}
+	}
 	return true;
 }
 
@@ -196,6 +218,7 @@ void MapUnit::setAiType(const task& t) {
 	}
 }
 
+// unused
 void MapUnit::update(const sf::Time& timeElapsed) {
 	moveTimer += timeElapsed.asMilliseconds();
 	if (moveTimer >= 500) {
@@ -227,8 +250,17 @@ int MapUnit::getDefenseStrength() {
 	return getAttackStrength();
 }
 
+bool MapUnit::isInMotion() {
+	return !path.empty();
+}
+
 void MapUnit::preTurn() {
 	hp.updateOldHealth();
+	switch (tasks.back().getType()) {
+	case AI_MOVE:
+		break;
+	}
+	acted = false;
 }
 
 void MapUnit::advanceTurn() {
@@ -251,6 +283,7 @@ void MapUnit::advanceTurn() {
 	}
 	hp.consumeFood();
 	hp.updateBars();
+	acted = true;
 }
 
 void MapUnit::postTurn() {

@@ -29,11 +29,12 @@ void Site::update(const sf::Time& timeElapsed) {
 }
 
 void Site::preTurn() {
-
+	acted = false;
 }
 
 void Site::advanceTurn() {
 	pop.popGrowth(1);
+	acted = true;
 }
 
 void Site::postTurn() {
@@ -97,6 +98,10 @@ int Site::getAttackStrength() {
 
 int Site::getDefenseStrength() {
 	return 1;
+}
+
+bool Site::isInMotion() {
+	return false;
 }
 
 void Site::setGoal(sf::Vector2i dest) {

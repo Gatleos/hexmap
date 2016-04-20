@@ -40,7 +40,7 @@ public:
 class HexTile {
 public:
 	enum {
-		MOUNTAINS, FLAG_MAX
+		MOUNTAINS, OCCUPIED_NEXT_TURN, FLAG_MAX
 	};
 	const HexTileS* hts;
 	const TileFeatureS* tfs;

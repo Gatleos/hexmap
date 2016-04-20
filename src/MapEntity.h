@@ -70,9 +70,11 @@ protected:
 	static int zoomLevel;
 	// Current position
 	sf::Vector2i pos;
+	sf::Vector2i lastPos;
 	array<AnimHandler, ZOOM_LEVELS> handlers_;
 	HexMap* hm;
 	Faction* faction;
+	bool acted;
 public:
 	static void setZoomLevel(int zoom);
 	static int getZoomLevel();
@@ -81,11 +83,15 @@ public:
 	void setStaticEntity(const MapEntityS* sEnt);
 	void setAnimationType(MapEntityS::anim num);
 	bool initMapPos(sf::Vector2i axialCoord);
-	bool setMapPos(sf::Vector2i axialCoord);
+	bool setMapPos(sf::Vector2i axialCoord, bool clearPrevious = true);
+	void undoMapMove();
 	const sf::Vector2i& getMapPos();
 	const MapEntityS* sMapEntity();
 	virtual void update(const sf::Time& timeElapsed) = 0;
 	void updateAnimation(const sf::Time& timeElapsed);
+	virtual bool isInMotion() = 0;
+	// Has it acted yet this turn?
+	bool hasActed();
 	// Actions to be taken before any units act
 	virtual void preTurn() = 0;
 	// Runs once per map turn
