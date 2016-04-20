@@ -225,6 +225,14 @@ MapEntity::MapEntity(const MapEntityS* sEnt, HexMap* hmSet, Faction* parent) {
 	acted = false;
 }
 
+void MapEntity::setFaction(Faction* fac) {
+	faction = fac;
+}
+
+Faction* MapEntity::getFaction() {
+	return faction;
+}
+
 void MapEntity::setStaticEntity(const MapEntityS* sEnt) {
 	mes = sEnt;
 	// Get animation data from associated MapEntityS

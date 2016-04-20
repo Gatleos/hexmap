@@ -200,9 +200,6 @@ void MapUnit::pushTask(const task& t) {
 		}
 		break;
 	case AI_ATTACK:
-		if (HexMap::distAxial(pos, t.getMapPos()) > 1.0f) {
-			pushTask(task(AI_MOVE, t.getEntity()));
-		}
 		break;
 	}
 }
@@ -270,11 +267,15 @@ void MapUnit::advanceTurn() {
 		if (!walkPath()) {
 			// either we reached the destination, or there is no viable path
 			tasks.pop_back();
+			advanceTurn();
+			return;
 		}
 		break;
 	case AI_ATTACK:
 		if (HexMap::distAxial(pos, tasks.back().getMapPos()) > 1.0f) {
 			pushTask(task(AI_MOVE, tasks.back().getEntity()));
+			advanceTurn();
+			return;
 		}
 		else {
 			attack(tasks.back().getEntity(), rng::r);
@@ -289,6 +290,7 @@ void MapUnit::advanceTurn() {
 void MapUnit::postTurn() {
 	if (hp.getHealth() <= 0) {
 		// dead
+		int x = 0;
 	}
 }
 

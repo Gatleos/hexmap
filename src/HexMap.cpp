@@ -687,7 +687,7 @@ void HexMap::drawUI(sf::RenderTarget& target, sf::RenderStates states) const {
 	}
 	else {
 		UIdef::selectedEnt->drawSelectors(target);
-		//UIdef::selectedEnt->drawHUD(target, states);
+		UIdef::selectedEnt->drawHUD(target, states);
 	}
 }
 

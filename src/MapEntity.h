@@ -80,6 +80,8 @@ public:
 	static int getZoomLevel();
 	int id;
 	MapEntity(const MapEntityS* sEnt, HexMap* hmSet, Faction* parent);
+	void setFaction(Faction* fac);
+	Faction* getFaction();
 	void setStaticEntity(const MapEntityS* sEnt);
 	void setAnimationType(MapEntityS::anim num);
 	bool initMapPos(sf::Vector2i axialCoord);
