@@ -4,6 +4,7 @@
 using namespace std;
 
 namespace lerp {
+	sf::Color interpolateColor(const sf::Color& a, const sf::Color& b, float fraction);
 	void colors(vector<sf::Color>& output, const sf::Color& a, const sf::Color& b, int numColors);
 	void colorRange(vector<sf::Color>& output, const vector<sf::Color>& keyColors, const vector<int> keyIndices);
 	extern const sf::Color orange;

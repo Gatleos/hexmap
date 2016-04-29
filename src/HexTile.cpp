@@ -20,8 +20,12 @@ array<unique_ptr<HexTileS>, HexTileS::TERRAIN_NUM> HexTileS::terrain = { {
 	terptr("t_jungle_m"), terptr("t_jungle_l"), terptr("t_savanna"), terptr("t_desert"), terptr("t_swamp")
 	} };
 const sf::Texture* HexTileS::tex = nullptr;
+const std::map<std::string, unsigned char> HexTileS::gradientTypes = {
+	{ "height", HexTileS::P_HEIGHT }, { "temperature", HexTileS::P_TEMPERATURE },
+	{ "moisture", HexTileS::P_MOISTURE }, { "drainage", HexTileS::P_DRAINAGE }
+};
 
-HexTileS::HexTileS(string idSet) :id(idSet), moveCost(10U) {
+HexTileS::HexTileS(string idSet) :id(idSet), moveCost(10U), gradientType(P_NONE) {
 }
 
 void HexTileS::loadJson(string filename) {
@@ -96,36 +100,36 @@ void HexTileS::loadJson(string filename) {
 				else {
 					gradientMax = HEIGHT_LIMIT - SEA_LEVEL;
 				}
-				hex->FLAGS[GRADIENT] = true;
 				element = "gradient";
-				hex->colors.clear();
+				hex->gradientKeys.clear();
 				auto members = gradient.getMemberNames();
-				vector<sf::Color> keyColors;
-				vector<int> keyIndices;
+				char gradientType = P_NONE;
 				for (auto& s : members) {
 					auto e = gradient[s];
+					if (s == "type") { // gradient type
+						auto it = gradientTypes.find(e.asString());
+						if (it == gradientTypes.end()) {
+							stringstream ss;
+							ss << "invalid gradient type \"" << e.asString() << "\"";
+							throw runtime_error(ss.str());
+						}
+						hex->gradientType = it->second;
+						continue;
+					}
 					if (e.size() != 3) {
-						hex->FLAGS[GRADIENT] = false;
 						throw runtime_error("wrong amount of elements for color definition (needs 3)");
 					}
-					float indexFraction = stof(s);
-					if (indexFraction < 0.0f || indexFraction > 1.0f) {
+					unsigned char indexValue = stoi(s);
+					if (indexValue < 0 || indexValue > 255) {
 						hex->FLAGS[GRADIENT] = false;
 						stringstream ss;
 						ss << "invalid index \"" << s << "\"";
 						throw runtime_error(ss.str());
 					}
+					// gradient key values
 					int index = stof(s) * gradientMax;
-					if (!keyIndices.empty() && index <= keyIndices.back()) {
-						hex->FLAGS[GRADIENT] = false;
-						throw runtime_error("gradient indices must be in ascending order");
-					}
-					if (index != 0) {
-						keyIndices.push_back(index);
-					}
-					keyColors.push_back(sf::Color(e[0].asInt(), e[1].asInt(), e[2].asInt()));
+					hex->gradientKeys[indexValue] = sf::Color(e[0].asInt(), e[1].asInt(), e[2].asInt());
 				}
-				lerp::colorRange(hex->colors, keyColors, keyIndices);
 			}
 			// moveCost
 			element = "moveCost";
@@ -155,4 +159,33 @@ HexTile::HexTile() :
 ent(nullptr),
 hts(nullptr),
 tfs(nullptr) {
+}
+
+sf::Color HexTile::getGradientValue() {
+	if (hts->gradientType == HexTileS::P_NONE || hts->gradientKeys.empty()) {
+		return sf::Color::White;
+	}
+	unsigned char value = properties[hts->gradientType];
+	unsigned char prevKey = 0;
+	bool found = false;
+	sf::Color prevColor = sf::Color::Transparent;
+	sf::Color finalColor;
+	for (auto k : hts->gradientKeys) {
+		if (value <= k.first) {
+			found = true;
+			if (prevColor.a == 0) {
+				finalColor = k.second;
+			}
+			else {
+				float fraction = float(value - prevKey) / float(k.first - prevKey);
+				finalColor = lerp::interpolateColor(prevColor, k.second, fraction);
+			}
+		}
+		prevKey = k.first;
+		prevColor = k.second;
+	}
+	if (!found) {
+		finalColor = hts->gradientKeys.rbegin()->second;
+	}
+	return finalColor;
 }

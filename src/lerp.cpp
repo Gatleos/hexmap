@@ -10,6 +10,10 @@ inline int interpolate(int a, int b, float val) {
 	return a + (val * (b - a));
 }
 
+sf::Color lerp::interpolateColor(const sf::Color& a, const sf::Color& b, float fraction) {
+	return sf::Color(interpolate(a.r, b.r, fraction), interpolate(a.g, b.g, fraction), interpolate(a.b, b.b, fraction));
+}
+
 void lerp::colors(vector<sf::Color>& output, const sf::Color& a, const sf::Color& b, int numColors) {
 	for (int x = 0; x < numColors; x++) {
 		float fraction = x / (float)numColors;

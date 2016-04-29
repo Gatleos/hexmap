@@ -146,14 +146,14 @@ void HexMap::generateBiomes(mt19937& urng) {
 					}
 				}
 			}
-			getOffset(hexPos.x, hexPos.y).FLAGS = 0;
+			auto& hex = getOffset(hexPos.x, hexPos.y);
+			hex.FLAGS = 0;
+			hex.properties[HexTileS::P_HEIGHT] = heightVal;
+			hex.properties[HexTileS::P_TEMPERATURE	] = tempVal;
+			hex.properties[HexTileS::P_MOISTURE] = moistVal;
+			hex.properties[HexTileS::P_DRAINAGE] = drainVal;
 			setTile(hexPos, *type, urng);
-			if (type->FLAGS[HexTileS::GRADIENT]) {
-				pushTileColor(hexPos, type->colors[colorIndex]);
-			}
-			else {
-				pushTileColor(hexPos, sf::Color::White);
-			}
+			pushTileColor(hexPos, hex.getGradientValue());
 		}
 	}
 }
@@ -247,7 +247,7 @@ void HexMap::findRegions() {
 						continue;
 					}
 					HexTile& t = getAxial(n.x, n.y);
-					if (t.height >= 200) {
+					if (t.properties[HexTileS::P_HEIGHT] >= 200) {
 						peaks.push_back(n);
 					}
 					if (t.hts == h->hts) {
