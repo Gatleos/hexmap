@@ -39,7 +39,7 @@
 			[1, "/tiles/quarter/ocean", 0, 0]
 		],
 		"gradient": {
-			"type": "temperature",
+			"type": "height",
 			"30": [0, 42, 179],
 			"100": [58, 146, 255]
 		},

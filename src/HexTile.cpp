@@ -180,6 +180,7 @@ sf::Color HexTile::getGradientValue() {
 				float fraction = float(value - prevKey) / float(k.first - prevKey);
 				finalColor = lerp::interpolateColor(prevColor, k.second, fraction);
 			}
+			break;
 		}
 		prevKey = k.first;
 		prevColor = k.second;
