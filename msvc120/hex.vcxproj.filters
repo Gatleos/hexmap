@@ -66,6 +66,12 @@
     <ClInclude Include="..\src\HealthBar.h">
       <Filter>animation</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\SiteDungeon.h">
+      <Filter>MapEntities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\SiteSettlement.h">
+      <Filter>MapEntities</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\main.cpp" />
@@ -133,6 +139,12 @@
     </ClCompile>
     <ClCompile Include="..\src\HealthBar.cpp">
       <Filter>animation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\SiteSettlement.cpp">
+      <Filter>MapEntities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\SiteDungeon.cpp">
+      <Filter>MapEntities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

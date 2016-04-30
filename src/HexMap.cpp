@@ -448,7 +448,7 @@ VectorSet& HexMap::clipToBounds(VectorSet& boundedAxial) {
 	}
 	return boundedAxial;
 }
-VectorSet& HexMap::clip(VectorSet& listAxial, std::function<bool(HexTile&)>& condition) {
+VectorSet& HexMap::clip(VectorSet& listAxial, std::function<bool(HexTile&)> condition) {
 	for (auto it = listAxial.begin(); it != listAxial.end();) {
 		if (!condition(getAxial(it->x, it->y))) {
 			it = listAxial.erase(it);
@@ -759,12 +759,22 @@ Faction* HexMap::addFaction() {
 	return &factions.back();
 }
 
-Site* HexMap::addSite(const SiteS* sSite, Faction* parent) {
-	auto& s = sites.emplace(nextSiteId, Site(sSite, this, parent)).first->second;
+SiteSettlement* HexMap::addSettlement(const SiteS* sSite, Faction* parent) {
+	auto s = make_shared<SiteSettlement>(sSite, this, parent);
+	sites.emplace(nextSiteId, s);
 	parent->sites.insert(nextSiteId);
-	s.id = nextSiteId;
+	s->id = nextSiteId;
 	nextSiteId++;
-	return &s;
+	return s.get();
+}
+
+SiteDungeon* HexMap::addDungeon(const SiteS* sSite, Faction* parent) {
+	auto s = make_shared<SiteDungeon>(sSite, this, parent);
+	sites.emplace(nextSiteId, s);
+	parent->sites.insert(nextSiteId);
+	s->id = nextSiteId;
+	nextSiteId++;
+	return s.get();
 }
 
 MapUnit* HexMap::addMapUnit(const MapUnitS* sEnt, Faction* parent) {
@@ -785,7 +795,7 @@ MapEntity* HexMap::getEntity(int id) {
 		}
 	}
 	else {
-		ent = &s->second;
+		ent = s->second.get();
 	}
 	return ent;
 }
@@ -793,7 +803,7 @@ MapEntity* HexMap::getEntity(int id) {
 void HexMap::clearEntities() {
 	factions.clear();
 	for (auto& s : sites) {
-		auto& pos = s.second.getMapPos();
+		auto& pos = s.second->getMapPos();
 		getAxial(pos.x, pos.y).ent = nullptr;
 		setFeatureColor(axialToOffset(pos), sf::Color::White);
 	}
@@ -827,14 +837,14 @@ void HexMap::update(const sf::Time& timeElapsed) {
 
 void HexMap::advanceTurn() {
 	for (auto& s : sites) {
-		s.second.preTurn();
+		s.second->preTurn();
 	}
 	for (auto& u : units) {
 		u.second.preTurn();
 	}
 	for (auto& s : sites) {
-		if (!s.second.hasActed()) {
-			s.second.advanceTurn();
+		if (!s.second->hasActed()) {
+			s.second->advanceTurn();
 		}
 	}
 	for (auto& u : units) {
@@ -843,7 +853,7 @@ void HexMap::advanceTurn() {
 		}
 	}
 	for (auto& s : sites) {
-		s.second.postTurn();
+		s.second->postTurn();
 	}
 	for (auto& u : units) {
 		u.second.postTurn();

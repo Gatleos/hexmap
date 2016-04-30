@@ -11,13 +11,10 @@ using namespace std;
 #define siteptr(x) unique_ptr<SiteS>(new SiteS(x))
 
 array<unique_ptr<SiteS>, SiteS::SITE_NUM> SiteS::site = { {
-		siteptr("si_null"), siteptr("si_city"), siteptr("si_town"), siteptr("si_village")
+		siteptr("si_null"), siteptr("si_city"), siteptr("si_town"), siteptr("si_village"), siteptr("si_dungeon")
 	} };
 
 Site::Site(const SiteS* sSite, HexMap* hmSet, Faction* parent) : MapEntity(sSite, hmSet, parent), ss(sSite), parent(nullptr) {
-	for (auto& r : resources) {
-		r = 0.0f;
-	}
 }
 
 const SiteS* Site::sSite() {
@@ -33,7 +30,6 @@ void Site::preTurn() {
 }
 
 void Site::advanceTurn() {
-	pop.popGrowth(1);
 	acted = true;
 }
 
@@ -42,12 +38,9 @@ void Site::postTurn() {
 }
 
 void Site::select() {
-	UIdef::SiteMenu::instance()->show(true);
-	UIdef::setSite(*this);
 }
 
 void Site::deselect() {
-	UIdef::SiteMenu::instance()->show(false);
 }
 
 void Site::setPath(sf::Vector2i dest) {
@@ -74,19 +67,6 @@ void Site::clearChildren(Site* s) {
 		ptr->parent = nullptr;
 	}
 	children.clear();
-}
-
-void Site::deployUnit(const MapUnit& u) {
-	// there's a problem if we're trying to create a group larger than our total population
-	assert(resources[MapEntityS::FOOD] >= u.getFood());
-	assert(pop.size(u.getMemberType()) >= u.getHealth());
-	// subtract it all out
-	resources[MapEntityS::FOOD] -= u.getFood();
-	pop.addSize(u.getMemberType(), -u.getHealth());
-}
-
-void Site::updateResources() {
-	resources[MapEntityS::WOOD] += pop.activities()[Population::GROUP_CIV][Population::CIV_WOOD] * pop.size(Population::GROUP_CIV);
 }
 
 void Site::takeDamage(double proportion) {

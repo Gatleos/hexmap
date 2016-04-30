@@ -6,7 +6,8 @@
 #include <list>
 #include <functional>
 #include "Compare.h"
-#include "Site.h"
+#include "SiteSettlement.h"
+#include "SiteDungeon.h"
 #include "Faction.h"
 #include "HexTile.h"
 #include "Array2d.h"
@@ -29,6 +30,8 @@ public:
 };
 
 #define HEXMAP HexMap::instance()
+
+
 
 class HexMap : public sf::Drawable, public sf::Transformable {
 public:
@@ -96,7 +99,7 @@ private:
 	std::deque<sf::Vector2f> land;
 	std::list<Faction> factions;
 	unsigned int nextSiteId;
-	map<int, Site> sites;
+	map<int, std::shared_ptr<Site>> sites;
 	unsigned int nextUnitId;
 	map<int, MapUnit> units;
 	// Distribution for rng along map's x coordinate
@@ -173,7 +176,7 @@ public:
 	// Remove all coordinates which fall outside the map
 	VectorSet& clipToBounds(VectorSet& boundedAxial);
 	// Remove all coordinates whose hexes do not meet condition()
-	VectorSet& clip(VectorSet& listAxial, std::function<bool(HexTile&)>& condition);
+	VectorSet& clip(VectorSet& listAxial, std::function<bool(HexTile&)> condition);
 
 	////////////
 	// Access //
@@ -236,7 +239,8 @@ public:
 
 	Faction* playerFaction();
 	Faction* addFaction();
-	Site* addSite(const SiteS* sSite, Faction* parent);
+	SiteSettlement* addSettlement(const SiteS* sSite, Faction* parent);
+	SiteDungeon* addDungeon(const SiteS* sSite, Faction* parent);
 	MapUnit* addMapUnit(const MapUnitS* sEnt, Faction* parent);
 	MapEntity* getEntity(int id);
 	void clearEntities();

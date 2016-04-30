@@ -36,6 +36,8 @@
     <ClInclude Include="..\src\simplexnoise.h" />
     <ClInclude Include="..\src\AnimHandler.h" />
     <ClInclude Include="..\src\Site.h" />
+    <ClInclude Include="..\src\SiteDungeon.h" />
+    <ClInclude Include="..\src\SiteSettlement.h" />
     <ClInclude Include="..\src\Species.h" />
     <ClInclude Include="..\src\States.h" />
     <ClInclude Include="..\src\Faction.h" />
@@ -68,6 +70,8 @@
     <ClCompile Include="..\src\simplexnoise.cpp" />
     <ClCompile Include="..\src\Site.cpp" />
     <ClCompile Include="..\src\Faction.cpp" />
+    <ClCompile Include="..\src\SiteDungeon.cpp" />
+    <ClCompile Include="..\src\SiteSettlement.cpp" />
     <ClCompile Include="..\src\Species.cpp" />
     <ClCompile Include="..\src\TileFeature.cpp" />
     <ClCompile Include="..\src\UI.cpp" />

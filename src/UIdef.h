@@ -3,7 +3,7 @@
 
 #include "UI.h"
 #include <array>
-#include "Site.h"
+#include "SiteSettlement.h"
 #include "MapUnit.h"
 
 namespace UIdef {
@@ -73,7 +73,7 @@ namespace UIdef {
 	};
 
 	// Set site-related UI elements to point to this site
-	void setSite(Site& site);
+	void setSettlement(SiteSettlement& site);
 	// Set unit-related UI elements to point to this unit
 	void setUnit(MapUnit& unit);
 	// Update all UI elements that refer to ent pop sizes

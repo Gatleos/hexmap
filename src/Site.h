@@ -8,7 +8,7 @@
 class SiteS : public MapEntityS {
 public:
 	enum {
-		NONE, CITY, TOWN, VILLAGE, SITE_NUM
+		NONE, CITY, TOWN, VILLAGE, DUNGEON, SITE_NUM
 	};
 private:
 	SiteS(string id);
@@ -23,29 +23,25 @@ class Site : public MapEntity {
 	Site* parent;
 	std::vector<Site*> children;
 public:
-	Population pop;
-	array<float, MapEntityS::RESOURCE_NUM> resources;
 	Site(const SiteS* sSite, HexMap* hmSet, Faction* parent);
 	const SiteS* sSite();
 	void update(const sf::Time& timeElapsed);
-	void preTurn();
-	void advanceTurn();
-	void postTurn();
-	void select();
-	void deselect();
+	virtual void preTurn();
+	virtual void advanceTurn();
+	virtual void postTurn();
+	virtual void select();
+	virtual void deselect();
 	void setPath(sf::Vector2i dest);
 	void addChild(Site* s);
 	void removeChild(Site* s);
 	void clearChildren(Site* s);
-	void deployUnit(const MapUnit& u);
-	void updateResources();
 	void takeDamage(double proportion);
 	int getAttackStrength();
 	int getDefenseStrength();
 	bool isInMotion();
 	void setGoal(sf::Vector2i dest);
 	void drawSelectors(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) const;
-	void drawHUD(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) const;
+	virtual void drawHUD(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) const;
 };
 
 #endif

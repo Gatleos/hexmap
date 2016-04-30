@@ -7,6 +7,7 @@
 #include "BezierCurve.h"
 #include "config.h"
 #include "rng.h"
+#include "SiteSettlement.h"
 
 void HexMap::generateBiomes(mt19937& urng) {
 	land.clear();
@@ -303,22 +304,22 @@ void HexMap::placeSites(mt19937& urng) {
 		}
 		// create a faction and place sites
 		Faction* fac = nullptr;
-		Site* c = nullptr;
+		SiteSettlement* c = nullptr;
 		if (f == fill.begin()) {
 			fac = playerFaction();
-			c = addSite(&SiteS::get(SiteS::CITY), fac);
+			c = addSettlement(&SiteS::get(SiteS::CITY), fac);
 			c->pop.setSize(Population::GROUP_MIL, 1000.0f);
 			c->resources[MapEntityS::FOOD] = 800000;
 		}
 		else {
 			fac = addFaction();
-			c = addSite(&SiteS::get(SiteS::CITY), fac);
+			c = addSettlement(&SiteS::get(SiteS::CITY), fac);
 		}
 		fac->capitol = c->id;
 		c->setAnimationType(MapEntityS::anim::IDLE);
 		c->initMapPos(territories[index]);
 		for (auto& o : output) {
-			auto* s = addSite(&SiteS::get(rng::boolean(urng) ? SiteS::TOWN : SiteS::VILLAGE), fac);
+			auto* s = addSettlement(&SiteS::get(rng::boolean(urng) ? SiteS::TOWN : SiteS::VILLAGE), fac);
 			c->addChild(s);
 			s->setAnimationType(MapEntityS::anim::IDLE);
 			s->initMapPos(o);

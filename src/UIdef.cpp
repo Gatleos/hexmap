@@ -7,7 +7,7 @@
 namespace UIdef {
 	MapEntity* selectedEnt = nullptr;
 	MapUnit* selectedUnit = nullptr;
-	Site* selectedSite = nullptr;
+	SiteSettlement* selectedSite = nullptr;
 
 	shared_ptr<MapGenDebug> MapGenDebug::instance() {
 		static auto mgd = make_shared<MapGenDebug>(MapGenDebug());
@@ -428,7 +428,7 @@ namespace UIdef {
 		selectedEnt = &ent;
 		ent.select();
 	}
-	void setSite(Site& site) {
+	void setSettlement(SiteSettlement& site) {
 		selectedEnt = &site;
 		selectedSite = &site;
 		selectedUnit = nullptr;
