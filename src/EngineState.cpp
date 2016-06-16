@@ -41,6 +41,8 @@ void EngineState::init() {
 	HEXMAP.init(MAPX, MAPY);
 	HEXMAP.setAllTiles(HexTileS::get(HexTileS::GRASSLAND), rng::r);
 	HEXMAP.calculateViewArea(HEXMAP.view);
+	engine->pushState(UIState::instance());
+	return;
 	// GUI construction
 	UI::addNewLayout(UIdef::MapGenDebug::instance());
 	UI::pushLayout(UIdef::MapGenDebug::instance());

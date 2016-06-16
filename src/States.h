@@ -84,4 +84,17 @@ public:
 	void chart();
 }; // DungeonState
 
+class UIState : public GameState {
+	UIState();
+public:
+	sf::Vector2f mouseMapPos;
+	sf::Vector2i tilePos;
+	static std::shared_ptr<UIState> instance();
+	void init();
+	void end();
+	void update();
+	void render(sf::RenderWindow &window);
+	void input(sf::Event &e);
+}; // UIState
+
 #endif
