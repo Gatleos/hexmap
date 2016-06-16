@@ -248,6 +248,11 @@
 		"quarter": [
 			[1, "/tiles/quarter/savanna", 0, 0]
 		],
+		"gradient": {
+			"type": "moisture",
+			"120": [255, 255, 255],
+			"150": [180, 255, 255]
+		},
 		"moveCost": 2
 	},
 	"t_desert": {
