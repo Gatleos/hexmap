@@ -204,6 +204,10 @@ void MapUnit::pushTask(const task& t) {
 	}
 }
 
+void MapUnit::place(sf::Vector2i axialCoord) {
+
+}
+
 void MapUnit::setAiType(const task& t) {
 	aiType = t.getType();
 	while (tasks.size() > 1) {

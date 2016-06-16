@@ -111,6 +111,7 @@ bool MapEntity::initMapPos(sf::Vector2i axialCoord) {
 	for (int a = 0; a < 3; a++) {
 		handlers_[a].setPosition((sf::Vector2f)hm->hexToPixel(pos, a) + HexMap::getMapOrigin(a));
 	}
+	place(axialCoord);
 	return true;
 }
 
@@ -129,6 +130,7 @@ bool MapEntity::setMapPos(sf::Vector2i axialCoord, bool clearPrevious) {
 	for (int a = 0; a < 3; a++) {
 		handlers_[a].setPosition((sf::Vector2f)hm->hexToPixel(pos, a) + HexMap::getMapOrigin(a));
 	}
+	place(axialCoord);
 	return true;
 }
 

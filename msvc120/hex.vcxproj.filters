@@ -146,6 +146,9 @@
     <ClCompile Include="..\src\SiteDungeon.cpp">
       <Filter>MapEntities</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\DungeonState.cpp">
+      <Filter>States</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="utility">

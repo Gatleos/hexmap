@@ -22,6 +22,7 @@ class Site : public MapEntity {
 	const SiteS* ss;
 	Site* parent;
 	std::vector<Site*> children;
+	virtual void place(sf::Vector2i axialCoord);
 public:
 	Site(const SiteS* sSite, HexMap* hmSet, Faction* parent);
 	const SiteS* sSite();

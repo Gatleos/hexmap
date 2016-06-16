@@ -66,6 +66,7 @@ namespace UI {
 	const sf::Image& image();
 	const sf::Texture& texture();
 	SpriteSheet& sprites();
+	sf::Font& font();
 	// Lose focus on all windows and contained widgets
 	void dropFocus();
 	void drawHexSelector(const sf::Vector2f& hexCoord, const sf::Color& color, sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default);

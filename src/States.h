@@ -67,4 +67,21 @@ public:
 	void input(sf::Event &e);
 }; // SelectState
 
+class DungeonState : public GameState {
+	sf::VertexArray vArray;
+	sf::Vector2f vOffset;
+	sf::Vector2f vSize;
+	sf::RectangleShape rectShape;
+	std::vector<sf::Color> vColors;
+	DungeonState();
+public:
+	static std::shared_ptr<DungeonState> instance();
+	void init();
+	void end();
+	void update();
+	void render(sf::RenderWindow &window);
+	void input(sf::Event &e);
+	void chart();
+}; // DungeonState
+
 #endif

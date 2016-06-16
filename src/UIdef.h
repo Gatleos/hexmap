@@ -4,6 +4,7 @@
 #include "UI.h"
 #include <array>
 #include "SiteSettlement.h"
+#include "SiteDungeon.h"
 #include "MapUnit.h"
 
 namespace UIdef {
@@ -34,6 +35,36 @@ namespace UIdef {
 		void updateSiteInfo();
 		void updateSitePop();
 		shared_ptr<sfg::Window> window;
+	};
+
+	class DungeonMenu : public UILayout {
+		class DangerBar : public sf::Drawable, public sf::Transformable {
+			static const float horizontalStretch;
+			static const sf::Vector2f size;
+			sf::RectangleShape red;
+			sf::RectangleShape yellow;
+			sf::RectangleShape green;
+			sf::Sprite arrow;
+			sf::Text dangerText;
+		public:
+			DangerBar();
+			void setTargetDanger(unsigned char targetDanger);
+			void setDanger(unsigned char danger);
+			void draw(sf::RenderTarget& target, sf::RenderStates states = sf::RenderStates::Default) const;
+		};
+		DangerBar dangerBar_;
+		shared_ptr<sfg::Canvas> dangerBarCanvas_;
+		sf::View dangerBarView_;
+		shared_ptr<sfg::Label> popularity_;
+		shared_ptr<sfg::Label> gold_;
+		unsigned char targetDanger_;
+		DungeonMenu();
+	public:
+		static shared_ptr<DungeonMenu> instance();
+		shared_ptr<sfg::Window> window;
+		void updateDungeonInfo();
+		void update(const sf::Time& timeElapsed);
+		void recenterDangerBar();
 	};
 
 	class DeployGroupMenu : public UILayout {
@@ -74,6 +105,8 @@ namespace UIdef {
 
 	// Set site-related UI elements to point to this site
 	void setSettlement(SiteSettlement& site);
+	// Set dungeon-related UI elements to point to this dungeon
+	void setDungeon(SiteDungeon& dungeon);
 	// Set unit-related UI elements to point to this unit
 	void setUnit(MapUnit& unit);
 	// Update all UI elements that refer to ent pop sizes

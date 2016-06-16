@@ -21,6 +21,10 @@ const SiteS* Site::sSite() {
 	return ss;
 }
 
+void Site::place(sf::Vector2i axialCoord) {
+
+}
+
 void Site::update(const sf::Time& timeElapsed) {
 
 }

@@ -7,7 +7,8 @@
 namespace UIdef {
 	MapEntity* selectedEnt = nullptr;
 	MapUnit* selectedUnit = nullptr;
-	SiteSettlement* selectedSite = nullptr;
+	SiteSettlement* selectedSettlement = nullptr;
+	SiteDungeon* selectedDungeon = nullptr;
 
 	shared_ptr<MapGenDebug> MapGenDebug::instance() {
 		static auto mgd = make_shared<MapGenDebug>(MapGenDebug());
@@ -152,35 +153,125 @@ namespace UIdef {
 		addWindow(window, UIAlign({ 1.0f, 1.0f, 250.0f, 300.0f }, UI::ALIGN_RIGHT | UI::ALIGN_FRAC_POSX | UI::ALIGN_FRAC_POSY | UI::ALIGN_BOTTOM));
 	}
 	void SiteMenu::updateSiteInfo() {
-		assert(selectedSite != nullptr);
-		for (int indexTab = 0; indexTab < selectedSite->pop.activities().size(); indexTab++) {
-			int size = selectedSite->pop.activities()[indexTab].size();
+		assert(selectedSettlement != nullptr);
+		for (int indexTab = 0; indexTab < selectedSettlement->pop.activities().size(); indexTab++) {
+			int size = selectedSettlement->pop.activities()[indexTab].size();
 			stringstream ss;
-			ss << "Pop: " << selectedSite->pop.size(indexTab);
+			ss << "Pop: " << selectedSettlement->pop.size(indexTab);
 			population[indexTab]->SetText(ss.str());
 			ss.str(std::string());
-			ss << "Idle: " << selectedSite->pop.activities()[indexTab][Population::IDLE] << "%";
+			ss << "Idle: " << selectedSettlement->pop.activities()[indexTab][Population::IDLE] << "%";
 			idlePercent[indexTab]->SetText(ss.str());
 			for (int index = 1; index < size; index++) {
 				// Link up the slider value to one of the population percentages
 				sliders[indexTab][index - 1]->GetSignal(sfg::Adjustment::OnChange).Connect(bind(&SiteMenu::adjust, this, indexTab, index));
-				sliders[indexTab][index - 1]->SetValue(selectedSite->pop.activities()[indexTab][index]);
+				sliders[indexTab][index - 1]->SetValue(selectedSettlement->pop.activities()[indexTab][index]);
 			}
 		}
 	}
 	void SiteMenu::updateSitePop() {
 		stringstream ss;
-		for (int indexTab = 0; indexTab < selectedSite->pop.activities().size(); indexTab++) {
-			ss << "Pop: " << selectedSite->pop.size(indexTab);
+		for (int indexTab = 0; indexTab < selectedSettlement->pop.activities().size(); indexTab++) {
+			ss << "Pop: " << selectedSettlement->pop.size(indexTab);
 			population[indexTab]->SetText(ss.str());
 			ss.str(std::string());
 		}
 	}
 	void SiteMenu::adjust(int group, int act) {
-		sliders[group][act - 1]->SetValue(selectedSite->pop.set(group, act, sliders[group][act - 1]->GetValue()));
+		sliders[group][act - 1]->SetValue(selectedSettlement->pop.set(group, act, sliders[group][act - 1]->GetValue()));
 		stringstream ss;
-		ss << "Idle: " << selectedSite->pop.activities()[group][Population::IDLE] << "%";
+		ss << "Idle: " << selectedSettlement->pop.activities()[group][Population::IDLE] << "%";
 		idlePercent[group]->SetText(ss.str());
+	}
+
+
+
+	const float DungeonMenu::DangerBar::horizontalStretch = 2.0f;
+	const sf::Vector2f DungeonMenu::DangerBar::size(100.0f * horizontalStretch, 20.0f);
+	DungeonMenu::DangerBar::DangerBar() {
+		arrow.setTexture(UI::texture());
+		sf::FloatRect trect = *UI::sprites().spr("/danger/arrow");
+		arrow.setTextureRect((sf::IntRect)trect);
+		arrow.setOrigin(sf::Vector2f((arrow.getTextureRect().width / 2) - 1, -size.y / 2.0f));
+		dangerText.setFont(UI::font());
+		dangerText.setCharacterSize(13u);
+	}
+	void DungeonMenu::DangerBar::setTargetDanger(unsigned char targetDanger) {
+		static const sf::Vector2f yExtents(-15.0f, 6.0f);
+		static const sf::Vector2f gExtents(-8.0f, 4.0f);
+		red.setSize(size);
+		red.setOutlineThickness(1.0f);
+		red.setOutlineColor(sf::Color(195, 174, 0));
+		red.setFillColor(sf::Color(159, 0, 0));
+		red.setOrigin(sf::Vector2f(-1.0f, -1.0f));
+		yellow.setSize({ (yExtents.y - yExtents.x) * horizontalStretch, size.y });
+		yellow.setOrigin({ -1.0f, -1.0f });
+		yellow.setPosition({ (targetDanger + yExtents.x) * horizontalStretch, 0.0f });
+		yellow.setFillColor(sf::Color(255, 204, 0));
+		green.setSize({ (gExtents.y - gExtents.x) * horizontalStretch, size.y });
+		green.setOrigin({ -1.0f, -1.0f });
+		green.setPosition({ (targetDanger + gExtents.x) * horizontalStretch, 0.0f });
+		green.setFillColor(sf::Color(0, 159, 64));
+	}
+	void DungeonMenu::DangerBar::setDanger(unsigned char danger) {
+		arrow.setPosition(sf::Vector2f(danger * horizontalStretch, 0.0f));
+		dangerText.setString(std::to_string(danger));
+		auto bounds = dangerText.getLocalBounds();
+		auto arrowBounds = arrow.getLocalBounds();
+		dangerText.setOrigin(sf::Vector2f((bounds.width / 2) - 1, -(arrowBounds.top + arrowBounds.height) + arrow.getOrigin().y));
+		dangerText.setPosition(sf::Vector2f(danger * horizontalStretch, 0.0f));
+	}
+	void DungeonMenu::DangerBar::draw(sf::RenderTarget& target, sf::RenderStates states) const {
+		states.transform *= this->getTransform();
+		target.draw(red, states);
+		target.draw(yellow, states);
+		target.draw(green, states);
+		target.draw(arrow, states);
+		target.draw(dangerText, states);
+	}
+	shared_ptr<DungeonMenu> DungeonMenu::instance() {
+		static auto dm = make_shared<DungeonMenu>(DungeonMenu());
+		return dm;
+	}
+	DungeonMenu::DungeonMenu() {
+	//	unsigned char targetDanger;
+	//	float popularity;
+	//	unsigned char danger;
+	//	int gold;
+	//	int wins;
+	//	int losses;
+		dangerBarCanvas_ = sfg::Canvas::Create();
+		//dangerBarCanvas_->GetSignal(sfg::Canvas::OnSizeAllocate).Connect(std::bind(&DungeonMenu::recenterDangerBar, this));
+		dangerBarCanvas_->SetRequisition({ 1.0f, 1.0f });
+		dangerBarView_.setCenter(0.0f, 0.0f);
+		window = sfg::Window::Create(sfg::Window::Style::BACKGROUND);
+		auto box = sfg::Box::Create(sfg::Box::Orientation::VERTICAL);
+		popularity_ = sfg::Label::Create("");
+		gold_ = sfg::Label::Create("");
+		box->Pack(popularity_, false);
+		box->Pack(gold_, false);
+		box->Pack(dangerBarCanvas_);
+		window->Add(box);
+		addWindow(window, UIAlign({ 1.0f, 1.0f, 250.0f, 300.0f }, UI::ALIGN_RIGHT | UI::ALIGN_FRAC_POSX | UI::ALIGN_FRAC_POSY | UI::ALIGN_BOTTOM));
+	}
+	void DungeonMenu::updateDungeonInfo() {
+		assert(selectedDungeon != nullptr);
+		dangerBar_.setDanger(selectedDungeon->danger);
+		dangerBar_.setTargetDanger(selectedDungeon->targetDanger);
+		popularity_->SetText("Popularity: " + std::to_string((int)std::round(selectedDungeon->popularity)) + "%");
+		gold_->SetText("Gold: " + std::to_string(selectedDungeon->gold));
+	}
+	void DungeonMenu::update(const sf::Time& timeElapsed) {
+		//dangerBarCanvas_->SetView(dangerBarView_);
+		dangerBarCanvas_->Bind();
+		dangerBarCanvas_->Clear(sf::Color::Transparent);
+		dangerBarCanvas_->Draw(dangerBar_);
+		dangerBarCanvas_->Display();
+		dangerBarCanvas_->Unbind();
+	}
+	void DungeonMenu::recenterDangerBar() {
+		auto alloc = dangerBarCanvas_->GetAllocation();
+		dangerBarView_.setSize({ alloc.width, alloc.height });
 	}
 
 
@@ -300,7 +391,7 @@ namespace UIdef {
 			UI::ALIGN_CENTERX | UI::ALIGN_FRAC_POSX | UI::ALIGN_CENTERY | UI::ALIGN_FRAC_POSY, false));
 	}
 	void DeployGroupMenu::updateSiteInfo() {
-		assert(selectedSite != nullptr);
+		assert(selectedSettlement != nullptr);
 		static auto createSelection = [](Site* site) {
 			auto vs = make_shared<VectorSet>();
 			HexMap::neighbors(site->getMapPos(), *vs);
@@ -310,7 +401,7 @@ namespace UIdef {
 		if (deploySignal_ >= 0) {
 			selectCoordButton_->GetSignal(sfg::Button::OnLeftClick).Disconnect(deploySignal_);
 		}
-		deploySignal_ = selectCoordButton_->GetSignal(sfg::Button::OnLeftClick).Connect(bind(createSelection, selectedSite));
+		deploySignal_ = selectCoordButton_->GetSignal(sfg::Button::OnLeftClick).Connect(bind(createSelection, selectedSettlement));
 		updateType();
 		updateSiteResources();
 	}
@@ -328,8 +419,8 @@ namespace UIdef {
 	void DeployGroupMenu::updateSitePop() {
 		stringstream ss;
 		// population related to currently selected unit type
-		armyAdjust[0]->SetUpper((int)selectedSite->pop.size(unit_.getMemberType()));
-		ss << " / " << (int)selectedSite->pop.size(unit_.getMemberType());
+		armyAdjust[0]->SetUpper((int)selectedSettlement->pop.size(unit_.getMemberType()));
+		ss << " / " << (int)selectedSettlement->pop.size(unit_.getMemberType());
 		armyLabel_[0]->SetText(ss.str());
 	}
 	void DeployGroupMenu::updateSiteResources() {
@@ -339,12 +430,12 @@ namespace UIdef {
 		stringstream ss;
 		// food stocks
 		int totalFood = (int)armyAdjust[1]->GetValue() * (int)armyAdjust[0]->GetValue();
-		ss << " (" << totalFood << " / " << (int)selectedSite->resources[SiteS::FOOD] << " food)";
+		ss << " (" << totalFood << " / " << (int)selectedSettlement->resources[SiteS::FOOD] << " food)";
 		if ((int)armyAdjust[0]->GetValue() < 1) {
 			armyAdjust[1]->SetUpper(0.0f);
 		}
 		else {
-			armyAdjust[1]->SetUpper((int)selectedSite->resources[SiteS::FOOD] / (int)armyAdjust[0]->GetValue());
+			armyAdjust[1]->SetUpper((int)selectedSettlement->resources[SiteS::FOOD] / (int)armyAdjust[0]->GetValue());
 		}
 		armyLabel_[1]->SetText(ss.str());
 		unit_.setHealth(armyAdjust[0]->GetValue());
@@ -392,7 +483,7 @@ namespace UIdef {
 			deployed->initMapPos(deployTo_);
 			deployed->setHealth(armyAdjust[0]->GetValue());
 			deployed->setFood(armyAdjust[1]->GetValue() * armyAdjust[0]->GetValue());
-			selectedSite->deployUnit(*deployed);
+			selectedSettlement->deployUnit(*deployed);
 			// Reset UI
 			reset();
 			//UIdef::updateSitePop();
@@ -420,7 +511,7 @@ namespace UIdef {
 		if (selectedEnt != nullptr) {
 			selectedEnt->deselect();
 			selectedEnt = nullptr;
-			selectedSite = nullptr;
+			selectedSettlement = nullptr;
 			selectedUnit = nullptr;
 		}
 	}
@@ -430,25 +521,34 @@ namespace UIdef {
 	}
 	void setSettlement(SiteSettlement& site) {
 		selectedEnt = &site;
-		selectedSite = &site;
+		selectedSettlement = &site;
+		selectedDungeon = nullptr;
 		selectedUnit = nullptr;
 		SiteMenu::instance()->updateSiteInfo();
 		DeployGroupMenu::instance()->updateSiteInfo();
 	}
+	void setDungeon(SiteDungeon& dungeon) {
+		selectedEnt = &dungeon;
+		selectedSettlement = nullptr;
+		selectedDungeon = &dungeon;
+		selectedUnit = nullptr;
+		DungeonMenu::instance()->updateDungeonInfo();
+	}
 	void setUnit(MapUnit& unit) {
 		selectedEnt = &unit;
-		selectedSite = nullptr;
+		selectedSettlement = nullptr;
+		selectedDungeon = nullptr;
 		selectedUnit = &unit;
 	}
 	void updateSitePop() {
-		if (selectedSite == nullptr) {
+		if (selectedSettlement == nullptr) {
 			return;
 		}
 		SiteMenu::instance()->updateSitePop();
 		DeployGroupMenu::instance()->updateSitePop();
 	}
 	void updateSiteResources() {
-		if (selectedSite == nullptr) {
+		if (selectedSettlement == nullptr) {
 			return;
 		}
 		DeployGroupMenu::instance()->updateSiteResources();

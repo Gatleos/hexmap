@@ -75,6 +75,8 @@ protected:
 	HexMap* hm;
 	Faction* faction;
 	bool acted;
+	// called whenever the entity changes position
+	virtual void place(sf::Vector2i axialCoord) = 0;
 public:
 	static void setZoomLevel(int zoom);
 	static int getZoomLevel();

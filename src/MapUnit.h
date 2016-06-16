@@ -63,6 +63,7 @@ private:
 	HealthBar hp;
 	bool blockedLastTurn;
 	void pushTask(const task& t);
+	virtual void place(sf::Vector2i axialCoord);
 public:
 	MapUnit(const MapUnitS* sUnit, HexMap* hmSet, Faction* parent);
 	void setStaticUnit(const MapUnitS* sUnit);

@@ -1,3 +1,4 @@
+#include <iostream>
 #include <stack>
 #include <SFGUI/Renderers.hpp>
 #include "UI.h"
@@ -8,6 +9,7 @@ sf::View UI::view;
 sf::Vector2i UI::lastMousePos(0, 0);
 sf::Sprite hexSelector[ZOOM_LEVELS];
 const sf::Vector2f UI::invalidHex(-1.0f, -1.0f);
+static std::unique_ptr<sf::Font> UI_font(new sf::Font);
 static sf::Vector2f UI_selectedHex(UI::invalidHex);
 static vector<pair<shared_ptr<UILayout>, bool>> UI_layoutStack;
 static sf::Vector2f UI_appSize;
@@ -155,6 +157,9 @@ const sf::Texture& UI::texture() {
 SpriteSheet& UI::sprites() {
 	return *UI_sprites;
 }
+sf::Font& UI::font() {
+	return *UI_font;
+}
 
 
 void UI::init(sfg::Desktop* d) {
@@ -162,6 +167,7 @@ void UI::init(sfg::Desktop* d) {
 	auto renderer = sfg::VertexBufferRenderer::Create(); // Fix a NonLegacyRenderer-related text bug
 	sfg::Renderer::Set(renderer);
 	UI_layoutStack.reserve(100);
+	UI_font->loadFromFile("data/font.ttf");
 }
 
 void UI::loadJson(std::string filename) {
@@ -201,6 +207,7 @@ void UI::loadJson(std::string filename) {
 }
 
 void UI::end() {
+	UI_font.release();
 	UI_layoutStack.clear();
 	UI_layouts.clear();
 }
