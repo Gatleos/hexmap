@@ -22,6 +22,9 @@
       <dir name="frame">
         <spr name="health" x="115" y="81" w="70" h="27"/>
       </dir>
+      <dir name="danger">
+        <spr name="arrow" x="118" y="10" w="17" h="18"/>
+      </dir>
     </dir>
   </definitions>
 </img>

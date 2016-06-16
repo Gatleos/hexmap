@@ -12,8 +12,8 @@
           <spr name="grassland" x="260" y="0" w="64" h="74"/>
           <spr name="semiarid" x="325" y="0" w="64" h="74"/>
           <spr name="desert" x="390" y="0" w="64" h="74"/>
-          <spr name="forest" x="65" y="75" w="64" h="74"/>
-          <spr name="taiga" x="0" y="75" w="64" h="74"/>
+          <spr name="grasslandHill" x="65" y="75" w="64" h="74"/>
+          <spr name="tundraHill" x="0" y="75" w="64" h="74"/>
           <spr name="jungle" x="130" y="75" w="64" h="74"/>
           <spr name="swamp" x="195" y="75" w="64" h="74"/>
           <spr name="swampPlant" x="260" y="75" w="64" h="74"/>
