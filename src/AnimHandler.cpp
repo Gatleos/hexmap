@@ -39,11 +39,11 @@ const char* AnimationData::darkFunctionVersion() {
 	return "1.3";
 }
 
-std::string AnimationData::getSheetName() {
+std::string AnimationData::getSheetName() const {
 	return sheetName;
 }
 
-const sf::Texture& AnimationData::getTexture() {
+const sf::Texture& AnimationData::getTexture() const {
 	return *tx;
 }
 
@@ -68,11 +68,19 @@ void AnimHandler::draw(sf::RenderTarget &target, sf::RenderStates states) const 
 	target.draw(currentFrame->sprites, states);
 }
 
+const sf::VertexArray& AnimHandler::getVArray() const {
+	return currentFrame->sprites;
+}
+
 void AnimHandler::setAnimationData(const AnimationData &ai) {
 	animInfo = &ai;
 	currentAnim = &animInfo->animations.begin()->second;
 	cframe = 0;
 	currentFrame = &currentAnim->frames[0];
+}
+
+const AnimationData& AnimHandler::getAnimationData() {
+	return *animInfo;
 }
 
 void AnimHandler::setAnimation(string name) {

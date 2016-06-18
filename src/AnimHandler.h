@@ -53,9 +53,9 @@ public:
 	static const AnimationData defaultAnim;
 	AnimationData(bool dummy = false);
 	// Return the name of the spritesheet
-	std::string getSheetName();
+	std::string getSheetName() const;
 	// Get the texture this animation draws from
-	const sf::Texture& getTexture();
+	const sf::Texture& getTexture() const;
 	friend AnimHandler;
 	friend ResourceLoader;
 };//AnimationData
@@ -70,7 +70,9 @@ public:
 	AnimHandler();
 	void updateAnimation(const sf::Time& timeElapsed);
 	virtual void draw(sf::RenderTarget &target, sf::RenderStates states = sf::RenderStates::Default) const;
+	const sf::VertexArray& getVArray() const;
 	void setAnimationData(const AnimationData &ai);
+	const AnimationData& getAnimationData();
 	void setAnimation(std::string name);
 	void setFrame(int num);
 	void randomFrame(std::mt19937& urng);
