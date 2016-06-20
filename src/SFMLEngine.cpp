@@ -2,6 +2,9 @@
 #include <SFGUI/Renderers.hpp>
 #include "SFMLEngine.h"
 #include "HexMap.h"
+#include "imgui.h"
+#include "imgui-rendering-SFML.h"
+#include "imgui-events-SFML.h"
 
 
 
@@ -13,51 +16,49 @@ void SFMLEngine::init(sf::RenderWindow* windowset) {
 	window = windowset;
 	window->setFramerateLimit(60);
 	clearColor = sf::Color::Black;
-	UI::init(&desktop);
-	UI::setAppSize((sf::Vector2f)window->getSize());
+	ImGui::SFML::SetWindow(*windowset);
+	ImGui::SFML::SetRenderTarget(*windowset);
+	ImGui::SFML::InitImGuiEvents();
+	ImGui::SFML::InitImGuiRendering();
 }
 void SFMLEngine::start() {
 	try {
 		sf::Clock fr;
 		while (window->isOpen()) {
+			ImGui::SFML::UpdateImGui();
+			ImGui::SFML::UpdateImGuiRendering();
 			while (window->pollEvent(event)) {
-				desktop.HandleEvent(event);
+				//desktop.HandleEvent(event);
+				ImGui::SFML::ProcessEvent(event);
 				if (event.type == sf::Event::Closed) {
 					window->close();
 					UI::end();
 				}
+				else if ((event.type == sf::Event::MouseButtonPressed
+					|| event.type == sf::Event::MouseWheelMoved) && ImGui::GetIO().WantCaptureMouse) {
+					continue; // our mouse press was "consumed" by the UI layer, ignore it
+				}
+				else if (event.type == sf::Event::KeyPressed && ImGui::GetIO().WantCaptureKeyboard) {
+					continue; // our key press was "consumed" by the UI layer, ignore it
+				}
 				else {
+					// pass input on to the current state
 					states.top()->input(event);
 				}
-				// Special UI event responses
-				if (event.type == sf::Event::MouseMoved) {
-					UI::lastMousePos = { event.mouseMove.x, event.mouseMove.y };
-				}
-				else if (event.type == sf::Event::MouseButtonPressed && !UI::gotMouseInput()) {
-					UI::dropFocus();
-				}
-				else if (event.type == sf::Event::Resized) {
-					UI::setAppSize({ (float)event.size.width, (float)event.size.height });
+				if (event.type == sf::Event::Resized) {
 					HEXMAP.view.setSize(sf::Vector2f((float)event.size.width, (float)event.size.height));
 					HEXMAP.view.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
-					UI::view.setSize(sf::Vector2f(roundf((float)event.size.width), roundf((float)event.size.height)));
-					UI::view.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
-					UI::view.setCenter(UI::view.getSize() / 2.0f);
-					//
 					HEXMAP.constrainView(HEXMAP.view);
 					HEXMAP.calculateViewArea(HEXMAP.view);
 				}
-				UI::resetInputFlags();
 			}
 			//
 			lastFrame = fr.restart();
 			states.top()->update();
-			UI::updateLayouts(lastFrame);
-			desktop.Update(lastFrame.asSeconds());
 			//
 			window->clear(clearColor);
 			states.top()->render(*window);
-			sfgui.Display(*window);
+			ImGui::Render();
 			window->display();
 		}
 	}

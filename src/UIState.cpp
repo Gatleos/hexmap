@@ -3,9 +3,7 @@
 #include <sstream>
 #include "States.h"
 #include "HexMap.h"
-#include "imgui.h"
-#include "imgui-rendering-SFML.h"
-#include "imgui-events-SFML.h"
+#include "UI2.h"
 
 std::shared_ptr<UIState> UIState::instance() {
 	static auto uis = std::make_shared<UIState>(UIState());
@@ -14,21 +12,23 @@ std::shared_ptr<UIState> UIState::instance() {
 UIState::UIState() {
 }
 void UIState::init() {
-	ImGui::SFML::SetWindow(*engine->window);
-	ImGui::SFML::SetRenderTarget(*engine->window);
-	ImGui::SFML::InitImGuiEvents();
-	ImGui::SFML::InitImGuiRendering();
-	int x = 0;
+	ifstream in;
+	in.open("data/default.style");
+	in.read((char*)&ImGui::GetStyle(), sizeof(ImGuiStyle));
+	in.close();
 }
 void UIState::end() {
+	ofstream out;
+	out.open("data/default.style");
+	out.write((char*)&ImGui::GetStyle(), sizeof(ImGuiStyle));
+	out.close();
 }
 void UIState::update() {
-	ImGui::SFML::UpdateImGui();
-	ImGui::SFML::UpdateImGuiRendering();
 }
 void UIState::render(sf::RenderWindow &window) {
-	ImGui::ShowStyleEditor();
-	ImGui::Render();
+	static bool randomSeed = true;
+	//ImGui::ShowStyleEditor(&ImGui::GetStyle());
+	//ui2::mapInfoMenu(HEXMAP, randomSeed);
 }
 void UIState::input(sf::Event &e) {
 }

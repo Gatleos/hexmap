@@ -54,6 +54,7 @@
     <ClInclude Include="..\src\Compare.h" />
     <ClInclude Include="..\src\TileFeature.h" />
     <ClInclude Include="..\src\UI.h" />
+    <ClInclude Include="..\src\UI2.h" />
     <ClInclude Include="..\src\UIdef.h" />
     <ClInclude Include="..\src\VERSION.h" />
   </ItemGroup>
@@ -89,6 +90,7 @@
     <ClCompile Include="..\src\Species.cpp" />
     <ClCompile Include="..\src\TileFeature.cpp" />
     <ClCompile Include="..\src\UI.cpp" />
+    <ClCompile Include="..\src\UI2.cpp" />
     <ClCompile Include="..\src\UIdef.cpp" />
     <ClCompile Include="..\src\UIState.cpp" />
   </ItemGroup>

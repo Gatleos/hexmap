@@ -102,6 +102,9 @@
     <ClInclude Include="..\imgui\stb_truetype.h">
       <Filter>imgui</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\UI2.h">
+      <Filter>UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\main.cpp" />
@@ -190,6 +193,9 @@
     </ClCompile>
     <ClCompile Include="..\src\UIState.cpp">
       <Filter>States</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\UI2.cpp">
+      <Filter>UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

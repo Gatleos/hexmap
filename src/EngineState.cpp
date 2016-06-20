@@ -36,19 +36,20 @@ void EngineState::init() {
 	winSize.x /= 2, winSize.y /= 2;
 	HEXMAP.view.setCenter((sf::Vector2f)winSize);
 	HEXMAP.view.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
-	UI::view = HEXMAP.view;
+	//UI::view = HEXMAP.view;
 	// Set up map
 	HEXMAP.init(MAPX, MAPY);
 	HEXMAP.setAllTiles(HexTileS::get(HexTileS::GRASSLAND), rng::r);
 	HEXMAP.calculateViewArea(HEXMAP.view);
-	engine->pushState(UIState::instance());
-	return;
+	//
+	//engine->pushState(UIState::instance());
+	//return;
 	// GUI construction
-	UI::addNewLayout(UIdef::MapGenDebug::instance());
-	UI::pushLayout(UIdef::MapGenDebug::instance());
-	siteMenu = UIdef::SiteMenu::instance();
-	UI::addNewLayout(siteMenu);
-	UI::addNewLayout(UIdef::DeployGroupMenu::instance());
+	//UI::addNewLayout(UIdef::MapGenDebug::instance());
+	//UI::pushLayout(UIdef::MapGenDebug::instance());
+	//siteMenu = UIdef::SiteMenu::instance();
+	//UI::addNewLayout(siteMenu);
+	//UI::addNewLayout(UIdef::DeployGroupMenu::instance());
 	// Shader
 	//shader.loadFromFile("data/simplex.glsl", sf::Shader::Type::Fragment);
 	//shader.setParameter("offset", HEXMAP.view.getCenter());
@@ -58,7 +59,7 @@ void EngineState::init() {
 	//shader.setParameter("brightness", 0.9f);
 	//engine->window->setFramerateLimit(600);
 	engine->pushState(MapControlState::instance());
-	UI::desktop->LoadThemeFromFile("data/test.theme");
+	//UI::desktop->LoadThemeFromFile("data/test.theme");
 	//generate();
 	// Entities
 	auto* f = HEXMAP.playerFaction();

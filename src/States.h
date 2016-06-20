@@ -32,9 +32,10 @@ public:
 }; // EngineState
 
 class MapControlState : public GameState {
-	const sf::Vector2f& viewSize_;
-	const sf::Vector2f& viewCenter_;
+	sf::Vector2f viewSize_;
+	sf::Vector2f viewCenter_;
 	sf::Vector2i camDelta_;
+	std::string terrainName_;
 	MapControlState();
 public:
 	sf::Vector2f mouseMapPos;

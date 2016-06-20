@@ -1,6 +1,10 @@
 #include "States.h"
 #include "HexMap.h"
 #include "clamp.h"
+#include "UI2.h"
+
+sf::RenderTexture* rtex;
+AnimHandler animHandler;
 
 std::shared_ptr<MapControlState> MapControlState::instance() {
 	static auto mcs = std::make_shared<MapControlState>(MapControlState());
@@ -11,8 +15,13 @@ viewSize_(HEXMAP.view.getSize()),
 viewCenter_(HEXMAP.view.getCenter()) {
 }
 void MapControlState::init() {
+	rtex = new sf::RenderTexture;
+	const AnimationData& animData = *RESOURCE.anim("monsters.anim");
+	animHandler.setAnimationData(animData);
+	rtex->create(300, 300);
 }
 void MapControlState::end() {
+	delete rtex;
 }
 void MapControlState::update() {
 	float move = 60.0f / engine->getFPS();
@@ -25,29 +34,34 @@ void MapControlState::update() {
 	timeOffset.x += HEXMAP.getLifetime().asSeconds() * HexMap::cloudSpeed;
 	timeOffset.y += HEXMAP.getLifetime().asSeconds() * HexMap::cloudSpeed;
 	HEXMAP.cloudShader.setParameter("offset", timeOffset);
+	animHandler.updateAnimation(engine->getLastTick());
 	prev->update();
 }
 void MapControlState::render(sf::RenderWindow &window) {
+	static bool randomSeed = true;
+	static int genTime = 1000;
 	prev->render(window);
+	ui2::mapInfoMenu((sf::Vector2i)mouseMapPos, tilePos, (sf::Vector2i)viewCenter_, terrainName_, genTime, randomSeed, animHandler);
+	ImGui::ShowMetricsWindow();
 }
 void MapControlState::input(sf::Event &e) {
 	if (e.type == sf::Event::MouseMoved) {
 		if (HEXMAP.isGrabbed) {
-			HEXMAP.view.move((sf::Vector2f)(UI::lastMousePos - sf::Mouse::getPosition(*engine->window)));
+			
+			HEXMAP.view.move(sf::Vector2f(-ImGui::GetIO().MouseDelta.x, -ImGui::GetIO().MouseDelta.y));
 			HEXMAP.constrainView(HEXMAP.view);
 			HEXMAP.calculateViewArea(HEXMAP.view);
 		}
-		const sf::Vector2f& size = HEXMAP.view.getSize();
-		const sf::Vector2f& center = HEXMAP.view.getCenter();
-		mouseMapPos = { e.mouseMove.x - size.x / 2.0f + center.x, e.mouseMove.y - size.y / 2.0f + center.y };
+		viewSize_ = HEXMAP.view.getSize();
+		viewCenter_ = HEXMAP.view.getCenter();
+		mouseMapPos = { e.mouseMove.x - viewSize_.x / 2.0f + viewCenter_.x, e.mouseMove.y - viewSize_.y / 2.0f + viewCenter_.y };
 		tilePos = (sf::Vector2i)HEXMAP.pixelToHex(mouseMapPos);
-		UIdef::MapGenDebug::instance()->updateDebugInfo((sf::Vector2i)mouseMapPos, tilePos, (sf::Vector2i)center);
 		if (HEXMAP.isAxialInBounds(tilePos)) {
-			UIdef::MapGenDebug::instance()->debugInfo[3]->SetText(HEXMAP.getAxial((int)tilePos.x, (int)tilePos.y).hts->name);
+			terrainName_ = HEXMAP.getAxial((int)tilePos.x, (int)tilePos.y).hts->name;
 			HEXMAP.updateCursorPos((sf::Vector2i)tilePos);
 		}
 		else {
-			UIdef::MapGenDebug::instance()->debugInfo[3]->SetText("");
+			terrainName_ = "";
 			HEXMAP.updateCursorPos({ -10, -10 });
 		}
 	}
